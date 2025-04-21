@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/dashboard_widgets/tab_title.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
-import 'package:techysquad/utils/colors.dart';
-import 'package:techysquad/utils/comman_texfield.dart';
-import 'package:techysquad/utils/common_dropdown.dart';
-import 'package:techysquad/utils/submit_button.dart';
-import 'package:techysquad/widgets/gradient_background.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/tab_title.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
+import 'package:honorfx/utils/colors.dart';
+import 'package:honorfx/utils/comman_texfield.dart';
+import 'package:honorfx/utils/common_dropdown.dart';
+import 'package:honorfx/utils/submit_button.dart';
+import 'package:honorfx/widgets/gradient_background.dart';
 
 class SupportScreen extends StatefulWidget {
   const SupportScreen({super.key});

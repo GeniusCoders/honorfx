@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:techysquad/screens/login/login_screen.dart';
-import 'package:techysquad/utils/colors.dart';
-import 'package:techysquad/utils/comman_texfield.dart';
-import 'package:techysquad/utils/common_dropdown.dart';
-import 'package:techysquad/widgets/gradient_background.dart';
+import 'package:honorfx/screens/login/login_screen.dart';
+import 'package:honorfx/utils/colors.dart';
+import 'package:honorfx/utils/comman_texfield.dart';
+import 'package:honorfx/utils/common_dropdown.dart';
+import 'package:honorfx/widgets/gradient_background.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});

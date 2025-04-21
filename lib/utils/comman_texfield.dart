@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:techysquad/utils/colors.dart';
+import 'package:honorfx/utils/colors.dart';
 
 class CommanTexfield extends StatelessWidget {
   const CommanTexfield({super.key, required this.hintText});

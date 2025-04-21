@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "techysquad" "\0"
+            VALUE "FileDescription", "honorfx" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "techysquad" "\0"
+            VALUE "InternalName", "honorfx" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "techysquad.exe" "\0"
-            VALUE "ProductName", "techysquad" "\0"
+            VALUE "OriginalFilename", "honorfx.exe" "\0"
+            VALUE "ProductName", "honorfx" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

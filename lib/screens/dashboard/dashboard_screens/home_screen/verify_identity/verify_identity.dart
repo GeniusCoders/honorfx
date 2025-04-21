@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
-import 'package:techysquad/utils/colors.dart';
-import 'package:techysquad/utils/comman_texfield.dart';
-import 'package:techysquad/widgets/gradient_background.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
+import 'package:honorfx/utils/colors.dart';
+import 'package:honorfx/utils/comman_texfield.dart';
+import 'package:honorfx/widgets/gradient_background.dart';
 
 class VerifyIdentityScreen extends StatelessWidget {
   const VerifyIdentityScreen({super.key});

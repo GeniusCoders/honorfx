@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/dashboard_widgets/tab_title.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/home_screen/home_widgets/account_balance.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/home_screen/home_widgets/account_balance_details.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/home_screen/home_widgets/account_list.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/home_screen/home_widgets/open_account_button.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/home_screen/home_widgets/open_position.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/home_screen/home_widgets/transactions.dart';
-import 'package:techysquad/utils/colors.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/tab_title.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/account_balance.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/account_balance_details.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/account_list.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/open_account_button.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/open_position.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/transactions.dart';
+import 'package:honorfx/utils/colors.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

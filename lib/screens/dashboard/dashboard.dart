@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/home_screen/home_screen.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/mydata_screen/mydata_screen.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/myfund_screen/myfund_screen.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/mywallet_screen/mywallet_screen.dart';
-import 'package:techysquad/widgets/app_drawer.dart';
-import 'package:techysquad/widgets/gradient_background.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_screen.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/mydata_screen/mydata_screen.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/myfund_screen/myfund_screen.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/mywallet_screen/mywallet_screen.dart';
+import 'package:honorfx/widgets/app_drawer.dart';
+import 'package:honorfx/widgets/gradient_background.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});

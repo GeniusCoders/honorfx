@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:techysquad/screens/dashboard/dashboard_screens/support_screen/support_screen.dart';
-import 'package:techysquad/screens/login/login_screen.dart';
-import 'package:techysquad/utils/colors.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/support_screen/support_screen.dart';
+import 'package:honorfx/screens/login/login_screen.dart';
+import 'package:honorfx/utils/colors.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({Key? key}) : super(key: key);

@@ -1,4 +1,4 @@
-# techysquad
+# honorfx
 
 A new Flutter project.
 
