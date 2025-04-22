@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
 import 'package:honorfx/services/repo/dashboard_repo.dart';
+import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
 
 @injectable
 class DashboardCubit extends Cubit<DashboardState> {
@@ -21,8 +22,12 @@ class DashboardCubit extends Cubit<DashboardState> {
         ),
         (accountList) {
           if (accountList.status == 200) {
-            if (accountList.data != null) {
+            if (accountList.data != null && accountList.data!.isNotEmpty) {
               emit(AccountsLoaded(accounts: accountList.data!));
+              // Fetch account details for the first account by default
+              getAccountDetails(
+                accountId: accountList.data!.first.mtUserid.toString(),
+              );
             } else {
               emit(AccountsLoaded(accounts: []));
             }
@@ -40,12 +45,92 @@ class DashboardCubit extends Cubit<DashboardState> {
     }
   }
 
-  // Additional methods for other dashboard data
-  // Future<void> getOpenPositions() async {
-  //   // Implementation
-  // }
+  Future<void> getAccountDetails({
+    required String accountId,
+    int? selectedIndex,
+  }) async {
+    List<AccountListingTypeData> accounts = [];
+    int selectedAccountIdx = selectedIndex ?? 0;
 
-  // Future<void> getTransactions() async {
-  //   // Implementation
-  // }
+    // Handle both states
+    if (state is AccountsLoaded) {
+      final currentState = state as AccountsLoaded;
+      accounts = currentState.accounts;
+      selectedAccountIdx =
+          selectedIndex ?? currentState.selectedAccountIndex ?? 0;
+    } else if (state is AccountDetailsLoaded) {
+      final currentState = state as AccountDetailsLoaded;
+      accounts = currentState.accounts;
+      selectedAccountIdx = selectedIndex ?? currentState.selectedAccountIndex;
+    } else {
+      return;
+    }
+
+    emit(AccountDetailsLoading());
+
+    try {
+      final result = await _dashboardRepo.accountDetails(accountId: accountId);
+      result.fold(
+        (error) {
+          emit(
+            AccountDetailsError(
+              message: error.message ?? 'Failed to load account details',
+            ),
+          );
+        },
+        (response) {
+          if (response.status == 200 && response.data != null) {
+            emit(
+              AccountDetailsLoaded(
+                accounts: accounts,
+                selectedAccountIndex: selectedAccountIdx,
+                accountDetails: response.data!,
+              ),
+            );
+          } else {
+            emit(
+              AccountDetailsError(
+                message: response.msg ?? 'Failed to load account details',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(AccountDetailsError(message: e.toString()));
+    }
+  }
+
+  void selectAccount(int index) {
+    // Handle both AccountsLoaded and AccountDetailsLoaded states
+    List<AccountListingTypeData> accounts = [];
+
+    if (state is AccountsLoaded) {
+      final currentState = state as AccountsLoaded;
+      accounts = currentState.accounts;
+    } else if (state is AccountDetailsLoaded) {
+      final currentState = state as AccountDetailsLoaded;
+      accounts = currentState.accounts;
+    } else {
+      return;
+    }
+
+    if (index >= 0 && index < accounts.length) {
+      final selectedAccount = accounts[index];
+
+      // First update the selection state based on current state type
+      if (state is AccountsLoaded) {
+        emit(AccountsLoaded(accounts: accounts, selectedAccountIndex: index));
+      } else if (state is AccountDetailsLoaded) {
+        // Keep the current account details but update the selected index
+        emit(AccountsLoaded(accounts: accounts, selectedAccountIndex: index));
+      }
+
+      // Call API to get account details
+      getAccountDetails(
+        accountId: selectedAccount.mtUserid.toString(),
+        selectedIndex: index,
+      );
+    } else {}
+  }
 }

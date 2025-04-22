@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
+import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
 import 'package:honorfx/utils/colors.dart';
 
 class AccountBalanceDetails extends StatelessWidget {
@@ -7,21 +10,61 @@ class AccountBalanceDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        AccountBalanceDetailItem(
-          title: "Unrealized P&L",
-          amount: "\$1000",
-          color: AppColors.primary,
-        ),
-        Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
-        AccountBalanceDetailItem(title: "Equity", amount: "\$400"),
-        Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
-        AccountBalanceDetailItem(title: "Free margin", amount: "\$400"),
-        Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
-        AccountBalanceDetailItem(title: "Actual leverage", amount: "1:2000"),
-      ],
+    return BlocBuilder<DashboardCubit, DashboardState>(
+      builder: (context, state) {
+        if (state is AccountDetailsLoaded) {
+          final details = state.accountDetails;
+          final currency = details.currency ?? '\$';
+
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              AccountBalanceDetailItem(
+                title: "Profit",
+                amount:
+                    "$currency${details.profit?.toStringAsFixed(2) ?? '0.00'}",
+                color: AppColors.primary,
+              ),
+              Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
+              AccountBalanceDetailItem(
+                title: "Equity",
+                amount: "$currency${details.equity ?? '0.00'}",
+              ),
+              Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
+              AccountBalanceDetailItem(
+                title: "Credit",
+                amount: "$currency${details.credit ?? '0.00'}",
+              ),
+              Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
+              AccountBalanceDetailItem(
+                title: "Leverage",
+                amount: "1:${details.leverage?.toString() ?? '0'}",
+              ),
+            ],
+          );
+        } else if (state is AccountDetailsLoading) {
+          return Center(
+            child: CircularProgressIndicator(color: AppColors.primary),
+          );
+        } else {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              AccountBalanceDetailItem(
+                title: "Profit",
+                amount: "\$0.00",
+                color: AppColors.primary,
+              ),
+              Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
+              AccountBalanceDetailItem(title: "Equity", amount: "\$0.00"),
+              Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
+              AccountBalanceDetailItem(title: "Credit", amount: "\$0.00"),
+              Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
+              AccountBalanceDetailItem(title: "Leverage", amount: "1:0"),
+            ],
+          );
+        }
+      },
     );
   }
 }

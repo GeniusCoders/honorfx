@@ -22,52 +22,101 @@ class AccountList extends StatelessWidget {
             SizedBox(height: 10.h),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Row(
-                children:
-                    state is AccountsLoaded
-                        ? state.accounts
-                            .map(
-                              (account) => AccountListItem(
-                                accountNumber: account.mtUserid.toString(),
-                              ),
-                            )
-                            .toList()
-                        : [],
-              ),
+              child: Row(children: _buildAccountItems(context, state)),
             ),
           ],
         );
       },
     );
   }
+
+  List<Widget> _buildAccountItems(BuildContext context, DashboardState state) {
+    final accounts = _getAccountsFromState(state);
+    final selectedIndex = _getSelectedIndexFromState(state);
+
+    if (accounts.isEmpty) return [];
+
+    return accounts.asMap().entries.map((entry) {
+      final index = entry.key;
+      final account = entry.value;
+      final isSelected = index == selectedIndex;
+
+      return AccountListItem(
+        accountNumber: "#${account.mtUserid}",
+        isSelected: isSelected,
+        onTap: () {
+          if (!isSelected) {
+            context.read<DashboardCubit>().selectAccount(index);
+          }
+        },
+      );
+    }).toList();
+  }
+
+  List _getAccountsFromState(DashboardState state) {
+    if (state is AccountsLoaded) {
+      return state.accounts;
+    } else if (state is AccountDetailsLoaded) {
+      return state.accounts;
+    }
+    return [];
+  }
+
+  int? _getSelectedIndexFromState(DashboardState state) {
+    if (state is AccountsLoaded) {
+      return state.selectedAccountIndex;
+    } else if (state is AccountDetailsLoaded) {
+      return state.selectedAccountIndex;
+    }
+    return 0;
+  }
 }
 
 class AccountListItem extends StatelessWidget {
   final String accountNumber;
-  const AccountListItem({super.key, required this.accountNumber});
+  final bool isSelected;
+  final VoidCallback? onTap;
+
+  const AccountListItem({
+    super.key,
+    required this.accountNumber,
+    this.isSelected = false,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(7),
-      ),
-      padding: EdgeInsets.all(12.w),
-      margin: EdgeInsets.only(right: 10.w),
-      child: Row(
-        children: [
-          Text(accountNumber, style: TextStyle(fontWeight: FontWeight.w500)),
-          SizedBox(width: 10.w),
-          Container(
-            padding: EdgeInsets.all(2.w),
-            decoration: BoxDecoration(
-              color: AppColors.lightGrey,
-              borderRadius: BorderRadius.circular(6),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.green.withOpacity(0.1) : AppColors.white,
+          borderRadius: BorderRadius.circular(7),
+          border:
+              isSelected ? Border.all(color: Colors.green, width: 1.5) : null,
+        ),
+        padding: EdgeInsets.all(12.w),
+        margin: EdgeInsets.only(right: 10.w),
+        child: Row(
+          children: [
+            Text(
+              accountNumber,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: isSelected ? Colors.green : AppColors.black,
+              ),
             ),
-            child: Icon(Icons.more_horiz, size: 18.w, color: AppColors.white),
-          ),
-        ],
+            SizedBox(width: 10.w),
+            Container(
+              padding: EdgeInsets.all(2.w),
+              decoration: BoxDecoration(
+                color: AppColors.lightGrey,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Icon(Icons.more_horiz, size: 18.w, color: AppColors.white),
+            ),
+          ],
+        ),
       ),
     );
   }
