@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
@@ -22,6 +23,9 @@ class LoginApi extends LoginRepo {
           responseHeader: false,
           requestBody: true,
           responseBody: true,
+          logPrint: (message) {
+            log(message.toString());
+          },
         ),
       );
     }

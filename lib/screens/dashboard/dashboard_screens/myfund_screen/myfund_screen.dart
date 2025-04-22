@@ -6,7 +6,7 @@ import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/ta
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/transactions.dart';
 import 'package:honorfx/utils/colors.dart';
-import 'package:honorfx/utils/comman_texfield.dart';
+import 'package:honorfx/widgets/textfields/comman_texfield.dart';
 import 'package:honorfx/utils/common_dropdown.dart';
 import 'package:honorfx/utils/submit_button.dart';
 

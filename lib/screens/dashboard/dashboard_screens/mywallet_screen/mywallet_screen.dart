@@ -5,7 +5,7 @@ import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/co
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/tab_title.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
 import 'package:honorfx/utils/colors.dart';
-import 'package:honorfx/utils/comman_texfield.dart';
+import 'package:honorfx/widgets/textfields/comman_texfield.dart';
 import 'package:honorfx/utils/common_dropdown.dart';
 import 'package:honorfx/utils/submit_button.dart';
 

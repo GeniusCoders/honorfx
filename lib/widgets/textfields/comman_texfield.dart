@@ -26,6 +26,7 @@ class CommanTexfield extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       onChanged: onChanged,
       validator: validator,
       decoration: InputDecoration(

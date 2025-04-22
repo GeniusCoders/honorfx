@@ -104,10 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Email/Phone input
                           _buildInputLabel('Email / Phone Number'),
                           SizedBox(height: 8.h),
-                          EmailTextField(
-                            controller: _emailController,
-                            isShowLeadingIcon: true,
-                          ),
+                          EmailTextField(controller: _emailController),
                           SizedBox(height: 20.h),
 
                           // Password input

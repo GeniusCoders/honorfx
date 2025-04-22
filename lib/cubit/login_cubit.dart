@@ -26,11 +26,7 @@ class LoginCubit extends Cubit<LoginState> {
 
             emit(LoginSuccess(loginModel: loginModel));
           } else {
-            emit(
-              LoginFailed(
-                error: loginModel.responseDetails!.msg ?? 'Login failed',
-              ),
-            );
+            emit(LoginFailed(error: 'Your email is not verified yet.'));
           }
         } else {
           emit(

@@ -21,6 +21,7 @@ class EmailTextField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: TextInputType.emailAddress,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
         hintText: hintText ?? 'Enter your email',
         hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14.sp),

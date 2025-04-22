@@ -17,7 +17,8 @@ class SignupApi implements SignupRepo {
     SignupModel signupModel,
   ) async {
     try {
-      final response = await dio.post('/signup', data: signupModel.toJson());
+      print(signupModel.toJson());
+      final response = await dio.post('/register', data: signupModel.toJson());
 
       return Right(LoginModel.fromJson(response.data));
     } on DioError catch (e) {
