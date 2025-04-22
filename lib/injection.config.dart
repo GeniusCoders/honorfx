@@ -15,9 +15,12 @@ import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
 import 'cubit/login_cubit.dart' as _i920;
+import 'cubit/signup/signup_cubit.dart' as _i775;
 import 'services/api/login_api.dart' as _i483;
+import 'services/api/signup_api.dart' as _i887;
 import 'services/core/register_module.dart' as _i758;
 import 'services/repo/login_repo.dart' as _i322;
+import 'services/repo/signup_repo.dart' as _i666;
 import 'utils/constant/strings.dart' as _i929;
 
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -51,6 +54,9 @@ Future<_i174.GetIt> $initGetIt(
       ));
   gh.factory<_i920.LoginCubit>(
       () => _i920.LoginCubit(loginRepo: gh<_i322.LoginRepo>()));
+  gh.factory<_i666.SignupRepo>(() => _i887.SignupApi(dio: gh<_i361.Dio>()));
+  gh.factory<_i775.SignupCubit>(
+      () => _i775.SignupCubit(signupRepo: gh<_i666.SignupRepo>()));
   return getIt;
 }
 

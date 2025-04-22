@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:honorfx/cubit/login_cubit.dart';
-import 'package:honorfx/widgets/buttons/button.dart';
+import 'package:honorfx/screens/dashboard/dashboard.dart';
+import 'package:honorfx/screens/signup/signup_screen.dart';
+import 'package:honorfx/utils/colors.dart';
+import 'package:honorfx/widgets/gradient_background.dart';
 import 'package:honorfx/widgets/loading/loading.dart';
 import 'package:honorfx/widgets/snackbar/snackbars.dart';
 import 'package:honorfx/widgets/textfields/email_text_field.dart';
 import 'package:honorfx/widgets/textfields/password_text_field.dart';
-import 'package:honorfx/screens/dashboard/dashboard.dart';
-import 'package:honorfx/screens/signup/signup_screen.dart';
-import 'package:honorfx/utils/colors.dart';
-import 'package:honorfx/utils/comman_texfield.dart';
-import 'package:honorfx/widgets/gradient_background.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);

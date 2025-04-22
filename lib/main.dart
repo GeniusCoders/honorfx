@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:honorfx/cubit/signup/signup_cubit.dart';
 import 'package:honorfx/injection.dart';
 import 'package:honorfx/screens/login/login_screen.dart';
 import 'package:honorfx/cubit/login_cubit.dart';
@@ -23,17 +24,20 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'HonorFX',
-          theme: ThemeData(
-            fontFamily: 'Manrope',
-            colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
-            useMaterial3: true,
-          ),
-          home: BlocProvider(
-            create: (context) => getIt<LoginCubit>(),
-            child: const LoginScreen(),
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => getIt<LoginCubit>()),
+            BlocProvider(create: (context) => getIt<SignupCubit>()),
+          ],
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'HonorFX',
+            theme: ThemeData(
+              fontFamily: 'Manrope',
+              colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+              useMaterial3: true,
+            ),
+            home: const LoginScreen(),
           ),
         );
       },

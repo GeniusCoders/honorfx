@@ -3,12 +3,31 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:honorfx/utils/colors.dart';
 
 class CommanTexfield extends StatelessWidget {
-  const CommanTexfield({super.key, required this.hintText});
   final String hintText;
+  final TextEditingController? controller;
+  final bool obscureText;
+  final TextInputType keyboardType;
+  final Function(String)? onChanged;
+  final String? Function(String?)? validator;
+
+  const CommanTexfield({
+    Key? key,
+    required this.hintText,
+    this.controller,
+    this.obscureText = false,
+    this.keyboardType = TextInputType.text,
+    this.onChanged,
+    this.validator,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      onChanged: onChanged,
+      validator: validator,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14.sp),
