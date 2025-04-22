@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:honorfx/cubit/auth/auth_cubit.dart';
+import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
+import 'package:honorfx/cubit/login_cubit.dart';
 import 'package:honorfx/cubit/signup/signup_cubit.dart';
 import 'package:honorfx/injection.dart';
 import 'package:honorfx/screens/splash/splash_screen.dart';
-import 'package:honorfx/cubit/login_cubit.dart';
 import 'package:honorfx/utils/colors.dart';
 
 void main() async {
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
           providers: [
             BlocProvider(create: (context) => getIt<LoginCubit>()),
             BlocProvider(create: (context) => getIt<SignupCubit>()),
+            BlocProvider(create: (context) => getIt<DashboardCubit>()),
             BlocProvider(create: (context) => getIt<AuthCubit>()),
           ],
           child: MaterialApp(

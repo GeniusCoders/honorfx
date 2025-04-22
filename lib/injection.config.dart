@@ -24,6 +24,9 @@ import 'services/repo/signup_repo.dart' as _i666;
 import 'utils/constant/strings.dart' as _i929;
 import 'package:honorfx/cubit/auth/auth_cubit.dart';
 import 'package:honorfx/services/auth_service.dart';
+import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
+import 'package:honorfx/services/api/dashboard_api.dart';
+import 'package:honorfx/services/repo/dashboard_repo.dart';
 
 // initializes the registration of main-scope dependencies inside of GetIt
 Future<_i174.GetIt> $initGetIt(
@@ -60,6 +63,15 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<AuthService>(() => AuthService(gh<_i460.SharedPreferences>()));
   gh.factory<AuthCubit>(() => AuthCubit(authService: gh<AuthService>()));
+  gh.factory<DashboardRepo>(
+    () => DashboardApi(
+      dio: gh<_i361.Dio>(),
+      sharedPreferences: gh<_i460.SharedPreferences>(),
+    ),
+  );
+  gh.factory<DashboardCubit>(
+    () => DashboardCubit(dashboardRepo: gh<DashboardRepo>()),
+  );
   return getIt;
 }
 

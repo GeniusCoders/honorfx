@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
+import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
 import 'package:honorfx/utils/colors.dart';
 
 class AccountList extends StatelessWidget {
@@ -7,21 +10,34 @@ class AccountList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Account List",
-          style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w700),
-        ),
-        SizedBox(height: 10.h),
-        Row(
+    return BlocBuilder<DashboardCubit, DashboardState>(
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AccountListItem(accountNumber: "#12363539"),
-            AccountListItem(accountNumber: "#12363539"),
+            Text(
+              "Account List",
+              style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w700),
+            ),
+            SizedBox(height: 10.h),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children:
+                    state is AccountsLoaded
+                        ? state.accounts
+                            .map(
+                              (account) => AccountListItem(
+                                accountNumber: account.mtUserid.toString(),
+                              ),
+                            )
+                            .toList()
+                        : [],
+              ),
+            ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }
