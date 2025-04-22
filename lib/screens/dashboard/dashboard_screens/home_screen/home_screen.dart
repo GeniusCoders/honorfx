@@ -44,19 +44,20 @@ class HomeScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        SizedBox(width: 4.w),
                         SvgPicture.asset(
                           "assets/icons/trade-button.svg",
-                          height: 52.h,
+                          height: 46.h,
                         ),
                         SizedBox(width: 4.w),
                         Image.asset(
                           "assets/images/deposit-button.png",
-                          height: 52.h,
+                          height: 46.h,
                         ),
                         SizedBox(width: 4.w),
                         SvgPicture.asset(
                           "assets/icons/withdraw-button.svg",
-                          height: 52.h,
+                          height: 46.h,
                         ),
                       ],
                     ),
@@ -64,9 +65,12 @@ class HomeScreen extends StatelessWidget {
                   Positioned(
                     left: 0,
                     bottom: 0,
-                    child: SvgPicture.asset(
-                      "assets/images/left-shape.svg",
-                      height: 57.h,
+                    child: Container(
+                      // color: Colors.red,
+                      child: SvgPicture.asset(
+                        "assets/images/left-shape.svg",
+                        height: 50.h,
+                      ),
                     ),
                   ),
                   Positioned(
@@ -74,7 +78,7 @@ class HomeScreen extends StatelessWidget {
                     bottom: 0,
                     child: SvgPicture.asset(
                       "assets/images/right-shape.svg",
-                      height: 57.h,
+                      height: 50.h,
                     ),
                   ),
                 ],
