@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart' as getcontroller;
+import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/auth/auth_cubit.dart';
 import 'package:honorfx/injection.dart';
 import 'package:honorfx/router/app_router.dart';
@@ -307,6 +310,7 @@ class AppDrawer extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     getIt<AuthCubit>().logout();
+                    getcontroller.Get.delete<DashboardController>();
                     getIt<AppRouter>().goToLogin();
                   },
                   child: IntrinsicWidth(

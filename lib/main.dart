@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/auth/auth_cubit.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
 import 'package:honorfx/cubit/login_cubit.dart';
@@ -8,10 +10,23 @@ import 'package:honorfx/cubit/signup/signup_cubit.dart';
 import 'package:honorfx/injection.dart';
 import 'package:honorfx/router/app_router.dart';
 import 'package:honorfx/utils/colors.dart';
+import 'package:honorfx/utils/constant/strings.dart';
+
+// Binding class to initialize controllers
+class InitialBinding implements Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<DashboardController>(() => DashboardController(), fenix: true);
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
+
+  // Initialize GetX bindings
+  InitialBinding().dependencies();
+
   runApp(const MyApp());
 }
 
@@ -37,7 +52,7 @@ class MyApp extends StatelessWidget {
           ],
           child: MaterialApp.router(
             debugShowCheckedModeBanner: false,
-            title: 'HonorFX',
+            title: Constant.appName,
             theme: ThemeData(
               fontFamily: 'Manrope',
               colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),

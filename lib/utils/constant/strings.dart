@@ -9,14 +9,13 @@ class Constant {
   static const String supportNumber2 = "+91 9922333639";
   static const String supportNumber3 = "+9120 48649981";
 
-  static const String merchantVpa = "vipstrade@yesbank";
   static const String htmlRegex = "<([A-Za-z][A-Za-z0-9]*)\\b[^>]*>(.*?)</\\1>";
   static const String usdtAddress = "TWHLaq1PBJNRPifvwVjr5Uj1CTrVnRG4Fn";
   static const String bitcoinAddress = "16VZpLkp1gKFSriPF57iNwVxj3JBppkHBo";
   static const String usdtBscAddress =
       "0xc8f0f077e53f86f6c11a59c519f953338fba7f00";
   static const String secureKey = "R6Ke4CVnsp@drjymALXfFgzPbZ5Nu@3GBDckYSMw";
-  static const String appName = "CentFX";
+  static const String appName = "HonorFx";
 
   //Finstock Api Secret Key
 
@@ -78,7 +77,7 @@ class Constant {
     "DE",
     "MX",
     "ES",
-    "GB"
+    "GB",
   ];
 
   Map<String, String> countryNames = {
@@ -676,7 +675,7 @@ class Constant {
     {"crypto": "usdcoinbsc", "title": "USD Coin (Binance Smart Chain)"},
     {"crypto": "paxdollarbsc", "title": "Pax Dollar (Binance Smart Chain)"},
     {"crypto": "usdcointron", "title": "USD Coin (TRON)"},
-    {"crypto": "tetherustron", "title": "TetherUS (TRON)"}
+    {"crypto": "tetherustron", "title": "TetherUS (TRON)"},
   ];
 
   static const ticketCategory = [
@@ -685,7 +684,7 @@ class Constant {
     "Account Opening",
     "KYC",
     "Deposit",
-    "Withdrawals"
+    "Withdrawals",
   ];
 
   static const ticketPriority = ["Low", "Medium", "High"];

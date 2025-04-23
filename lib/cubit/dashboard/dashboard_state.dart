@@ -1,9 +1,19 @@
 import 'package:honorfx/models/dashboard/account_details_response.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
+import 'package:honorfx/models/login_model.dart';
 
 abstract class DashboardState {}
 
 class DashboardInitial extends DashboardState {}
+
+class DashboardLoading extends DashboardState {}
+
+// Token Response state
+class TokenResponseDataState extends DashboardState {
+  final TokenResponse tokenResponse;
+
+  TokenResponseDataState({required this.tokenResponse});
+}
 
 // Account-related states
 class AccountsLoading extends DashboardState {}

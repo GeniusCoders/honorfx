@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/auth/auth_cubit.dart';
 import 'package:honorfx/injection.dart';
+import 'package:get/get.dart' as getcontroller;
 import 'package:honorfx/models/dashboard/account_details_response.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
 import 'package:honorfx/models/login_model.dart';
@@ -45,6 +47,9 @@ class DashboardApi extends DashboardRepo {
           if (htmlRegex.hasMatch(response.data.toString()) &&
               response.data.toString().contains("Honorfx Portal | Account")) {
             getIt<AuthCubit>().logout();
+            if (getcontroller.Get.isRegistered<DashboardController>()) {
+              getcontroller.Get.delete<DashboardController>();
+            }
             getIt<AppRouter>().goToLogin();
           } else {
             handler.next(response);
@@ -56,6 +61,9 @@ class DashboardApi extends DashboardRepo {
               var htmlRegex = RegExp(Constant.htmlRegex);
               if (htmlRegex.hasMatch(error.response!.data.toString())) {
                 getIt<AuthCubit>().logout();
+                if (getcontroller.Get.isRegistered<DashboardController>()) {
+                  getcontroller.Get.delete<DashboardController>();
+                }
                 getIt<AppRouter>().goToLogin();
               } else {
                 handler.next(error);
@@ -95,6 +103,14 @@ class DashboardApi extends DashboardRepo {
     } catch (e) {
       return left(ServerError(message: e.toString()));
     }
+  }
+
+  @override
+  Future<TokenResponse> getTokenData() async {
+    final _encodeData = sharedPreferences.getString('token');
+    final _data = json.decode(_encodeData!);
+    final tokenData = TokenResponse.fromJson(_data);
+    return tokenData;
   }
 
   // Additional dashboard API methods implementation:

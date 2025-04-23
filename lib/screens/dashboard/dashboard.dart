@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_screen.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/mydata_screen/mydata_screen.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/myfund_screen/myfund_screen.dart';
@@ -17,6 +19,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
+  late DashboardController _dashboardController;
 
   final List<Widget> _screens = [
     const HomeScreen(),
@@ -24,6 +27,13 @@ class _DashboardState extends State<Dashboard> {
     const MyDataScreen(),
     const MyWalletScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Always put the controller to ensure it exists
+    _dashboardController = Get.put(DashboardController());
+  }
 
   @override
   Widget build(BuildContext context) {

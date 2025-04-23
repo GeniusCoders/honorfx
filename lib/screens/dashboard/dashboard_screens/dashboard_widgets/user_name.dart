@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:honorfx/controllers/dashboard_controller.dart';
 
 class UserName extends StatelessWidget {
   const UserName({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Ensure the controller exists by using Get.put with the tag parameter to
+    // avoid creating multiple instances
+    final DashboardController dashboardController = Get.put(
+      DashboardController(),
+    );
+
     return Row(
       children: [
         Container(
@@ -20,9 +28,11 @@ class UserName extends StatelessWidget {
               "Welcome",
               style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14.sp),
             ),
-            Text(
-              "Jignesh Patel",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.sp),
+            Obx(
+              () => Text(
+                dashboardController.userName,
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.sp),
+              ),
             ),
           ],
         ),

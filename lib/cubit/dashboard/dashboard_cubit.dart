@@ -12,6 +12,16 @@ class DashboardCubit extends Cubit<DashboardState> {
     : _dashboardRepo = dashboardRepo,
       super(DashboardInitial());
 
+  Future<void> getTokenData() async {
+    emit(DashboardLoading());
+    try {
+      final tokenData = await _dashboardRepo.getTokenData();
+      emit(TokenResponseDataState(tokenResponse: tokenData));
+    } catch (e) {
+      emit(AccountsError(message: e.toString()));
+    }
+  }
+
   Future<void> getAccounts() async {
     emit(AccountsLoading());
     try {
