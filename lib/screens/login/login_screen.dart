@@ -24,7 +24,6 @@ class _LoginScreenState extends State<LoginScreen> {
   late TextEditingController _passwordController;
   final GlobalKey<FormState> _formKey = GlobalKey();
   bool _rememberMe = false;
-  bool _isPasswordVisible = false;
 
   @override
   void initState() {
@@ -77,8 +76,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(height: 40.h),
                           // Logo
                           Center(
-                            child: Image.asset(
-                              'assets/images/techysquad_logo.png',
+                            child: SvgPicture.asset(
+                              'assets/images/honorfx_logo.svg',
                               height: 60.h,
                             ),
                           ),
@@ -89,6 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(
                               fontSize: 24.sp,
                               fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
                             ),
                           ),
                           SizedBox(height: 8.h),

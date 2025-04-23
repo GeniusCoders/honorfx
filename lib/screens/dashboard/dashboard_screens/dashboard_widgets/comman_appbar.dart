@@ -15,7 +15,7 @@ class CommanAppbar extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Image.asset("assets/images/techysquad_logo.png", height: 32),
+            SvgPicture.asset("assets/images/honorfx_logo.svg", height: 32),
             Spacer(),
             Container(
               padding: EdgeInsets.all(8),

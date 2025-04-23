@@ -90,10 +90,12 @@ class AccountListItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: isSelected ? Colors.green.withOpacity(0.1) : AppColors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(7),
           border:
-              isSelected ? Border.all(color: Colors.green, width: 1.5) : null,
+              isSelected
+                  ? Border.all(color: AppColors.primary, width: 1.5)
+                  : null,
         ),
         padding: EdgeInsets.all(12.w),
         margin: EdgeInsets.only(right: 10.w),
@@ -103,7 +105,7 @@ class AccountListItem extends StatelessWidget {
               accountNumber,
               style: TextStyle(
                 fontWeight: FontWeight.w500,
-                color: isSelected ? Colors.green : AppColors.black,
+                color: isSelected ? AppColors.primary : AppColors.black,
               ),
             ),
             SizedBox(width: 10.w),

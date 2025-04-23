@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:honorfx/utils/colors.dart';
 
 class OpenAccountButton extends StatelessWidget {
   const OpenAccountButton({super.key});
@@ -9,7 +10,7 @@ class OpenAccountButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),
-        color: Colors.black,
+        color: AppColors.primary,
       ),
       child: TextButton.icon(
         onPressed: () {},

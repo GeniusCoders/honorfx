@@ -8,6 +8,17 @@ import 'package:honorfx/utils/colors.dart';
 class AccountBalanceDetails extends StatelessWidget {
   const AccountBalanceDetails({super.key});
 
+  // Helper function to format values to 2 decimal places
+  String _formatValue(String? value) {
+    if (value == null) return "0.00";
+    try {
+      double doubleValue = double.parse(value);
+      return doubleValue.toStringAsFixed(2);
+    } catch (e) {
+      return "0.00";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DashboardCubit, DashboardState>(
@@ -28,12 +39,12 @@ class AccountBalanceDetails extends StatelessWidget {
               Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
               AccountBalanceDetailItem(
                 title: "Equity",
-                amount: "$currency${details.equity ?? '0.00'}",
+                amount: "$currency${_formatValue(details.equity)}",
               ),
               Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
               AccountBalanceDetailItem(
                 title: "Credit",
-                amount: "$currency${details.credit ?? '0.00'}",
+                amount: "$currency${_formatValue(details.credit)}",
               ),
               Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
               AccountBalanceDetailItem(

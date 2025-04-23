@@ -177,11 +177,33 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Text(
                             state is AccountDetailsLoaded
-                                ? "${state.accountDetails.currency ?? '\$'}${state.accountDetails.balance ?? '0.00'}"
+                                ? () {
+                                  try {
+                                    double balanceValue = double.parse(
+                                      state.accountDetails.balance ?? "0.00",
+                                    );
+                                    return "${state.accountDetails.currency ?? '\$'}${balanceValue.toStringAsFixed(2)}";
+                                  } catch (e) {
+                                    return "${state.accountDetails.currency ?? '\$'}0.00";
+                                  }
+                                }()
                                 : state is AccountsLoaded &&
                                     state.accounts.isNotEmpty &&
                                     state.selectedAccountIndex != null
-                                ? "\$${state.accounts[state.selectedAccountIndex!].balance ?? '0.00'}"
+                                ? () {
+                                  try {
+                                    double balanceValue = double.parse(
+                                      state
+                                              .accounts[state
+                                                  .selectedAccountIndex!]
+                                              .balance ??
+                                          "0.00",
+                                    );
+                                    return "\$${balanceValue.toStringAsFixed(2)}";
+                                  } catch (e) {
+                                    return "\$0.00";
+                                  }
+                                }()
                                 : "\$0.00",
                             style: TextStyle(
                               fontWeight: FontWeight.w700,

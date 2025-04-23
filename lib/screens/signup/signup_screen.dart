@@ -122,8 +122,8 @@ class _SignupScreenState extends State<SignupScreen> {
                           SizedBox(height: 10.h),
                           // Logo
                           Center(
-                            child: Image.asset(
-                              'assets/images/techysquad_logo.png',
+                            child: SvgPicture.asset(
+                              'assets/images/honorfx_logo.svg',
                               height: 60.h,
                             ),
                           ),
@@ -134,6 +134,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             style: TextStyle(
                               fontSize: 24.sp,
                               fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
                             ),
                           ),
                           SizedBox(height: 8.h),

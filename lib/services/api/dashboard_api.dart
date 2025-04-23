@@ -114,7 +114,7 @@ class DashboardApi extends DashboardRepo {
             "Equity": "0.0000",
             "Assets": 0,
             "Registration": "22 Apr 2025",
-            "Leverage": 10,
+            "Leverage": 100,
             "EquityPrevDay": "0.0000",
           },
         };

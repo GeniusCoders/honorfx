@@ -16,13 +16,28 @@ class AccountBalance extends StatelessWidget {
         String currency = "\$";
 
         if (state is AccountDetailsLoaded) {
-          balance = state.accountDetails.balance ?? "0.00";
+          // Format balance to show only 2 decimal places
+          try {
+            double balanceValue = double.parse(
+              state.accountDetails.balance ?? "0.00",
+            );
+            balance = balanceValue.toStringAsFixed(2);
+          } catch (e) {
+            balance = "0.00";
+          }
           currency = state.accountDetails.currency ?? "\$";
         } else if (state is AccountsLoaded &&
             state.accounts.isNotEmpty &&
             state.selectedAccountIndex != null) {
-          balance =
-              state.accounts[state.selectedAccountIndex!].balance ?? "0.00";
+          // Format balance to show only 2 decimal places
+          try {
+            double balanceValue = double.parse(
+              state.accounts[state.selectedAccountIndex!].balance ?? "0.00",
+            );
+            balance = balanceValue.toStringAsFixed(2);
+          } catch (e) {
+            balance = "0.00";
+          }
         }
 
         return Column(
