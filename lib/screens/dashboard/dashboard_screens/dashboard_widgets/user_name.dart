@@ -10,9 +10,8 @@ class UserName extends StatelessWidget {
   Widget build(BuildContext context) {
     // Ensure the controller exists by using Get.put with the tag parameter to
     // avoid creating multiple instances
-    final DashboardController dashboardController = Get.put(
-      DashboardController(),
-    );
+    final DashboardController dashboardController =
+        Get.find<DashboardController>();
 
     return Row(
       children: [

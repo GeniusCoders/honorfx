@@ -53,7 +53,7 @@ class AccountBalanceDetails extends StatelessWidget {
               ),
             ],
           );
-        } else if (state is AccountDetailsLoading) {
+        } else if (state is DashboardLoading) {
           return Center(
             child: CircularProgressIndicator(color: AppColors.primary),
           );

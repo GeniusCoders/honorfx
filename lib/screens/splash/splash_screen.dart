@@ -1,10 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
-import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/auth/auth_cubit.dart';
 import 'package:honorfx/cubit/auth/auth_state.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
@@ -22,8 +21,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final dashboardController = Get.put(DashboardController());
-
   @override
   void initState() {
     super.initState();
@@ -60,8 +57,6 @@ class _SplashScreenState extends State<SplashScreen> {
         BlocListener<DashboardCubit, DashboardState>(
           listener: (context, state) {
             if (state is TokenResponseDataState) {
-              // Store user data in GetX controller and navigate to dashboard
-              dashboardController.tokenResponse.value = state.tokenResponse;
               appRouter.goToDashboard();
             }
           },

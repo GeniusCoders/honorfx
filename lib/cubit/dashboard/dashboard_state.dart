@@ -15,9 +15,6 @@ class TokenResponseDataState extends DashboardState {
   TokenResponseDataState({required this.tokenResponse});
 }
 
-// Account-related states
-class AccountsLoading extends DashboardState {}
-
 class AccountsLoaded extends DashboardState {
   final List<AccountListingTypeData> accounts;
   final int? selectedAccountIndex;
@@ -31,9 +28,6 @@ class AccountsError extends DashboardState {
   AccountsError({required this.message});
 }
 
-// Account details states
-class AccountDetailsLoading extends DashboardState {}
-
 class AccountDetailsLoaded extends DashboardState {
   final List<AccountListingTypeData> accounts;
   final int selectedAccountIndex;
@@ -46,10 +40,10 @@ class AccountDetailsLoaded extends DashboardState {
   });
 }
 
-class AccountDetailsError extends DashboardState {
+class DashboardError extends DashboardState {
   final String message;
 
-  AccountDetailsError({required this.message});
+  DashboardError({required this.message});
 }
 
 // You can add more dashboard-related states here

@@ -404,12 +404,9 @@ class AppDrawer extends StatelessWidget {
                 : null,
         onTap: () {
           // Handle navigation
-          Navigator.pop(context);
+
           if (title == 'Support') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => SupportScreen()),
-            );
+            getIt<AppRouter>().goToSupport();
           }
         },
       ),

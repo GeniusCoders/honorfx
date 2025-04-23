@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honorfx/screens/dashboard/dashboard.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/support_screen/support_screen.dart';
 import 'package:honorfx/screens/login/login_screen.dart';
 import 'package:honorfx/screens/signup/signup_screen.dart';
 import 'package:honorfx/screens/splash/splash_screen.dart';
@@ -33,6 +34,11 @@ class AppRouter {
           name: 'signup',
           builder: (context, state) => const SignupScreen(),
         ),
+        GoRoute(
+          path: '/support',
+          name: 'support',
+          builder: (context, state) => const SupportScreen(),
+        ),
       ],
     );
   }
@@ -50,5 +56,10 @@ class AppRouter {
   // Navigate to signup screen
   void goToSignup() {
     router.goNamed('signup');
+  }
+
+  // Navigate to support screen
+  void goToSupport() {
+    router.goNamed('support');
   }
 }

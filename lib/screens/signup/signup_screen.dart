@@ -5,8 +5,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:honorfx/cubit/signup/signup_cubit.dart';
 import 'package:honorfx/cubit/signup/signup_state.dart';
+import 'package:honorfx/injection.dart';
 import 'package:honorfx/models/country_model.dart';
 import 'package:honorfx/models/signup_model.dart';
+import 'package:honorfx/router/app_router.dart';
 import 'package:honorfx/screens/login/login_screen.dart';
 import 'package:honorfx/utils/colors.dart';
 import 'package:honorfx/widgets/textfields/comman_texfield.dart';
@@ -95,10 +97,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 );
 
                 // Navigate to login page
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
+                getIt<AppRouter>().goToLogin();
               } else if (state is SignupError) {
                 Fluttertoast.showToast(
                   msg: state.message,
@@ -301,12 +300,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const LoginScreen(),
-                                    ),
-                                  );
+                                  getIt<AppRouter>().goToLogin();
                                 },
                                 child: Text(
                                   'Sign In',

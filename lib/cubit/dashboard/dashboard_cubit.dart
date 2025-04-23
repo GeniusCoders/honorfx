@@ -18,12 +18,12 @@ class DashboardCubit extends Cubit<DashboardState> {
       final tokenData = await _dashboardRepo.getTokenData();
       emit(TokenResponseDataState(tokenResponse: tokenData));
     } catch (e) {
-      emit(AccountsError(message: e.toString()));
+      emit(DashboardError(message: e.toString()));
     }
   }
 
   Future<void> getAccounts() async {
-    emit(AccountsLoading());
+    emit(DashboardLoading());
     try {
       final result = await _dashboardRepo.getAccounts();
       result.fold(
@@ -76,14 +76,14 @@ class DashboardCubit extends Cubit<DashboardState> {
       return;
     }
 
-    emit(AccountDetailsLoading());
+    emit(DashboardLoading());
 
     try {
       final result = await _dashboardRepo.accountDetails(accountId: accountId);
       result.fold(
         (error) {
           emit(
-            AccountDetailsError(
+            DashboardError(
               message: error.message ?? 'Failed to load account details',
             ),
           );
@@ -99,7 +99,7 @@ class DashboardCubit extends Cubit<DashboardState> {
             );
           } else {
             emit(
-              AccountDetailsError(
+              DashboardError(
                 message: response.msg ?? 'Failed to load account details',
               ),
             );
@@ -107,7 +107,7 @@ class DashboardCubit extends Cubit<DashboardState> {
         },
       );
     } catch (e) {
-      emit(AccountDetailsError(message: e.toString()));
+      emit(DashboardError(message: e.toString()));
     }
   }
 
