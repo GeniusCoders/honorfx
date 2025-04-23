@@ -4,6 +4,7 @@ import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_scr
 import 'package:honorfx/screens/dashboard/dashboard_screens/mydata_screen/mydata_screen.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/myfund_screen/myfund_screen.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/mywallet_screen/mywallet_screen.dart';
+import 'package:honorfx/utils/colors.dart';
 import 'package:honorfx/widgets/app_drawer.dart';
 import 'package:honorfx/widgets/gradient_background.dart';
 
@@ -35,7 +36,7 @@ class _DashboardState extends State<Dashboard> {
         bottomNavigationBar: Container(
           padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
           decoration: BoxDecoration(
-            color: Colors.black,
+            color: AppColors.black,
             borderRadius: BorderRadius.circular(40),
           ),
           margin: EdgeInsets.all(20.w),

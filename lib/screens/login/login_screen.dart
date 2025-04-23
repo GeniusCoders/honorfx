@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:honorfx/cubit/login_cubit.dart';
+import 'package:honorfx/injection.dart';
+import 'package:honorfx/router/app_router.dart';
 import 'package:honorfx/screens/dashboard/dashboard.dart';
 import 'package:honorfx/screens/signup/signup_screen.dart';
 import 'package:honorfx/utils/colors.dart';
@@ -47,11 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const Dashboard()),
-            (route) => false,
-          );
+          getIt<AppRouter>().goToDashboard();
         } else if (state is LoginFailed) {
           ScaffoldMessenger.of(
             context,
@@ -187,13 +186,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) => const SignupScreen(),
-                                    ),
-                                  );
+                                  // Navigate to signup using GoRouter
+                                  getIt<AppRouter>().goToSignup();
                                 },
                                 child: Text(
                                   'Sign Up',

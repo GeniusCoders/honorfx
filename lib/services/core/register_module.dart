@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:honorfx/router/app_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:honorfx/utils/constant/base_url.dart';
@@ -17,4 +18,7 @@ abstract class RegisterModule {
 
   @lazySingleton
   FlutterSecureStorage get flutterSecureStorage => const FlutterSecureStorage();
+
+  @lazySingleton
+  AppRouter get appRouter => AppRouter();
 }

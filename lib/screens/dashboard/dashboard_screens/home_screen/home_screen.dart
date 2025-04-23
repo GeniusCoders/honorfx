@@ -228,6 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         TabBar(
                           dividerColor: AppColors.primary,
                           indicatorColor: Colors.transparent,
+
                           labelColor: Colors.white,
                           labelStyle: TextStyle(
                             fontWeight: FontWeight.w700,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:honorfx/cubit/auth/auth_cubit.dart';
+import 'package:honorfx/injection.dart';
+import 'package:honorfx/router/app_router.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/support_screen/support_screen.dart';
-import 'package:honorfx/screens/login/login_screen.dart';
 import 'package:honorfx/utils/colors.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -304,13 +306,8 @@ class AppDrawer extends StatelessWidget {
                 padding: EdgeInsets.all(16.w),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                      (route) => false,
-                    );
+                    getIt<AuthCubit>().logout();
+                    getIt<AppRouter>().goToLogin();
                   },
                   child: IntrinsicWidth(
                     child: Container(

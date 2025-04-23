@@ -6,7 +6,7 @@ import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
 import 'package:honorfx/cubit/login_cubit.dart';
 import 'package:honorfx/cubit/signup/signup_cubit.dart';
 import 'package:honorfx/injection.dart';
-import 'package:honorfx/screens/splash/splash_screen.dart';
+import 'package:honorfx/router/app_router.dart';
 import 'package:honorfx/utils/colors.dart';
 
 void main() async {
@@ -21,6 +21,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final appRouter = getIt<AppRouter>();
+
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,
@@ -33,7 +35,7 @@ class MyApp extends StatelessWidget {
             BlocProvider(create: (context) => getIt<DashboardCubit>()),
             BlocProvider(create: (context) => getIt<AuthCubit>()),
           ],
-          child: MaterialApp(
+          child: MaterialApp.router(
             debugShowCheckedModeBanner: false,
             title: 'HonorFX',
             theme: ThemeData(
@@ -41,7 +43,7 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
               useMaterial3: true,
             ),
-            home: const SplashScreen(),
+            routerConfig: appRouter.router,
           ),
         );
       },

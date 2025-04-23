@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:honorfx/widgets/app_drawer.dart';
 
 class UserName extends StatelessWidget {
   const UserName({super.key});
