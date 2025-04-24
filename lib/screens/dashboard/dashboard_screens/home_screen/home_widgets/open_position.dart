@@ -139,7 +139,7 @@ class PositionCard extends StatelessWidget {
                     vertical: 4.h,
                   ),
                   decoration: BoxDecoration(
-                    color: position.isBuy ? AppColors.primary : AppColors.red,
+                    color: position.isBuy ? Colors.green : Colors.red,
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Text(

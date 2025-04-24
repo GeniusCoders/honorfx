@@ -109,29 +109,73 @@ class OpenPositionData {
   // Format prices with appropriate decimal places based on the asset
   String get formattedOpenPrice {
     if (openPrice == null) return "0.00";
-    // For forex pairs, typically show 5 decimals
-    if (symbol != null &&
-        (symbol!.contains('USD') ||
-            symbol!.contains('EUR') ||
-            symbol!.contains('GBP'))) {
+
+    // Check if it's a commodity (like XAUUSD.r, ESP35.r) or index
+    if (symbol != null) {
+      // Commodities typically start with XAU, XAG, USOIL, etc.
+      bool isCommodity =
+          symbol!.startsWith('XAU') ||
+          symbol!.startsWith('XAG') ||
+          symbol!.contains('OIL') ||
+          symbol!.contains('GOLD');
+
+      // Indices typically include numbers or specific names
+      bool isIndex =
+          symbol!.contains('30') ||
+          symbol!.contains('35') ||
+          symbol!.contains('40') ||
+          symbol!.contains('500') ||
+          symbol!.startsWith('US') ||
+          symbol!.startsWith('UK') ||
+          symbol!.startsWith('ESP') ||
+          symbol!.startsWith('GER') ||
+          symbol!.startsWith('JP');
+
+      if (isCommodity || isIndex) {
+        return openPrice!.toStringAsFixed(2);
+      }
+
+      // For forex pairs, show 5 decimals
       return openPrice!.toStringAsFixed(5);
     }
-    // For indices and commodities, show 2 decimals
-    return openPrice!.toStringAsFixed(2);
+
+    return openPrice!.toStringAsFixed(5);
   }
 
   // Format current price with appropriate decimal places
   String get formattedCurrentPrice {
     if (currentPrice == null) return "0.00";
-    // For forex pairs, typically show 5 decimals
-    if (symbol != null &&
-        (symbol!.contains('USD') ||
-            symbol!.contains('EUR') ||
-            symbol!.contains('GBP'))) {
+
+    // Check if it's a commodity (like XAUUSD.r, ESP35.r) or index
+    if (symbol != null) {
+      // Commodities typically start with XAU, XAG, USOIL, etc.
+      bool isCommodity =
+          symbol!.startsWith('XAU') ||
+          symbol!.startsWith('XAG') ||
+          symbol!.contains('OIL') ||
+          symbol!.contains('GOLD');
+
+      // Indices typically include numbers or specific names
+      bool isIndex =
+          symbol!.contains('30') ||
+          symbol!.contains('35') ||
+          symbol!.contains('40') ||
+          symbol!.contains('500') ||
+          symbol!.startsWith('US') ||
+          symbol!.startsWith('UK') ||
+          symbol!.startsWith('ESP') ||
+          symbol!.startsWith('GER') ||
+          symbol!.startsWith('JP');
+
+      if (isCommodity || isIndex) {
+        return currentPrice!.toStringAsFixed(2);
+      }
+
+      // For forex pairs, show 5 decimals
       return currentPrice!.toStringAsFixed(5);
     }
-    // For indices and commodities, show 2 decimals
-    return currentPrice!.toStringAsFixed(2);
+
+    return currentPrice!.toStringAsFixed(5);
   }
 
   // Get date string from Unix timestamp
