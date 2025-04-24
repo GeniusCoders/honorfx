@@ -1,5 +1,6 @@
 import 'package:honorfx/models/dashboard/account_details_response.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
+import 'package:honorfx/models/dashboard/open_positions_model.dart';
 import 'package:honorfx/models/login_model.dart';
 
 abstract class DashboardState {}
@@ -8,11 +9,24 @@ class DashboardInitial extends DashboardState {}
 
 class DashboardLoading extends DashboardState {}
 
+class DashboardFailed extends DashboardState {
+  final String error;
+
+  DashboardFailed({required this.error});
+}
+
 // Token Response state
 class TokenResponseDataState extends DashboardState {
   final TokenResponse tokenResponse;
 
   TokenResponseDataState({required this.tokenResponse});
+}
+
+// Open Positions state
+class OpenPositionsReportState extends DashboardState {
+  final List<OpenPositionData> data;
+
+  OpenPositionsReportState({required this.data});
 }
 
 class AccountsLoaded extends DashboardState {

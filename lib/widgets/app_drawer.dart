@@ -80,44 +80,6 @@ class AppDrawer extends StatelessWidget {
                 ),
               ),
 
-              // Search Box
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 13.w, vertical: 8.h),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.grey),
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons/search-normal.svg',
-                        width: 20.w,
-                        height: 20.h,
-                      ),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: 'Search',
-                            hintStyle: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14.sp,
-                            ),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 10.h),
-
               // Menu Items
               Column(
                 // padding: EdgeInsets.zero,

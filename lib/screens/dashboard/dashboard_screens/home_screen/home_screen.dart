@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     context.read<DashboardCubit>().getAccounts();
 
     // Add other dashboard data loading here
-    // context.read<DashboardCubit>().getOpenPositions();
+    context.read<DashboardCubit>().getOpenPositions();
     // context.read<DashboardCubit>().getTransactions();
   }
 

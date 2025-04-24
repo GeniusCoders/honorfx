@@ -16,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dartz/dartz.dart';
 import 'package:honorfx/services/core/server_error.dart';
 import 'package:honorfx/services/repo/dashboard_repo.dart';
+import 'package:honorfx/models/dashboard/open_positions_model.dart';
 
 @Injectable(as: DashboardRepo)
 class DashboardApi extends DashboardRepo {
@@ -186,6 +187,26 @@ class DashboardApi extends DashboardRepo {
     } catch (e) {
       log("Error in getTokenData: $e");
       rethrow;
+    }
+  }
+
+  @override
+  Future<Either<ServerError, OpenPositionsResponse>>
+  openPositionsReport() async {
+    try {
+      _setupToken();
+
+      String url = "/openpositions";
+
+      final response = await dio.get(url);
+
+      return right(OpenPositionsResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in openPositionsReport: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in openPositionsReport: $e");
+      return left(ServerError(message: e.toString()));
     }
   }
 

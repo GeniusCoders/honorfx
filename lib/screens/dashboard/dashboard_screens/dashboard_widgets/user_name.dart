@@ -17,7 +17,7 @@ class UserName extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(7)),
-          child: Image.asset("assets/images/DP.png"),
+          child: Image.asset("assets/images/DP.png", width: 50.w, height: 50.h),
         ),
         SizedBox(width: 16.w),
         Column(
