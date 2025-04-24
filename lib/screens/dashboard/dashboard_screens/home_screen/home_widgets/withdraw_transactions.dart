@@ -13,17 +13,37 @@ class WithdrawTransactions extends StatefulWidget {
   State<WithdrawTransactions> createState() => _WithdrawTransactionsState();
 }
 
-class _WithdrawTransactionsState extends State<WithdrawTransactions> {
+class _WithdrawTransactionsState extends State<WithdrawTransactions>
+    with AutomaticKeepAliveClientMixin {
   List<WithdrawReportData> withdrawReport = [];
+  bool _isDataLoaded = false;
+
+  // This keeps the state alive when switching tabs
+  @override
+  bool get wantKeepAlive => true;
+
+  void _loadData() {
+    if (!_isDataLoaded) {
+      // Only load if data hasn't been loaded yet
+      context.read<ReportsCubit>().getWithdrawReport();
+      _isDataLoaded = true;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    context.read<ReportsCubit>().getWithdrawReport();
+    // We'll defer loading until the first build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Must call super.build for AutomaticKeepAliveClientMixin to work
+    super.build(context);
+
     return BlocConsumer<ReportsCubit, ReportsState>(
       listener: (context, state) {
         if (state is WithdrawReportLoaded) {
@@ -31,21 +51,71 @@ class _WithdrawTransactionsState extends State<WithdrawTransactions> {
         }
       },
       builder: (context, state) {
-        if (state is ReportsLoading) {
+        if (state is ReportsLoading && !_isDataLoaded) {
           return const Center(child: CircularProgressIndicator());
         }
-        return Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: demoTransactions.length,
-            itemBuilder: (context, index) {
-              final transaction = demoTransactions[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: TransactionCard(transaction: transaction),
-              );
-            },
+        if (state is ReportsError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, color: AppColors.secondary, size: 40),
+                SizedBox(height: 16),
+                Text(
+                  state.error,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey.shade700),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<ReportsCubit>().getWithdrawReport();
+                  },
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () async {
+            await context.read<ReportsCubit>().getWithdrawReport();
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child:
+                withdrawReport.isEmpty
+                    ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.account_balance_outlined,
+                            color: Colors.grey.shade400,
+                            size: 40,
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'No withdraw transactions found',
+                            style: TextStyle(color: Colors.grey.shade700),
+                          ),
+                        ],
+                      ),
+                    )
+                    : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: withdrawReport.length,
+                      itemBuilder: (context, index) {
+                        final transaction = withdrawReport[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: WithdrawTransactionCard(
+                            transaction: transaction,
+                          ),
+                        );
+                      },
+                    ),
           ),
         );
       },
@@ -53,10 +123,10 @@ class _WithdrawTransactionsState extends State<WithdrawTransactions> {
   }
 }
 
-class TransactionCard extends StatelessWidget {
-  final TransactionData transaction;
+class WithdrawTransactionCard extends StatelessWidget {
+  final WithdrawReportData transaction;
 
-  const TransactionCard({super.key, required this.transaction});
+  const WithdrawTransactionCard({super.key, required this.transaction});
 
   @override
   Widget build(BuildContext context) {
@@ -82,17 +152,20 @@ class TransactionCard extends StatelessWidget {
 
               SizedBox(width: 16.w),
 
-              // Transaction title, id and date
-              _buildInfoColumn("MT5 ID", transaction.mt5Id),
-              SizedBox(width: 16.w),
-
-              // Payment method
-              _buildInfoColumn("Payment method", transaction.paymentMethod),
-
-              SizedBox(width: 16.w),
-
               // MT5 ID
-              _buildInfoColumn("Date", transaction.date),
+              _buildInfoColumn("MT5 ID", transaction.mtaccountid ?? 'N/A'),
+              SizedBox(width: 16.w),
+
+              // Payment method (bank account)
+              _buildInfoColumn(
+                "Payment method",
+                transaction.bankaccount ?? 'N/A',
+              ),
+
+              SizedBox(width: 16.w),
+
+              // Date
+              _buildInfoColumn("Date", transaction.date ?? 'N/A'),
 
               SizedBox(width: 16.w),
 
@@ -115,11 +188,11 @@ class TransactionCard extends StatelessWidget {
                       vertical: 4.h,
                     ),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(transaction.status),
+                      color: _getStatusColor(transaction.status ?? 'Pending'),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     child: Text(
-                      transaction.status,
+                      transaction.status ?? 'Pending',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 12.sp,
@@ -134,7 +207,7 @@ class TransactionCard extends StatelessWidget {
 
               // Amount
               Text(
-                "\$${transaction.amount}",
+                "\$${transaction.amount ?? '0'}",
                 style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
               ),
             ],
@@ -166,12 +239,12 @@ class TransactionCard extends StatelessWidget {
   }
 
   Color _getStatusColor(String status) {
-    switch (status) {
-      case 'Approved':
+    switch (status.toLowerCase()) {
+      case 'approved':
         return AppColors.primary;
-      case 'Pending':
+      case 'pending':
         return AppColors.secondary;
-      case 'Hold':
+      case 'hold':
         return Color(0xFF4A4A4A);
       default:
         return Colors.grey;
@@ -179,7 +252,7 @@ class TransactionCard extends StatelessWidget {
   }
 }
 
-// Model class for transaction data
+// Keep the TransactionData class for reference
 class TransactionData {
   final String type;
   final String id;
@@ -200,7 +273,7 @@ class TransactionData {
   });
 }
 
-// Sample data
+// Sample data (keeping for reference)
 final List<TransactionData> demoTransactions = [
   TransactionData(
     type: "Deposit",

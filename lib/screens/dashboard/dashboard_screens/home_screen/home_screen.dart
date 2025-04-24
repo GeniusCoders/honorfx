@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
+import 'package:honorfx/cubit/reports_cubit/reports_cubit.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/tab_title.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
@@ -30,7 +31,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _loadDashboardData() {
     // Load accounts data
-    context.read<DashboardCubit>().getAccounts();
+    Future.wait([
+      context.read<DashboardCubit>().getAccounts(),
+      context.read<ReportsCubit>().getOpenPositions(),
+    ]);
   }
 
   @override

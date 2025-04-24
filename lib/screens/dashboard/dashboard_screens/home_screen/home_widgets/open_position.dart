@@ -12,17 +12,24 @@ class OpenPosition extends StatefulWidget {
   State<OpenPosition> createState() => _OpenPositionState();
 }
 
-class _OpenPositionState extends State<OpenPosition> {
+class _OpenPositionState extends State<OpenPosition>
+    with AutomaticKeepAliveClientMixin {
+  List<OpenPositionData> openPositions = [];
+
+  // This keeps the state alive when switching tabs
   @override
-  void initState() {
-    super.initState();
-    // Fetch open positions data
-    context.read<ReportsCubit>().getOpenPositions();
-  }
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ReportsCubit, ReportsState>(
+    super.build(context);
+
+    return BlocConsumer<ReportsCubit, ReportsState>(
+      listener: (context, state) {
+        if (state is OpenPositionsReportLoaded) {
+          openPositions = state.data;
+        }
+      },
       builder: (context, state) {
         if (state is ReportsLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -40,52 +47,54 @@ class _OpenPositionState extends State<OpenPosition> {
                 ),
                 SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed:
-                      () => context.read<ReportsCubit>().getOpenPositions(),
+                  onPressed: () {
+                    context.read<ReportsCubit>().getOpenPositions();
+                  },
                   child: const Text('Retry'),
                 ),
               ],
             ),
           );
-        } else if (state is OpenPositionsReportLoaded) {
-          if (state.data.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.account_balance_outlined,
-                    color: Colors.grey.shade400,
-                    size: 40,
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'No open positions found',
-                    style: TextStyle(color: Colors.grey.shade700),
-                  ),
-                ],
-              ),
-            );
-          }
+        }
+        if (openPositions.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.account_balance_outlined,
+                  color: Colors.grey.shade400,
+                  size: 40,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'No open positions found',
+                  style: TextStyle(color: Colors.grey.shade700),
+                ),
+              ],
+            ),
+          );
+        }
 
-          return Padding(
+        return RefreshIndicator(
+          onRefresh: () async {
+            await context.read<ReportsCubit>().getOpenPositions();
+          },
+          child: Padding(
             padding: const EdgeInsets.only(top: 10),
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount: state.data.length,
+              itemCount: openPositions.length,
               itemBuilder: (context, index) {
-                final position = state.data[index];
+                final position = openPositions[index];
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: PositionCard(position: position),
                 );
               },
             ),
-          );
-        }
-
-        // Default state - loading
-        return const Center(child: CircularProgressIndicator());
+          ),
+        );
       },
     );
   }
@@ -182,28 +191,6 @@ class PositionCard extends StatelessWidget {
                       ),
                     ),
                   ],
-                ),
-              ),
-
-              SizedBox(width: 16.w),
-
-              // Close Button
-              SizedBox(
-                width: 70.w,
-                child: TextButton(
-                  onPressed: () {},
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size(60, 30),
-                  ),
-                  child: Text(
-                    "Close",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14.sp,
-                    ),
-                  ),
                 ),
               ),
             ],

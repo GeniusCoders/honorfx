@@ -15,17 +15,32 @@ class DepositTransactions extends StatefulWidget {
   State<DepositTransactions> createState() => _DepositTransactionsState();
 }
 
-class _DepositTransactionsState extends State<DepositTransactions> {
+class _DepositTransactionsState extends State<DepositTransactions>
+    with AutomaticKeepAliveClientMixin {
   List<DepositReportData> depositReport = [];
 
+  // This keeps the state alive when switching tabs
   @override
-  void initState() {
-    super.initState();
+  bool get wantKeepAlive => true;
+
+  void _loadData() {
     context.read<ReportsCubit>().getDepositReport();
   }
 
   @override
+  void initState() {
+    super.initState();
+    // We'll defer loading until the first build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Must call super.build for AutomaticKeepAliveClientMixin to work
+    super.build(context);
+
     return BlocConsumer<ReportsCubit, ReportsState>(
       listener: (context, state) {
         if (state is DepositReportLoaded) {
@@ -36,18 +51,66 @@ class _DepositTransactionsState extends State<DepositTransactions> {
         if (state is ReportsLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-        return Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: depositReport.length,
-            itemBuilder: (context, index) {
-              final transaction = depositReport[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: TransactionCard(transaction: transaction),
-              );
-            },
+        if (state is ReportsError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, color: AppColors.secondary, size: 40),
+                SizedBox(height: 16),
+                Text(
+                  state.error,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey.shade700),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<ReportsCubit>().getDepositReport();
+                  },
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () async {
+            await context.read<ReportsCubit>().getDepositReport();
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child:
+                depositReport.isEmpty
+                    ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.account_balance_outlined,
+                            color: Colors.grey.shade400,
+                            size: 40,
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'No deposit transactions found',
+                            style: TextStyle(color: Colors.grey.shade700),
+                          ),
+                        ],
+                      ),
+                    )
+                    : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: depositReport.length,
+                      itemBuilder: (context, index) {
+                        final transaction = depositReport[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: TransactionCard(transaction: transaction),
+                        );
+                      },
+                    ),
           ),
         );
       },

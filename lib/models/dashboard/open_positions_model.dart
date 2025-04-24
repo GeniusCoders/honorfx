@@ -30,7 +30,7 @@ class OpenPositionData {
   double? currentPrice;
   double? sl;
   double? tp;
-  double? volume;
+  int? volume;
   double? profit;
   String? comment;
   int? timeCreate;
@@ -76,11 +76,7 @@ class OpenPositionData {
           json['PriceTP'] != null
               ? double.tryParse(json['PriceTP'].toString())
               : null,
-      volume:
-          json['Volume'] != null
-              ? (double.tryParse(json['Volume'].toString()) ?? 0) /
-                  1000 // Convert to standard lot size
-              : null,
+      volume: json['Volume'],
       profit:
           json['Profit'] != null
               ? double.tryParse(json['Profit'].toString())
@@ -100,7 +96,7 @@ class OpenPositionData {
   // Format volume to display in lots with proper rounding
   String get formattedVolume {
     if (volume == null) return "0.00 Lot";
-    return "${volume!.toStringAsFixed(2)} Lot";
+    return "${(volume! / 10000)} Lot";
   }
 
   // Format profit with sign and decimal places
