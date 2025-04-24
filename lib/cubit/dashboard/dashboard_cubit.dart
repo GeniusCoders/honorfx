@@ -22,22 +22,6 @@ class DashboardCubit extends Cubit<DashboardState> {
     }
   }
 
-  Future<void> getOpenPositions() async {
-    emit(DashboardLoading());
-
-    final data = await _dashboardRepo.openPositionsReport();
-    data.fold(
-      (l) => emit(DashboardFailed(error: l.message ?? "Something went wrong")),
-      (r) {
-        if (r.status == 200) {
-          emit(OpenPositionsReportState(data: r.data ?? []));
-        } else {
-          emit(DashboardFailed(error: r.msg ?? "Something went wrong"));
-        }
-      },
-    );
-  }
-
   Future<void> getAccounts() async {
     emit(DashboardLoading());
     try {
@@ -75,7 +59,6 @@ class DashboardCubit extends Cubit<DashboardState> {
     required String accountId,
     int? selectedIndex,
   }) async {
-    print("getAccountDetails");
     List<AccountListingTypeData> accounts = [];
     int selectedAccountIdx = selectedIndex ?? 0;
 

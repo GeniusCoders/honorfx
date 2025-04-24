@@ -1,4 +1,5 @@
 import 'package:honorfx/models/common/response_details.dart';
+import 'package:intl/intl.dart';
 
 class OpenPositionsResponse extends ResponseDetails {
   List<OpenPositionData>? data;
@@ -23,70 +24,131 @@ class OpenPositionsResponse extends ResponseDetails {
 class OpenPositionData {
   int? id;
   String? ticket;
-  String? openTime;
-  String? type;
-  String? volume;
   String? symbol;
+  int? action; // 0 = Buy, 1 = Sell
   double? openPrice;
   double? currentPrice;
   double? sl;
   double? tp;
-  double? commission;
-  double? swap;
+  double? volume;
   double? profit;
   String? comment;
-  String? accountId;
+  int? timeCreate;
+  int? timeUpdate;
+  int? login;
 
   OpenPositionData({
     this.id,
     this.ticket,
-    this.openTime,
-    this.type,
-    this.volume,
     this.symbol,
+    this.action,
     this.openPrice,
     this.currentPrice,
     this.sl,
     this.tp,
-    this.commission,
-    this.swap,
+    this.volume,
     this.profit,
     this.comment,
-    this.accountId,
+    this.timeCreate,
+    this.timeUpdate,
+    this.login,
   });
 
   factory OpenPositionData.fromJson(Map<String, dynamic> json) {
     return OpenPositionData(
-      id: json['id'],
-      ticket: json['ticket'],
-      openTime: json['open_time'],
-      type: json['type'],
-      volume: json['volume'],
-      symbol: json['symbol'],
+      id: json['Position'],
+      ticket: json['Position']?.toString(),
+      symbol: json['Symbol'],
+      action: json['Action'],
       openPrice:
-          json['open_price'] != null
-              ? double.tryParse(json['open_price'].toString())
+          json['PriceOpen'] != null
+              ? double.tryParse(json['PriceOpen'].toString())
               : null,
       currentPrice:
-          json['current_price'] != null
-              ? double.tryParse(json['current_price'].toString())
+          json['PriceCurrent'] != null
+              ? double.tryParse(json['PriceCurrent'].toString())
               : null,
-      sl: json['sl'] != null ? double.tryParse(json['sl'].toString()) : null,
-      tp: json['tp'] != null ? double.tryParse(json['tp'].toString()) : null,
-      commission:
-          json['commission'] != null
-              ? double.tryParse(json['commission'].toString())
+      sl:
+          json['PriceSL'] != null
+              ? double.tryParse(json['PriceSL'].toString())
               : null,
-      swap:
-          json['swap'] != null
-              ? double.tryParse(json['swap'].toString())
+      tp:
+          json['PriceTP'] != null
+              ? double.tryParse(json['PriceTP'].toString())
+              : null,
+      volume:
+          json['Volume'] != null
+              ? (double.tryParse(json['Volume'].toString()) ?? 0) /
+                  1000 // Convert to standard lot size
               : null,
       profit:
-          json['profit'] != null
-              ? double.tryParse(json['profit'].toString())
+          json['Profit'] != null
+              ? double.tryParse(json['Profit'].toString())
               : null,
-      comment: json['comment'],
-      accountId: json['account_id'],
+      comment: json['Comment'],
+      timeCreate: json['TimeCreate'],
+      timeUpdate: json['TimeUpdate'],
+      login: json['Login'],
     );
+  }
+
+  // Helper methods for UI display
+  bool get isBuy => action == 0;
+
+  String get actionType => isBuy ? "Buy" : "Sell";
+
+  // Format volume to display in lots with proper rounding
+  String get formattedVolume {
+    if (volume == null) return "0.00 Lot";
+    return "${volume!.toStringAsFixed(2)} Lot";
+  }
+
+  // Format profit with sign and decimal places
+  String get formattedProfit {
+    if (profit == null) return "\$0.00";
+    final sign = profit! >= 0 ? "+" : "";
+    return "$sign\$${profit!.toStringAsFixed(2)}";
+  }
+
+  // Format prices with appropriate decimal places based on the asset
+  String get formattedOpenPrice {
+    if (openPrice == null) return "0.00";
+    // For forex pairs, typically show 5 decimals
+    if (symbol != null &&
+        (symbol!.contains('USD') ||
+            symbol!.contains('EUR') ||
+            symbol!.contains('GBP'))) {
+      return openPrice!.toStringAsFixed(5);
+    }
+    // For indices and commodities, show 2 decimals
+    return openPrice!.toStringAsFixed(2);
+  }
+
+  // Format current price with appropriate decimal places
+  String get formattedCurrentPrice {
+    if (currentPrice == null) return "0.00";
+    // For forex pairs, typically show 5 decimals
+    if (symbol != null &&
+        (symbol!.contains('USD') ||
+            symbol!.contains('EUR') ||
+            symbol!.contains('GBP'))) {
+      return currentPrice!.toStringAsFixed(5);
+    }
+    // For indices and commodities, show 2 decimals
+    return currentPrice!.toStringAsFixed(2);
+  }
+
+  // Get date string from Unix timestamp
+  String get dateString {
+    if (timeCreate == null) return "";
+    final dateTime = DateTime.fromMillisecondsSinceEpoch(timeCreate! * 1000);
+    return DateFormat('MM/dd/yyyy').format(dateTime);
+  }
+
+  // Get time string from Unix timestamp
+  String get timeString {
+    if (timeCreate == null) return "";
+    final dateTime = DateTime.fromMillisecondsSinceEpoch(timeCreate! * 1000);
+    return DateFormat('HH:mm').format(dateTime);
   }
 }

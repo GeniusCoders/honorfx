@@ -21,3 +21,10 @@ final class WithdrawReportLoaded extends ReportsState {
   final List<WithdrawReportData> withdrawReport;
   WithdrawReportLoaded({required this.withdrawReport});
 }
+
+// Open Positions state
+class OpenPositionsReportLoaded extends ReportsState {
+  final List<OpenPositionData> data;
+
+  OpenPositionsReportLoaded({required this.data});
+}

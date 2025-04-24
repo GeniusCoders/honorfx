@@ -22,13 +22,6 @@ class TokenResponseDataState extends DashboardState {
   TokenResponseDataState({required this.tokenResponse});
 }
 
-// Open Positions state
-class OpenPositionsReportState extends DashboardState {
-  final List<OpenPositionData> data;
-
-  OpenPositionsReportState({required this.data});
-}
-
 class AccountsLoaded extends DashboardState {
   final List<AccountListingTypeData> accounts;
   final int? selectedAccountIndex;

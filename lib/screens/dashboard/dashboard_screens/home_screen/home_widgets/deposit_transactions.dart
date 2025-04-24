@@ -6,6 +6,7 @@ import 'package:honorfx/cubit/reports_cubit/reports_cubit.dart';
 import 'package:honorfx/utils/colors.dart';
 import 'package:honorfx/models/dashboard/reports_model/deposit_report_model.dart';
 import 'package:honorfx/utils/extensions/date_extension.dart';
+import 'package:honorfx/widgets/shimmer/shimmer.dart';
 
 class DepositTransactions extends StatefulWidget {
   const DepositTransactions({super.key});
@@ -61,92 +62,97 @@ class TransactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Transaction icon
-              SvgPicture.asset(
-                "assets/icons/deposit_transaction.svg",
-                width: 30.w,
-                height: 30.w,
-                color: AppColors.primary,
-              ),
+    return Shimmer(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Transaction icon
+                SvgPicture.asset(
+                  "assets/icons/deposit_transaction.svg",
+                  width: 30.w,
+                  height: 30.w,
+                  color: AppColors.primary,
+                ),
 
-              SizedBox(width: 16.w),
+                SizedBox(width: 16.w),
 
-              // MT5 ID
-              _buildInfoColumn("MT5 ID", transaction.mtaccountid ?? ""),
+                // MT5 ID
+                _buildInfoColumn("MT5 ID", transaction.mtaccountid ?? ""),
 
-              SizedBox(width: 16.w),
+                SizedBox(width: 16.w),
 
-              // Payment method
-              _buildInfoColumn(
-                "Payment method",
-                transaction.paymentmethod ?? "",
-              ),
+                // Payment method
+                _buildInfoColumn(
+                  "Payment method",
+                  transaction.paymentmethod ?? "",
+                ),
 
-              SizedBox(width: 16.w),
+                SizedBox(width: 16.w),
 
-              _buildInfoColumn(
-                "Date",
-                transaction.date != null
-                    ? transaction.date!.toFormattedDateTime()
-                    : "",
-              ),
+                _buildInfoColumn(
+                  "Date",
+                  transaction.date != null
+                      ? transaction.date!.toFormattedDateTime()
+                      : "",
+                ),
 
-              SizedBox(width: 16.w),
+                SizedBox(width: 16.w),
 
-              // Status
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Status",
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Color(0xFF8A8A8A),
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 10.w,
-                      vertical: 4.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _getStatusColor(transaction.status ?? ""),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Text(
-                      transaction.status ?? "",
+                // Status
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Status",
                       style: TextStyle(
-                        color: Colors.white,
                         fontSize: 12.sp,
-                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF8A8A8A),
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
+                    SizedBox(height: 4.h),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10.w,
+                        vertical: 4.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(transaction.status ?? ""),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Text(
+                        transaction.status ?? "",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(width: 16.w),
+
+                // Amount
+                Text(
+                  "\$${transaction.amount}",
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w700,
                   ),
-                ],
-              ),
-
-              SizedBox(width: 16.w),
-
-              // Amount
-              Text(
-                "\$${transaction.amount}",
-                style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

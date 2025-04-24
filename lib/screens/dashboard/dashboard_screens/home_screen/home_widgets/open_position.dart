@@ -1,43 +1,103 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:honorfx/cubit/reports_cubit/reports_cubit.dart';
+import 'package:honorfx/models/dashboard/open_positions_model.dart';
 import 'package:honorfx/utils/colors.dart';
-import 'package:honorfx/utils/extensions/date_extension.dart';
 
-class OpenPosition extends StatelessWidget {
+class OpenPosition extends StatefulWidget {
   const OpenPosition({super.key});
 
   @override
+  State<OpenPosition> createState() => _OpenPositionState();
+}
+
+class _OpenPositionState extends State<OpenPosition> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch open positions data
+    context.read<ReportsCubit>().getOpenPositions();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: demoPositions.length,
-        itemBuilder: (context, index) {
-          final position = demoPositions[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: PositionCard(position: position),
+    return BlocBuilder<ReportsCubit, ReportsState>(
+      builder: (context, state) {
+        if (state is ReportsLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is ReportsError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, color: AppColors.secondary, size: 40),
+                SizedBox(height: 16),
+                Text(
+                  state.error,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey.shade700),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed:
+                      () => context.read<ReportsCubit>().getOpenPositions(),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
           );
-        },
-      ),
+        } else if (state is OpenPositionsReportLoaded) {
+          if (state.data.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.account_balance_outlined,
+                    color: Colors.grey.shade400,
+                    size: 40,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'No open positions found',
+                    style: TextStyle(color: Colors.grey.shade700),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: state.data.length,
+              itemBuilder: (context, index) {
+                final position = state.data[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: PositionCard(position: position),
+                );
+              },
+            ),
+          );
+        }
+
+        // Default state - loading
+        return const Center(child: CircularProgressIndicator());
+      },
     );
   }
 }
 
 class PositionCard extends StatelessWidget {
-  final PositionData position;
+  final OpenPositionData position;
 
   const PositionCard({super.key, required this.position});
 
   @override
   Widget build(BuildContext context) {
-    // Get the formatted date and time from the API strings
-    // Since the API might be returning date and time separately, we'll format them individually
-    final formattedDate = position.date.toFormattedDate();
-    final formattedTime = position.time.toFormattedTime();
-    // Or if we have a full datetime string: position.dateTime.toFormattedDateTime()
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -54,7 +114,7 @@ class PositionCard extends StatelessWidget {
               SizedBox(
                 width: 88.w,
                 child: Text(
-                  position.currencyPair,
+                  position.symbol ?? 'Unknown',
                   style: TextStyle(
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w500,
@@ -74,7 +134,7 @@ class PositionCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Text(
-                    position.isBuy ? "Buy" : "Sell",
+                    position.actionType,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
@@ -88,16 +148,16 @@ class PositionCard extends StatelessWidget {
               SizedBox(width: 16.w),
 
               // Profit/Loss
-              _buildTableCell("Profit / Loss", position.profitLoss),
+              _buildTableCell("Profit / Loss", position.formattedProfit),
 
               // Buy Price
-              _buildTableCell("Buy Price", position.buyPrice),
+              _buildTableCell("Open Price", position.formattedOpenPrice),
 
               // Current Price
-              _buildTableCell("Current Price", position.currentPrice),
+              _buildTableCell("Current Price", position.formattedCurrentPrice),
 
               // Volume
-              _buildTableCell("Volume", position.volume),
+              _buildTableCell("Volume", position.formattedVolume),
 
               // Date & Time
               SizedBox(
@@ -106,7 +166,7 @@ class PositionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      formattedDate,
+                      position.dateString,
                       style: TextStyle(
                         fontSize: 12.sp,
                         color: Color(0xFF8A8A8A),
@@ -114,7 +174,7 @@ class PositionCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      formattedTime,
+                      position.timeString,
                       style: TextStyle(
                         fontSize: 12.sp,
                         color: Color(0xFF8A8A8A),
@@ -173,7 +233,14 @@ class PositionCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.w600,
-              color: Colors.black,
+              color:
+                  label == "Profit / Loss"
+                      ? (value.contains("+")
+                          ? Colors.green
+                          : value.contains("-")
+                          ? Colors.red
+                          : Colors.black)
+                      : Colors.black,
             ),
           ),
         ],
@@ -181,70 +248,3 @@ class PositionCard extends StatelessWidget {
     );
   }
 }
-
-// Model class for position data
-class PositionData {
-  final String currencyPair;
-  final bool isBuy;
-  final String profitLoss;
-  final String buyPrice;
-  final String currentPrice;
-  final String volume;
-  final String date;
-  final String time;
-
-  PositionData({
-    required this.currencyPair,
-    required this.isBuy,
-    required this.profitLoss,
-    required this.buyPrice,
-    required this.currentPrice,
-    required this.volume,
-    required this.date,
-    required this.time,
-  });
-}
-
-// Sample data
-final List<PositionData> demoPositions = [
-  PositionData(
-    currencyPair: "USD/EUR",
-    isBuy: false,
-    profitLoss: "\$20",
-    buyPrice: "2066",
-    currentPrice: "2066",
-    volume: "1.5 Lot",
-    date: "02/01/2025",
-    time: "14:32",
-  ),
-  PositionData(
-    currencyPair: "XAU/USD",
-    isBuy: true,
-    profitLoss: "\$20",
-    buyPrice: "2066",
-    currentPrice: "2066",
-    volume: "1.5 Lot",
-    date: "02/01/2025",
-    time: "14:32",
-  ),
-  PositionData(
-    currencyPair: "USD/EUR",
-    isBuy: false,
-    profitLoss: "\$20",
-    buyPrice: "2066",
-    currentPrice: "2066",
-    volume: "1.5 Lot",
-    date: "02/01/2025",
-    time: "14:32",
-  ),
-  PositionData(
-    currencyPair: "XAU/USD",
-    isBuy: true,
-    profitLoss: "\$20",
-    buyPrice: "2066",
-    currentPrice: "2066",
-    volume: "1.5 Lot",
-    date: "02/01/2025",
-    time: "14:32",
-  ),
-];
