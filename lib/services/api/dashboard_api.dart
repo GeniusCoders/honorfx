@@ -8,6 +8,8 @@ import 'package:honorfx/injection.dart';
 import 'package:get/get.dart' as getcontroller;
 import 'package:honorfx/models/dashboard/account_details_response.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
+import 'package:honorfx/models/dashboard/reports_model/deposit_report_model.dart';
+import 'package:honorfx/models/dashboard/reports_model/withdraw_report_model.dart';
 import 'package:honorfx/models/login_model.dart';
 import 'package:honorfx/router/app_router.dart';
 import 'package:honorfx/utils/constant/strings.dart';
@@ -210,14 +212,27 @@ class DashboardApi extends DashboardRepo {
     }
   }
 
-  // Additional dashboard API methods implementation:
-  // @override
-  // Future<Either<ServerError, PositionListModel>> getOpenPositions() async {
-  //   // Implementation here
-  // }
+  @override
+  Future<Either<ServerError, DepositReportResponse>> depositReport() async {
+    Response response;
+    try {
+      const _url = "/depositlist";
+      response = await dio.get(_url);
+      return right(DepositReportResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      return left(ServerError.withError(error: e));
+    }
+  }
 
-  // @override
-  // Future<Either<ServerError, TransactionListModel>> getTransactions() async {
-  //   // Implementation here
-  // }
+  @override
+  Future<Either<ServerError, WithdrawReportResponse>> withdrawReport() async {
+    Response response;
+    try {
+      const _url = "/withdrawlist";
+      response = await dio.get(_url);
+      return right(WithdrawReportResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      return left(ServerError.withError(error: e));
+    }
+  }
 }

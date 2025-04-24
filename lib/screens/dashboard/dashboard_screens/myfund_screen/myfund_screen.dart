@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/tab_title.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
-import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/transactions.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/deposit_transactions.dart';
 import 'package:honorfx/utils/colors.dart';
 import 'package:honorfx/widgets/textfields/comman_texfield.dart';
 import 'package:honorfx/utils/common_dropdown.dart';
@@ -483,6 +483,6 @@ class _MyFundScreenState extends State<MyFundScreen>
   }
 
   Widget _buildRecentTransactionsTab() {
-    return Transactions();
+    return DepositTransactions();
   }
 }

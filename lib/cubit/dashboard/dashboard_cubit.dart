@@ -75,6 +75,7 @@ class DashboardCubit extends Cubit<DashboardState> {
     required String accountId,
     int? selectedIndex,
   }) async {
+    print("getAccountDetails");
     List<AccountListingTypeData> accounts = [];
     int selectedAccountIdx = selectedIndex ?? 0;
 
@@ -128,6 +129,7 @@ class DashboardCubit extends Cubit<DashboardState> {
   }
 
   void selectAccount(int index) {
+    print("selectAccount");
     // Handle both AccountsLoaded and AccountDetailsLoaded states
     List<AccountListingTypeData> accounts = [];
 

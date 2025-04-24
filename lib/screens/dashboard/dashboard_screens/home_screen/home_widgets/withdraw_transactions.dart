@@ -1,26 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:honorfx/cubit/reports_cubit/reports_cubit.dart';
+import 'package:honorfx/models/dashboard/reports_model/withdraw_report_model.dart';
 import 'package:honorfx/utils/colors.dart';
 
-class Transactions extends StatelessWidget {
-  const Transactions({super.key});
+class WithdrawTransactions extends StatefulWidget {
+  const WithdrawTransactions({super.key});
+
+  @override
+  State<WithdrawTransactions> createState() => _WithdrawTransactionsState();
+}
+
+class _WithdrawTransactionsState extends State<WithdrawTransactions> {
+  List<WithdrawReportData> withdrawReport = [];
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ReportsCubit>().getWithdrawReport();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: demoTransactions.length,
-        itemBuilder: (context, index) {
-          final transaction = demoTransactions[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: TransactionCard(transaction: transaction),
-          );
-        },
-      ),
+    return BlocConsumer<ReportsCubit, ReportsState>(
+      listener: (context, state) {
+        if (state is WithdrawReportLoaded) {
+          withdrawReport = state.withdrawReport;
+        }
+      },
+      builder: (context, state) {
+        if (state is ReportsLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: demoTransactions.length,
+            itemBuilder: (context, index) {
+              final transaction = demoTransactions[index];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: TransactionCard(transaction: transaction),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
@@ -45,54 +73,18 @@ class TransactionCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Transaction icon
-              transaction.type == 'Deposit'
-                  ? SvgPicture.asset(
-                    "assets/icons/deposit_transaction.svg",
-                    width: 30.w,
-                    height: 30.w,
-                    color: AppColors.primary,
-                  )
-                  : SvgPicture.asset(
-                    "assets/icons/withdraw_transaction.svg",
-                    width: 30.w,
-                    height: 30.w,
-                    color: AppColors.secondary,
-                  ),
+              SvgPicture.asset(
+                "assets/icons/withdraw_transaction.svg",
+                width: 30.w,
+                height: 30.w,
+                color: AppColors.secondary,
+              ),
 
               SizedBox(width: 16.w),
 
               // Transaction title, id and date
-              Padding(
-                padding: EdgeInsets.only(right: 26.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      transaction.type,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    Text(
-                      "#${transaction.id}",
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: Color(0xFF8A8A8A),
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    Text(
-                      transaction.date,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: Color(0xFF8A8A8A),
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _buildInfoColumn("MT5 ID", transaction.mt5Id),
+              SizedBox(width: 16.w),
 
               // Payment method
               _buildInfoColumn("Payment method", transaction.paymentMethod),
@@ -100,7 +92,7 @@ class TransactionCard extends StatelessWidget {
               SizedBox(width: 16.w),
 
               // MT5 ID
-              _buildInfoColumn("MT5 ID", transaction.mt5Id),
+              _buildInfoColumn("Date", transaction.date),
 
               SizedBox(width: 16.w),
 

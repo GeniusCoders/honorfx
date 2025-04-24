@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:honorfx/utils/colors.dart';
+import 'package:honorfx/utils/extensions/date_extension.dart';
 
 class OpenPosition extends StatelessWidget {
   const OpenPosition({super.key});
@@ -31,6 +32,12 @@ class PositionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the formatted date and time from the API strings
+    // Since the API might be returning date and time separately, we'll format them individually
+    final formattedDate = position.date.toFormattedDate();
+    final formattedTime = position.time.toFormattedTime();
+    // Or if we have a full datetime string: position.dateTime.toFormattedDateTime()
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -99,7 +106,7 @@ class PositionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      position.date,
+                      formattedDate,
                       style: TextStyle(
                         fontSize: 12.sp,
                         color: Color(0xFF8A8A8A),
@@ -107,7 +114,7 @@ class PositionCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      position.time,
+                      formattedTime,
                       style: TextStyle(
                         fontSize: 12.sp,
                         color: Color(0xFF8A8A8A),

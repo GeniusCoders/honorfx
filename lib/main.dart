@@ -5,7 +5,8 @@ import 'package:get/get.dart';
 import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/auth/auth_cubit.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
-import 'package:honorfx/cubit/login_cubit.dart';
+import 'package:honorfx/cubit/login_cubit/login_cubit.dart';
+import 'package:honorfx/cubit/reports_cubit/reports_cubit.dart';
 import 'package:honorfx/cubit/signup/signup_cubit.dart';
 import 'package:honorfx/injection.dart';
 import 'package:honorfx/router/app_router.dart';
@@ -49,6 +50,7 @@ class MyApp extends StatelessWidget {
             BlocProvider(create: (context) => getIt<SignupCubit>()),
             BlocProvider(create: (context) => getIt<DashboardCubit>()),
             BlocProvider(create: (context) => getIt<AuthCubit>()),
+            BlocProvider(create: (context) => getIt<ReportsCubit>()),
           ],
           child: MaterialApp.router(
             debugShowCheckedModeBanner: false,

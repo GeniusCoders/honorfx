@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
+import 'package:honorfx/cubit/reports_cubit/reports_cubit.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/tab_title.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
@@ -14,7 +15,8 @@ import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_wid
 import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/account_list.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/open_account_button.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/open_position.dart';
-import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/transactions.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/deposit_transactions.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/withdraw_transactions.dart';
 import 'package:honorfx/utils/colors.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -253,13 +255,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 SizedBox(
                   height: 400.h,
                   child: DefaultTabController(
-                    length: 2,
+                    length: 3,
+
                     child: Column(
                       children: [
                         TabBar(
                           dividerColor: AppColors.primary,
                           indicatorColor: Colors.transparent,
-
+                          isScrollable: true,
+                          tabAlignment: TabAlignment.start,
                           labelColor: Colors.white,
                           labelStyle: TextStyle(
                             fontWeight: FontWeight.w700,
@@ -284,12 +288,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           indicatorSize: TabBarIndicatorSize.tab,
                           tabs: [
                             Tab(text: "Open Positions"),
-                            Tab(text: "Transactions"),
+                            Tab(text: "Deposit"),
+                            Tab(text: "Withdraw"),
                           ],
                         ),
                         Expanded(
                           child: TabBarView(
-                            children: [OpenPosition(), Transactions()],
+                            children: [
+                              OpenPosition(),
+                              DepositTransactions(),
+                              WithdrawTransactions(),
+                            ],
                           ),
                         ),
                       ],

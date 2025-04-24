@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/tab_title.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
-import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/transactions.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/deposit_transactions.dart';
 import 'package:honorfx/utils/colors.dart';
 
 class MyDataScreen extends StatefulWidget {
@@ -163,7 +163,7 @@ class _MyDataScreenState extends State<MyDataScreen>
             ],
           ),
           SizedBox(height: 20.h),
-          Transactions(),
+          DepositTransactions(),
         ],
       ),
     );
