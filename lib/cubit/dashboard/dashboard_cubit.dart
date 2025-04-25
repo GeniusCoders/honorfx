@@ -247,4 +247,42 @@ class DashboardCubit extends Cubit<DashboardState> {
       emit(OpenAccountError(message: e.toString()));
     }
   }
+
+  Future<void> internalTransfer({
+    required String fromAccount,
+    required String toAccount,
+    required String amount,
+  }) async {
+    emit(DashboardLoading());
+    try {
+      final result = await _dashboardRepo.internalTransfer(
+        fromAccount: fromAccount,
+        toAccount: toAccount,
+        amount: amount,
+      );
+
+      result.fold(
+        (error) => emit(
+          InternalTransferError(message: error.message ?? 'Transfer failed'),
+        ),
+        (response) {
+          if (response.status == 200) {
+            emit(
+              InternalTransferSuccess(
+                message: response.msg ?? 'Transfer successful',
+              ),
+            );
+            // Refresh accounts list to show updated balances
+            getAccounts();
+          } else {
+            emit(
+              InternalTransferError(message: response.msg ?? 'Transfer failed'),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(InternalTransferError(message: e.toString()));
+    }
+  }
 }

@@ -176,7 +176,11 @@ class _SupportScreenState extends State<SupportScreen>
         children: [
           // Category field
           _buildFormLabel('Category', isRequired: true),
-          CommonDropdown(hintText: 'Select Category', onChanged: (value) {}),
+          CommonDropdown(
+            hintText: 'Select Category',
+            onChanged: (value) {},
+            data: ["Category 1", "Category 2", "Category 3"],
+          ),
           SizedBox(height: 16.h),
 
           // Title field

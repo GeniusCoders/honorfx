@@ -95,6 +95,19 @@ class OpenAccountError extends DashboardState {
   OpenAccountError({required this.message});
 }
 
+// Internal transfer states
+class InternalTransferSuccess extends DashboardState {
+  final String message;
+
+  InternalTransferSuccess({required this.message});
+}
+
+class InternalTransferError extends DashboardState {
+  final String message;
+
+  InternalTransferError({required this.message});
+}
+
 // You can add more dashboard-related states here
 // class PositionsLoading extends DashboardState {}
 // class PositionsLoaded extends DashboardState {...}

@@ -166,7 +166,11 @@ class _MyWalletScreenState extends State<MyWalletScreen>
     return Column(
       children: [
         // From wallet dropdown
-        CommonDropdown(hintText: 'Select Wallet', onChanged: (value) {}),
+        CommonDropdown(
+          hintText: 'Select Wallet',
+          onChanged: (value) {},
+          data: ["Wallet 1", "Wallet 2", "Wallet 3"],
+        ),
 
         // Transfer direction icon
         IconButton(
@@ -175,7 +179,11 @@ class _MyWalletScreenState extends State<MyWalletScreen>
         ),
 
         // To MT5 account dropdown
-        CommonDropdown(hintText: 'Select MT5 Account', onChanged: (value) {}),
+        CommonDropdown(
+          hintText: 'Select MT5 Account',
+          onChanged: (value) {},
+          data: ["MT5 1", "MT5 2", "MT5 3"],
+        ),
 
         SizedBox(height: 30.h),
 

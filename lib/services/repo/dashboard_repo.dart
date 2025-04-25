@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:honorfx/models/dashboard/account_details_response.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
 import 'package:honorfx/models/dashboard/group_list_model.dart';
+import 'package:honorfx/models/dashboard/internal_transfer_response.dart';
 import 'package:honorfx/models/dashboard/leverage_list_model.dart';
 import 'package:honorfx/models/dashboard/open_account_response.dart';
 import 'package:honorfx/models/dashboard/open_positions_model.dart';
@@ -28,5 +29,12 @@ abstract class DashboardRepo {
     required String leverage,
     required String mainPassword,
     required String investorPassword,
+  });
+
+  // Internal transfer method
+  Future<Either<ServerError, InternalTransferResponse>> internalTransfer({
+    required String fromAccount,
+    required String toAccount,
+    required String amount,
   });
 }

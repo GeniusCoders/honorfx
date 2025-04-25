@@ -5,10 +5,14 @@ import 'package:honorfx/utils/colors.dart';
 class CommonDropdown extends StatelessWidget {
   final String hintText;
   final Function(String?) onChanged;
+  final List<String> data;
+  final String? value;
   const CommonDropdown({
     super.key,
     required this.hintText,
     required this.onChanged,
+    required this.data,
+    this.value,
   });
 
   @override
@@ -21,14 +25,26 @@ class CommonDropdown extends StatelessWidget {
       ),
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
+        child: DropdownButtonFormField<String>(
+          decoration: InputDecoration(border: InputBorder.none),
           hint: Text(
             hintText,
             style: TextStyle(color: Colors.grey.shade400, fontSize: 14.sp),
           ),
           isExpanded: true,
-          icon: Icon(Icons.keyboard_arrow_down),
-          items: null,
+          value: value,
+          icon: const Icon(Icons.keyboard_arrow_down),
+          items:
+              data.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                    style: TextStyle(fontSize: 14.sp),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              }).toList(),
           onChanged: onChanged,
         ),
       ),

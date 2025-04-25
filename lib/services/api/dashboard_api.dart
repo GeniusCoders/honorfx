@@ -22,6 +22,7 @@ import 'package:honorfx/models/dashboard/open_positions_model.dart';
 import 'package:honorfx/models/dashboard/group_list_model.dart';
 import 'package:honorfx/models/dashboard/leverage_list_model.dart';
 import 'package:honorfx/models/dashboard/open_account_response.dart';
+import 'package:honorfx/models/dashboard/internal_transfer_response.dart';
 
 @Injectable(as: DashboardRepo)
 class DashboardApi extends DashboardRepo {
@@ -295,6 +296,32 @@ class DashboardApi extends DashboardRepo {
       return left(ServerError.withError(error: e));
     } catch (e) {
       log("General error in openLiveAccount: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, InternalTransferResponse>> internalTransfer({
+    required String fromAccount,
+    required String toAccount,
+    required String amount,
+  }) async {
+    try {
+      _setupToken();
+      const url = "/internaltransfer";
+      final Map<String, dynamic> data = {
+        'from': fromAccount,
+        'to': toAccount,
+        'amount': amount,
+      };
+
+      final response = await dio.post(url, data: data);
+      return right(InternalTransferResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in internalTransfer: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in internalTransfer: $e");
       return left(ServerError(message: e.toString()));
     }
   }
