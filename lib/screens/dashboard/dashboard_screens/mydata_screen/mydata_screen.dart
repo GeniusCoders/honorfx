@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:honorfx/cubit/reports_cubit/reports_cubit.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/tab_title.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/deposit_transactions.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/withdraw_transactions.dart';
 import 'package:honorfx/utils/colors.dart';
 
 class MyDataScreen extends StatefulWidget {
@@ -163,7 +166,14 @@ class _MyDataScreenState extends State<MyDataScreen>
             ],
           ),
           SizedBox(height: 20.h),
-          DepositTransactions(),
+          // Display either deposit or withdraw transactions based on selection
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child:
+                _selectedOption == 'Deposit'
+                    ? const DepositTransactions(key: ValueKey('deposit'))
+                    : const WithdrawTransactions(key: ValueKey('withdraw')),
+          ),
         ],
       ),
     );
@@ -372,48 +382,37 @@ class _MyDataScreenState extends State<MyDataScreen>
   }
 
   Widget _buildRadioOption(String value, String label) {
-    final bool isSelected = _selectedOption == value;
+    return Row(
+      children: [
+        Radio<String>(
+          value: value,
+          groupValue: _selectedOption,
+          activeColor: AppColors.primary,
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              setState(() {
+                _selectedOption = newValue;
+              });
 
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedOption = value;
-        });
-      },
-      child: Row(
-        children: [
-          Container(
-            width: 24.w,
-            height: 24.w,
-            padding: EdgeInsets.all(2.w),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: isSelected ? const Color(0xFF9BC547) : Colors.grey,
-                width: 2.w,
-              ),
-            ),
-            child:
-                isSelected
-                    ? const Center(
-                      child: CircleAvatar(
-                        radius: 8,
-                        backgroundColor: Color(0xFF9BC547),
-                      ),
-                    )
-                    : null,
+              // Load the appropriate data when the radio button is selected
+              final reportsCubit = context.read<ReportsCubit>();
+              if (newValue == 'Deposit') {
+                reportsCubit.getDepositReport();
+              } else {
+                reportsCubit.getWithdrawReport();
+              }
+            }
+          },
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w500,
+            color: _selectedOption == value ? Colors.black : Colors.grey,
           ),
-          SizedBox(width: 8.w),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w500,
-              color: isSelected ? Colors.black : Colors.grey,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
