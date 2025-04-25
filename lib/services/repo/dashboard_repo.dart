@@ -1,6 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:honorfx/models/dashboard/account_details_response.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
+import 'package:honorfx/models/dashboard/group_list_model.dart';
+import 'package:honorfx/models/dashboard/leverage_list_model.dart';
+import 'package:honorfx/models/dashboard/open_account_response.dart';
 import 'package:honorfx/models/dashboard/open_positions_model.dart';
 import 'package:honorfx/models/dashboard/reports_model/deposit_report_model.dart';
 import 'package:honorfx/models/dashboard/reports_model/withdraw_report_model.dart';
@@ -16,4 +19,14 @@ abstract class DashboardRepo {
   Future<Either<ServerError, OpenPositionsResponse>> openPositionsReport();
   Future<Either<ServerError, DepositReportResponse>> depositReport();
   Future<Either<ServerError, WithdrawReportResponse>> withdrawReport();
+
+  // New methods for open account feature
+  Future<Either<ServerError, GroupListResponse>> getGroupList();
+  Future<Either<ServerError, LeverageListResponse>> getLeverageList();
+  Future<Either<ServerError, OpenAccountResponse>> openLiveAccount({
+    required String group,
+    required String leverage,
+    required String mainPassword,
+    required String investorPassword,
+  });
 }

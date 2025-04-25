@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:honorfx/injection.dart';
+import 'package:honorfx/router/app_router.dart';
 import 'package:honorfx/utils/colors.dart';
 
 class OpenAccountButton extends StatelessWidget {
@@ -13,12 +15,14 @@ class OpenAccountButton extends StatelessWidget {
         color: AppColors.primary,
       ),
       child: TextButton.icon(
-        onPressed: () {},
+        onPressed: () {
+          getIt<AppRouter>().goToOpenAccount();
+        },
         icon: Icon(Icons.add_circle, color: Colors.white),
         label: Text(
           "Open New Account",
           style: TextStyle(
-            color: Colors.white,
+            color: AppColors.white,
             fontWeight: FontWeight.w500,
             fontSize: 14.sp,
           ),

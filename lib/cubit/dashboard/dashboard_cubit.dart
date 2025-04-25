@@ -3,6 +3,8 @@ import 'package:injectable/injectable.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
 import 'package:honorfx/services/repo/dashboard_repo.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
+import 'package:honorfx/models/dashboard/group_list_model.dart';
+import 'package:honorfx/models/dashboard/leverage_list_model.dart';
 
 @injectable
 class DashboardCubit extends Cubit<DashboardState> {
@@ -143,5 +145,106 @@ class DashboardCubit extends Cubit<DashboardState> {
         selectedIndex: index,
       );
     } else {}
+  }
+
+  Future<void> getGroupList() async {
+    emit(DashboardLoading());
+    try {
+      final result = await _dashboardRepo.getGroupList();
+      result.fold(
+        (error) => emit(
+          GroupListError(message: error.message ?? 'Failed to load groups'),
+        ),
+        (groupList) {
+          if (groupList.status == 200) {
+            if (groupList.data != null && groupList.data!.isNotEmpty) {
+              emit(GroupListLoaded(groups: groupList.data!));
+            } else {
+              emit(GroupListLoaded(groups: []));
+            }
+          } else {
+            emit(
+              GroupListError(message: groupList.msg ?? 'Failed to load groups'),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(GroupListError(message: e.toString()));
+    }
+  }
+
+  Future<void> getLeverageList() async {
+    emit(DashboardLoading());
+    try {
+      final result = await _dashboardRepo.getLeverageList();
+      result.fold(
+        (error) => emit(
+          LeverageListError(
+            message: error.message ?? 'Failed to load leverages',
+          ),
+        ),
+        (leverageList) {
+          if (leverageList.status == 200) {
+            if (leverageList.data != null && leverageList.data!.isNotEmpty) {
+              emit(LeverageListLoaded(leverages: leverageList.data!));
+            } else {
+              emit(LeverageListLoaded(leverages: []));
+            }
+          } else {
+            emit(
+              LeverageListError(
+                message: leverageList.msg ?? 'Failed to load leverages',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(LeverageListError(message: e.toString()));
+    }
+  }
+
+  Future<void> openLiveAccount({
+    required String group,
+    required String leverage,
+    required String mainPassword,
+    required String investorPassword,
+  }) async {
+    emit(DashboardLoading());
+    try {
+      final result = await _dashboardRepo.openLiveAccount(
+        group: group,
+        leverage: leverage,
+        mainPassword: mainPassword,
+        investorPassword: investorPassword,
+      );
+
+      result.fold(
+        (error) => emit(
+          OpenAccountError(message: error.message ?? 'Failed to open account'),
+        ),
+        (response) {
+          if (response.status == 200) {
+            emit(
+              OpenAccountSuccess(
+                message:
+                    response.data?.message ?? 'Account created successfully',
+              ),
+            );
+            // Refresh accounts list
+            getAccounts();
+          } else {
+            emit(
+              OpenAccountError(
+                message: response.msg ?? 'Failed to open account',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(OpenAccountError(message: e.toString()));
+    }
   }
 }

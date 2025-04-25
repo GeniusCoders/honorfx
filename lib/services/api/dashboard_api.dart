@@ -19,6 +19,9 @@ import 'package:dartz/dartz.dart';
 import 'package:honorfx/services/core/server_error.dart';
 import 'package:honorfx/services/repo/dashboard_repo.dart';
 import 'package:honorfx/models/dashboard/open_positions_model.dart';
+import 'package:honorfx/models/dashboard/group_list_model.dart';
+import 'package:honorfx/models/dashboard/leverage_list_model.dart';
+import 'package:honorfx/models/dashboard/open_account_response.dart';
 
 @Injectable(as: DashboardRepo)
 class DashboardApi extends DashboardRepo {
@@ -233,6 +236,66 @@ class DashboardApi extends DashboardRepo {
       return right(WithdrawReportResponse.fromJson(response.data));
     } on DioError catch (e) {
       return left(ServerError.withError(error: e));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, GroupListResponse>> getGroupList() async {
+    try {
+      _setupToken();
+      const url = "/grouplist";
+      final response = await dio.get(url);
+      return right(GroupListResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in getGroupList: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in getGroupList: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, LeverageListResponse>> getLeverageList() async {
+    try {
+      _setupToken();
+      const url = "/leveragelist";
+      final response = await dio.get(url);
+      return right(LeverageListResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in getLeverageList: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in getLeverageList: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, OpenAccountResponse>> openLiveAccount({
+    required String group,
+    required String leverage,
+    required String mainPassword,
+    required String investorPassword,
+  }) async {
+    try {
+      _setupToken();
+      const url = "/openliveaccount";
+      final Map<String, dynamic> data = {
+        'group': group,
+        'leverage': leverage,
+        'main_password': mainPassword,
+        'investor_password': investorPassword,
+      };
+
+      final response = await dio.post(url, data: data);
+      return right(OpenAccountResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in openLiveAccount: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in openLiveAccount: $e");
+      return left(ServerError(message: e.toString()));
     }
   }
 }

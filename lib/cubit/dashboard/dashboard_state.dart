@@ -1,6 +1,11 @@
 import 'package:honorfx/models/dashboard/account_details_response.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
+import 'package:honorfx/models/dashboard/group_list_model.dart';
+import 'package:honorfx/models/dashboard/leverage_list_model.dart';
+import 'package:honorfx/models/dashboard/open_account_response.dart';
 import 'package:honorfx/models/dashboard/open_positions_model.dart';
+import 'package:honorfx/models/dashboard/reports_model/deposit_report_model.dart';
+import 'package:honorfx/models/dashboard/reports_model/withdraw_report_model.dart';
 import 'package:honorfx/models/login_model.dart';
 
 abstract class DashboardState {}
@@ -51,6 +56,43 @@ class DashboardError extends DashboardState {
   final String message;
 
   DashboardError({required this.message});
+}
+
+// New states for open account feature
+class GroupListLoaded extends DashboardState {
+  final List<GroupData> groups;
+
+  GroupListLoaded({required this.groups});
+}
+
+class GroupListError extends DashboardState {
+  final String message;
+
+  GroupListError({required this.message});
+}
+
+class LeverageListLoaded extends DashboardState {
+  final List<LeverageData> leverages;
+
+  LeverageListLoaded({required this.leverages});
+}
+
+class LeverageListError extends DashboardState {
+  final String message;
+
+  LeverageListError({required this.message});
+}
+
+class OpenAccountSuccess extends DashboardState {
+  final String message;
+
+  OpenAccountSuccess({required this.message});
+}
+
+class OpenAccountError extends DashboardState {
+  final String message;
+
+  OpenAccountError({required this.message});
 }
 
 // You can add more dashboard-related states here
