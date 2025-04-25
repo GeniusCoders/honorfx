@@ -23,6 +23,7 @@ import 'package:honorfx/models/dashboard/group_list_model.dart';
 import 'package:honorfx/models/dashboard/leverage_list_model.dart';
 import 'package:honorfx/models/dashboard/open_account_response.dart';
 import 'package:honorfx/models/dashboard/internal_transfer_response.dart';
+import 'package:honorfx/models/dashboard/withdraw_response.dart';
 
 @Injectable(as: DashboardRepo)
 class DashboardApi extends DashboardRepo {
@@ -322,6 +323,34 @@ class DashboardApi extends DashboardRepo {
       return left(ServerError.withError(error: e));
     } catch (e) {
       log("General error in internalTransfer: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, WithdrawResponse>> withdraw({
+    required String mt5id,
+    required String withdrawTo,
+    required String amount,
+    required String note,
+    required String paymentMethod,
+  }) async {
+    try {
+      _setupToken();
+      const url = "/withdraw";
+      final Map<String, dynamic> data = {
+        'mt5id': mt5id,
+        'withdraw_to': withdrawTo,
+        'amount': amount,
+        'paymentmethod': paymentMethod,
+        'note': note,
+      };
+
+      final response = await dio.post(url, data: data);
+      return right(WithdrawResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      return left(ServerError.withError(error: e));
+    } catch (e) {
       return left(ServerError(message: e.toString()));
     }
   }

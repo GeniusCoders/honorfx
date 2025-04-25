@@ -6,6 +6,7 @@ import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/us
 import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/deposit_transactions.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/myfund_screen/myfund_widget/deposit_widget.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/myfund_screen/myfund_widget/internal_transfer_widget.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/myfund_screen/myfund_widget/withdraw_widget.dart';
 import 'package:honorfx/utils/colors.dart';
 
 class MyFundScreen extends StatefulWidget {
@@ -83,15 +84,9 @@ class _MyFundScreenState extends State<MyFundScreen>
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 // Deposit Tab
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: const DepositWidget(),
-                ),
+                const DepositWidget(),
                 // Withdrawal Tab
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: _buildWithdrawalTab(),
-                ),
+                _buildWithdrawalTab(),
               ],
             ),
           ),
@@ -118,10 +113,7 @@ class _MyFundScreenState extends State<MyFundScreen>
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 // Internal Transfer Tab
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: const InternalTransferWidget(),
-                ),
+                const InternalTransferWidget(),
                 // Recent Transactions Tab
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -136,12 +128,7 @@ class _MyFundScreenState extends State<MyFundScreen>
   }
 
   Widget _buildWithdrawalTab() {
-    return Center(
-      child: Text(
-        'Withdrawal Feature Coming Soon',
-        style: TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
-      ),
-    );
+    return const WithdrawWidget();
   }
 
   Widget _buildRecentTransactionsTab() {

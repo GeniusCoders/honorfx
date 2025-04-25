@@ -285,4 +285,44 @@ class DashboardCubit extends Cubit<DashboardState> {
       emit(InternalTransferError(message: e.toString()));
     }
   }
+
+  Future<void> withdraw({
+    required String mt5id,
+    required String withdrawTo,
+    required String amount,
+    required String note,
+    required String paymentMethod,
+  }) async {
+    emit(DashboardLoading());
+    try {
+      final result = await _dashboardRepo.withdraw(
+        mt5id: mt5id,
+        withdrawTo: withdrawTo,
+        amount: amount,
+        note: note,
+        paymentMethod: paymentMethod,
+      );
+
+      result.fold(
+        (error) =>
+            emit(WithdrawError(message: error.message ?? 'Withdrawal failed')),
+        (response) {
+          if (response.status == 200) {
+            emit(
+              WithdrawSuccess(
+                message:
+                    response.msg ?? 'Withdrawal request processed successfully',
+              ),
+            );
+            // Refresh accounts list to show updated balances
+            getAccounts();
+          } else {
+            emit(WithdrawError(message: response.msg ?? 'Withdrawal failed'));
+          }
+        },
+      );
+    } catch (e) {
+      emit(WithdrawError(message: e.toString()));
+    }
+  }
 }

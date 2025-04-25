@@ -108,6 +108,19 @@ class InternalTransferError extends DashboardState {
   InternalTransferError({required this.message});
 }
 
+// Withdraw states
+class WithdrawSuccess extends DashboardState {
+  final String message;
+
+  WithdrawSuccess({required this.message});
+}
+
+class WithdrawError extends DashboardState {
+  final String message;
+
+  WithdrawError({required this.message});
+}
+
 // You can add more dashboard-related states here
 // class PositionsLoading extends DashboardState {}
 // class PositionsLoaded extends DashboardState {...}
