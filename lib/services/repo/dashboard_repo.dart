@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:honorfx/models/dashboard/account_details_response.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
 import 'package:honorfx/models/dashboard/dashboard_data_response.dart';
+import 'package:honorfx/models/dashboard/deal_report_response.dart';
 import 'package:honorfx/models/dashboard/group_list_model.dart';
 import 'package:honorfx/models/dashboard/internal_transfer_response.dart';
 import 'package:honorfx/models/dashboard/leverage_list_model.dart';
@@ -70,4 +71,11 @@ abstract class DashboardRepo {
 
   // Get Dashboard Data
   Future<Either<ServerError, DashboardDataResponse>> getDashboardData();
+
+  // Get Deal Report
+  Future<Either<ServerError, DealReportResponse>> getDealReport({
+    required String mt5id,
+    required String from,
+    required String to,
+  });
 }

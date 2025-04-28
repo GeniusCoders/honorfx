@@ -314,8 +314,6 @@ class DashboardCubit extends Cubit<DashboardState> {
                     response.msg ?? 'Withdrawal request processed successfully',
               ),
             );
-            // Refresh accounts list to show updated balances
-            getAccounts();
           } else {
             emit(WithdrawError(message: response.msg ?? 'Withdrawal failed'));
           }
@@ -350,8 +348,6 @@ class DashboardCubit extends Cubit<DashboardState> {
                 message: response.msg ?? 'Transfer successful',
               ),
             );
-            // Refresh accounts list to show updated balances
-            getAccounts();
           } else {
             emit(WalletToMt5Error(message: response.msg ?? 'Transfer failed'));
           }
@@ -386,8 +382,6 @@ class DashboardCubit extends Cubit<DashboardState> {
                 message: response.msg ?? 'Transfer successful',
               ),
             );
-            // Refresh accounts list to show updated balances
-            getAccounts();
           } else {
             emit(Mt5ToWalletError(message: response.msg ?? 'Transfer failed'));
           }
@@ -461,6 +455,47 @@ class DashboardCubit extends Cubit<DashboardState> {
       );
     } catch (e) {
       emit(DashboardDataError(message: e.toString()));
+    }
+  }
+
+  // Get deal report
+  Future<void> getDealReport({
+    required String mt5id,
+    required String from,
+    required String to,
+  }) async {
+    emit(DashboardLoading());
+    try {
+      final result = await _dashboardRepo.getDealReport(
+        mt5id: mt5id,
+        from: from,
+        to: to,
+      );
+
+      result.fold(
+        (error) => emit(
+          DealReportError(
+            message: error.message ?? 'Failed to load deal report',
+          ),
+        ),
+        (response) {
+          if (response.status == 200) {
+            if (response.data != null && response.data!.isNotEmpty) {
+              emit(DealReportLoaded(deals: response.data!));
+            } else {
+              emit(DealReportLoaded(deals: []));
+            }
+          } else {
+            emit(
+              DealReportError(
+                message: response.message ?? 'Failed to load deal report',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(DealReportError(message: e.toString()));
     }
   }
 }

@@ -1,12 +1,9 @@
 import 'package:honorfx/models/dashboard/account_details_response.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
 import 'package:honorfx/models/dashboard/dashboard_data_response.dart';
+import 'package:honorfx/models/dashboard/deal_report_response.dart';
 import 'package:honorfx/models/dashboard/group_list_model.dart';
 import 'package:honorfx/models/dashboard/leverage_list_model.dart';
-import 'package:honorfx/models/dashboard/open_account_response.dart';
-import 'package:honorfx/models/dashboard/open_positions_model.dart';
-import 'package:honorfx/models/dashboard/reports_model/deposit_report_model.dart';
-import 'package:honorfx/models/dashboard/reports_model/withdraw_report_model.dart';
 import 'package:honorfx/models/dashboard/wallet_history_response.dart';
 import 'package:honorfx/models/login_model.dart';
 
@@ -173,6 +170,19 @@ class DashboardDataError extends DashboardState {
   final String message;
 
   DashboardDataError({required this.message});
+}
+
+// Deal Report states
+class DealReportLoaded extends DashboardState {
+  final List<DealReportData> deals;
+
+  DealReportLoaded({required this.deals});
+}
+
+class DealReportError extends DashboardState {
+  final String message;
+
+  DealReportError({required this.message});
 }
 
 // You can add more dashboard-related states here

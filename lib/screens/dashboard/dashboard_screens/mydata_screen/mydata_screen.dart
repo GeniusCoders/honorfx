@@ -8,6 +8,7 @@ import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/ta
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/deposit_transactions.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/home_screen/home_widgets/withdraw_transactions.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/mydata_screen/deal_report.dart';
 import 'package:honorfx/utils/colors.dart';
 
 class MyDataScreen extends StatefulWidget {
@@ -76,12 +77,7 @@ class _MyDataScreenState extends State<MyDataScreen>
                 // History Tab
                 _buildHistoryTab(),
                 // Deal Report Tab
-                Center(
-                  child: Text(
-                    'Deal Report Content',
-                    style: TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
-                  ),
-                ),
+                const DealReport(),
                 // Insights Tab
                 _buildInsightsTab(),
               ],

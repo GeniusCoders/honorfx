@@ -27,6 +27,7 @@ import 'package:honorfx/models/dashboard/withdraw_response.dart';
 import 'package:honorfx/models/dashboard/wallet_transfer_response.dart';
 import 'package:honorfx/models/dashboard/wallet_history_response.dart';
 import 'package:honorfx/models/dashboard/dashboard_data_response.dart';
+import 'package:honorfx/models/dashboard/deal_report_response.dart';
 
 @Injectable(as: DashboardRepo)
 class DashboardApi extends DashboardRepo {
@@ -440,6 +441,33 @@ class DashboardApi extends DashboardRepo {
       return left(ServerError.withError(error: e));
     } catch (e) {
       log("General error in getDashboardData: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, DealReportResponse>> getDealReport({
+    required String mt5id,
+    required String from,
+    required String to,
+  }) async {
+    try {
+      _setupToken();
+      const url = "/dealreport";
+
+      final Map<String, dynamic> data = {
+        'mt5id': mt5id,
+        'from': from,
+        'to': to,
+      };
+
+      final response = await dio.post(url, data: data);
+      return right(DealReportResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in getDealReport: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in getDealReport: $e");
       return left(ServerError(message: e.toString()));
     }
   }
