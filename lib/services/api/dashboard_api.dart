@@ -24,6 +24,7 @@ import 'package:honorfx/models/dashboard/leverage_list_model.dart';
 import 'package:honorfx/models/dashboard/open_account_response.dart';
 import 'package:honorfx/models/dashboard/internal_transfer_response.dart';
 import 'package:honorfx/models/dashboard/withdraw_response.dart';
+import 'package:honorfx/models/dashboard/wallet_transfer_response.dart';
 
 @Injectable(as: DashboardRepo)
 class DashboardApi extends DashboardRepo {
@@ -351,6 +352,58 @@ class DashboardApi extends DashboardRepo {
     } on DioError catch (e) {
       return left(ServerError.withError(error: e));
     } catch (e) {
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, WalletTransferResponse>> walletToMt5({
+    required String mt5id,
+    required String amount,
+    required String note,
+  }) async {
+    try {
+      _setupToken();
+      const url = "/wallettomt5";
+      final Map<String, dynamic> data = {
+        'mt5id': mt5id,
+        'amount': amount,
+        'note': note,
+      };
+
+      final response = await dio.post(url, data: data);
+      return right(WalletTransferResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in walletToMt5: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in walletToMt5: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, WalletTransferResponse>> mt5ToWallet({
+    required String mt5id,
+    required String amount,
+    required String note,
+  }) async {
+    try {
+      _setupToken();
+      const url = "/mt5towallet";
+      final Map<String, dynamic> data = {
+        'mt5id': mt5id,
+        'amount': amount,
+        'note': note,
+      };
+
+      final response = await dio.post(url, data: data);
+      return right(WalletTransferResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in mt5ToWallet: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in mt5ToWallet: $e");
       return left(ServerError(message: e.toString()));
     }
   }

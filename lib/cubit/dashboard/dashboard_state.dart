@@ -121,6 +121,32 @@ class WithdrawError extends DashboardState {
   WithdrawError({required this.message});
 }
 
+// Wallet to MT5 states
+class WalletToMt5Success extends DashboardState {
+  final String message;
+
+  WalletToMt5Success({required this.message});
+}
+
+class WalletToMt5Error extends DashboardState {
+  final String message;
+
+  WalletToMt5Error({required this.message});
+}
+
+// MT5 to Wallet states
+class Mt5ToWalletSuccess extends DashboardState {
+  final String message;
+
+  Mt5ToWalletSuccess({required this.message});
+}
+
+class Mt5ToWalletError extends DashboardState {
+  final String message;
+
+  Mt5ToWalletError({required this.message});
+}
+
 // You can add more dashboard-related states here
 // class PositionsLoading extends DashboardState {}
 // class PositionsLoaded extends DashboardState {...}

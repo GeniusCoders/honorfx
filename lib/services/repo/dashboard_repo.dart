@@ -8,6 +8,7 @@ import 'package:honorfx/models/dashboard/open_account_response.dart';
 import 'package:honorfx/models/dashboard/open_positions_model.dart';
 import 'package:honorfx/models/dashboard/reports_model/deposit_report_model.dart';
 import 'package:honorfx/models/dashboard/reports_model/withdraw_report_model.dart';
+import 'package:honorfx/models/dashboard/wallet_transfer_response.dart';
 import 'package:honorfx/models/dashboard/withdraw_response.dart';
 import 'package:honorfx/models/login_model.dart';
 import 'package:honorfx/services/core/server_error.dart';
@@ -46,5 +47,19 @@ abstract class DashboardRepo {
     required String amount,
     required String note,
     required String paymentMethod,
+  });
+
+  // Wallet to MT5 transfer
+  Future<Either<ServerError, WalletTransferResponse>> walletToMt5({
+    required String mt5id,
+    required String amount,
+    required String note,
+  });
+
+  // MT5 to Wallet transfer
+  Future<Either<ServerError, WalletTransferResponse>> mt5ToWallet({
+    required String mt5id,
+    required String amount,
+    required String note,
   });
 }

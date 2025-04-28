@@ -325,4 +325,76 @@ class DashboardCubit extends Cubit<DashboardState> {
       emit(WithdrawError(message: e.toString()));
     }
   }
+
+  // Wallet to MT5 transfer
+  Future<void> walletToMt5({
+    required String mt5id,
+    required String amount,
+    required String note,
+  }) async {
+    emit(DashboardLoading());
+    try {
+      final result = await _dashboardRepo.walletToMt5(
+        mt5id: mt5id,
+        amount: amount,
+        note: note,
+      );
+
+      result.fold(
+        (error) =>
+            emit(WalletToMt5Error(message: error.message ?? 'Transfer failed')),
+        (response) {
+          if (response.status == 200) {
+            emit(
+              WalletToMt5Success(
+                message: response.msg ?? 'Transfer successful',
+              ),
+            );
+            // Refresh accounts list to show updated balances
+            getAccounts();
+          } else {
+            emit(WalletToMt5Error(message: response.msg ?? 'Transfer failed'));
+          }
+        },
+      );
+    } catch (e) {
+      emit(WalletToMt5Error(message: e.toString()));
+    }
+  }
+
+  // MT5 to Wallet transfer
+  Future<void> mt5ToWallet({
+    required String mt5id,
+    required String amount,
+    required String note,
+  }) async {
+    emit(DashboardLoading());
+    try {
+      final result = await _dashboardRepo.mt5ToWallet(
+        mt5id: mt5id,
+        amount: amount,
+        note: note,
+      );
+
+      result.fold(
+        (error) =>
+            emit(Mt5ToWalletError(message: error.message ?? 'Transfer failed')),
+        (response) {
+          if (response.status == 200) {
+            emit(
+              Mt5ToWalletSuccess(
+                message: response.msg ?? 'Transfer successful',
+              ),
+            );
+            // Refresh accounts list to show updated balances
+            getAccounts();
+          } else {
+            emit(Mt5ToWalletError(message: response.msg ?? 'Transfer failed'));
+          }
+        },
+      );
+    } catch (e) {
+      emit(Mt5ToWalletError(message: e.toString()));
+    }
+  }
 }

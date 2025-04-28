@@ -4,10 +4,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/tab_title.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/mywallet_screen/mt5_to_wallet.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/mywallet_screen/wallet_to_mt5.dart';
 import 'package:honorfx/utils/colors.dart';
 import 'package:honorfx/widgets/textfields/comman_texfield.dart';
-import 'package:honorfx/utils/common_dropdown.dart';
-import 'package:honorfx/utils/submit_button.dart';
 
 class MyWalletScreen extends StatefulWidget {
   const MyWalletScreen({super.key});
@@ -25,7 +25,7 @@ class _MyWalletScreenState extends State<MyWalletScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -86,6 +86,8 @@ class _MyWalletScreenState extends State<MyWalletScreen>
             child: TabBar(
               controller: _tabController,
               labelColor: Colors.black,
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
               unselectedLabelColor: Colors.grey,
               indicatorColor: AppColors.primary,
               labelStyle: TextStyle(
@@ -95,7 +97,11 @@ class _MyWalletScreenState extends State<MyWalletScreen>
               indicatorWeight: 3.w,
               dividerColor: AppColors.grey,
               indicatorSize: TabBarIndicatorSize.tab,
-              tabs: const [Tab(text: 'Wallet Transfer'), Tab(text: 'History')],
+              tabs: const [
+                Tab(text: 'Wallet to MT5'),
+                Tab(text: 'MT5 to Wallet'),
+                Tab(text: 'History'),
+              ],
             ),
           ),
           SizedBox(height: 30.h),
@@ -107,7 +113,8 @@ class _MyWalletScreenState extends State<MyWalletScreen>
               controller: _tabController,
               children: [
                 // Wallet Transfer Tab
-                _buildWalletTransferTab(),
+                const WalletToMt5(),
+                const Mt5ToWallet(),
 
                 // History Tab
                 _buildHistoryTab(),
@@ -159,51 +166,6 @@ class _MyWalletScreenState extends State<MyWalletScreen>
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildWalletTransferTab() {
-    return Column(
-      children: [
-        // From wallet dropdown
-        CommonDropdown(
-          hintText: 'Select Wallet',
-          onChanged: (value) {},
-          data: ["Wallet 1", "Wallet 2", "Wallet 3"],
-        ),
-
-        // Transfer direction icon
-        IconButton(
-          onPressed: () {},
-          icon: SvgPicture.asset("assets/icons/arrange-circle.svg"),
-        ),
-
-        // To MT5 account dropdown
-        CommonDropdown(
-          hintText: 'Select MT5 Account',
-          onChanged: (value) {},
-          data: ["MT5 1", "MT5 2", "MT5 3"],
-        ),
-
-        SizedBox(height: 30.h),
-
-        // Amount field
-        _buildInputField(
-          label: 'Amount*',
-          hintText: 'Amount',
-          keyboardType: TextInputType.number,
-        ),
-
-        SizedBox(height: 20.h),
-
-        // Note field
-        _buildInputField(label: 'Note*', hintText: 'Note', maxLines: 3),
-
-        SizedBox(height: 28.h),
-
-        // Submit button
-        SubmitButton(),
-      ],
     );
   }
 
