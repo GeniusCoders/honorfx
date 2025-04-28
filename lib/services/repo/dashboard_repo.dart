@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:honorfx/models/dashboard/account_details_response.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
+import 'package:honorfx/models/dashboard/dashboard_data_response.dart';
 import 'package:honorfx/models/dashboard/group_list_model.dart';
 import 'package:honorfx/models/dashboard/internal_transfer_response.dart';
 import 'package:honorfx/models/dashboard/leverage_list_model.dart';
@@ -8,6 +9,7 @@ import 'package:honorfx/models/dashboard/open_account_response.dart';
 import 'package:honorfx/models/dashboard/open_positions_model.dart';
 import 'package:honorfx/models/dashboard/reports_model/deposit_report_model.dart';
 import 'package:honorfx/models/dashboard/reports_model/withdraw_report_model.dart';
+import 'package:honorfx/models/dashboard/wallet_history_response.dart';
 import 'package:honorfx/models/dashboard/wallet_transfer_response.dart';
 import 'package:honorfx/models/dashboard/withdraw_response.dart';
 import 'package:honorfx/models/login_model.dart';
@@ -62,4 +64,10 @@ abstract class DashboardRepo {
     required String amount,
     required String note,
   });
+
+  // Wallet History
+  Future<Either<ServerError, WalletHistoryResponse>> walletHistory();
+
+  // Get Dashboard Data
+  Future<Either<ServerError, DashboardDataResponse>> getDashboardData();
 }

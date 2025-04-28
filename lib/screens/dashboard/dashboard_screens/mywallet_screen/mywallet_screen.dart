@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
+import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/tab_title.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/mywallet_screen/mt5_to_wallet.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/mywallet_screen/wallet_history.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/mywallet_screen/wallet_to_mt5.dart';
 import 'package:honorfx/utils/colors.dart';
-import 'package:honorfx/widgets/textfields/comman_texfield.dart';
+import 'package:honorfx/widgets/loading/loading_overlay.dart';
 
 class MyWalletScreen extends StatefulWidget {
   const MyWalletScreen({super.key});
@@ -19,110 +23,148 @@ class MyWalletScreen extends StatefulWidget {
 class _MyWalletScreenState extends State<MyWalletScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final ScrollController _horizontalScrollController = ScrollController();
-  static String _dateRange = 'Jan 02,23 - Feb 28,25';
+  String walletBalance = '\$0.00';
+  String equityBalance = '\$0.00';
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    // Fetch dashboard data when the screen loads
+    _loadDashboardData();
+  }
+
+  void _loadDashboardData() {
+    context.read<DashboardCubit>().getDashboardData();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _horizontalScrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const CommanAppbar(),
-          SizedBox(height: 20.h),
-          const UserName(),
-          SizedBox(height: 30.h),
-          const TabTitle(title: 'My Wallet'),
-          SizedBox(height: 20.h),
+    return BlocConsumer<DashboardCubit, DashboardState>(
+      listener: (context, state) {
+        if (state is DashboardDataLoaded) {
+          setState(() {
+            // Update the wallet balance from API
+            walletBalance = '\$${state.dashboardData.walletBalance ?? '0.00'}';
 
-          // Balance Cards
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              // Wallet Balance Card
-              Expanded(
-                child: _buildBalanceCard(
-                  'Wallet Balance',
-                  '\$1200.56',
-                  'assets/icons/wallet.svg',
-                  Colors.deepOrange,
-                ),
-              ),
-              SizedBox(width: 12.w),
-              // Equity Balance Card
-              Expanded(
-                child: _buildBalanceCard(
-                  'Equity Balance',
-                  '\$1000.16',
-                  'assets/icons/green_candle.svg',
-                  Colors.green,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 30.h),
-
-          // Tab Bar
-          Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: const Color(0xFFEEEEEE), width: 2.w),
-              ),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              labelColor: Colors.black,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: AppColors.primary,
-              labelStyle: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-              ),
-              indicatorWeight: 3.w,
-              dividerColor: AppColors.grey,
-              indicatorSize: TabBarIndicatorSize.tab,
-              tabs: const [
-                Tab(text: 'Wallet to MT5'),
-                Tab(text: 'MT5 to Wallet'),
-                Tab(text: 'History'),
-              ],
-            ),
-          ),
-          SizedBox(height: 30.h),
-
-          // Tab Content
-          SizedBox(
-            height: 500.h,
-            child: TabBarView(
-              controller: _tabController,
+            // Equity balance could come from the account details,
+            // but for now we'll just keep the placeholder
+            equityBalance = '\$1000.16';
+          });
+        }
+      },
+      builder: (context, state) {
+        return LoadingOverlay(
+          isLoading: state is DashboardLoading,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(16.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Wallet Transfer Tab
-                const WalletToMt5(),
-                const Mt5ToWallet(),
+                const CommanAppbar(),
+                SizedBox(height: 20.h),
+                const UserName(),
+                SizedBox(height: 30.h),
+                const TabTitle(title: 'My Wallet'),
+                SizedBox(height: 20.h),
 
-                // History Tab
-                _buildHistoryTab(),
+                // Balance Cards
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    // Wallet Balance Card
+                    Expanded(
+                      child: _buildBalanceCard(
+                        'Wallet Balance',
+                        walletBalance,
+                        'assets/icons/wallet.svg',
+                        Colors.deepOrange,
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    // Equity Balance Card
+                    Expanded(
+                      child: _buildBalanceCard(
+                        'Equity Balance',
+                        equityBalance,
+                        'assets/icons/green_candle.svg',
+                        Colors.green,
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Error message
+                if (state is DashboardDataError)
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.h),
+                    child: Text(
+                      state.message,
+                      style: TextStyle(color: Colors.red, fontSize: 12.sp),
+                    ),
+                  ),
+
+                SizedBox(height: 30.h),
+
+                // Tab Bar
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: const Color(0xFFEEEEEE),
+                        width: 2.w,
+                      ),
+                    ),
+                  ),
+                  child: TabBar(
+                    controller: _tabController,
+                    labelColor: Colors.black,
+                    isScrollable: true,
+                    tabAlignment: TabAlignment.start,
+                    unselectedLabelColor: Colors.grey,
+                    indicatorColor: AppColors.primary,
+                    labelStyle: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    indicatorWeight: 3.w,
+                    dividerColor: AppColors.grey,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    tabs: const [
+                      Tab(text: 'Wallet to MT5'),
+                      Tab(text: 'MT5 to Wallet'),
+                      Tab(text: 'History'),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 30.h),
+
+                // Tab Content
+                SizedBox(
+                  height: 500.h,
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      // Wallet Transfer Tab
+                      const WalletToMt5(),
+                      const Mt5ToWallet(),
+
+                      // History Tab
+                      WalletHistory(),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -167,419 +209,5 @@ class _MyWalletScreenState extends State<MyWalletScreen>
         ],
       ),
     );
-  }
-
-  Widget _buildHistoryTab() {
-    // Sample transaction data
-    final List<Map<String, dynamic>> transactions = [
-      {
-        'date': 'Jan 21 2025',
-        'id': '#12345378',
-        'method': 'MT5',
-        'deposit': '74648845',
-        'amount': '\$500.00',
-      },
-      {
-        'date': 'Jan 10 2025',
-        'id': '#2567888',
-        'method': 'Wallet',
-        'deposit': '74648845',
-        'amount': '\$100.00',
-      },
-      {
-        'date': 'Jan 05 2025',
-        'id': '#2536378',
-        'method': 'Wallet',
-        'deposit': '74648845',
-        'amount': '\$100.00',
-      },
-      {
-        'date': 'Jan 01 2025',
-        'id': '#12343678',
-        'method': 'MT5',
-        'deposit': '74648845',
-        'amount': '\$500.00',
-      },
-      {
-        'date': 'Dec 21 2024',
-        'id': '#24345378',
-        'method': 'Wallet',
-        'deposit': '74648845',
-        'amount': '\$500.00',
-      },
-      {
-        'date': 'Nov 25 2024',
-        'id': '#12457378',
-        'method': 'MT5',
-        'deposit': '74648845',
-        'amount': '\$500.00',
-      },
-      {
-        'date': 'Sep 19 2025',
-        'id': '#11255378',
-        'method': 'MT5',
-        'deposit': '74648845',
-        'amount': '\$500.00',
-      },
-    ];
-
-    // Pagination state
-    int currentPage = 1;
-    int totalPages = (transactions.length / 4).ceil();
-    int startIndex = (currentPage - 1) * 4;
-    int endIndex =
-        startIndex + 4 > transactions.length
-            ? transactions.length
-            : startIndex + 4;
-    var displayedTransactions = transactions.sublist(startIndex, endIndex);
-
-    // Define a minimum width for the table to ensure it's scrollable
-    const double tableMinWidth = 600;
-
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(7.r),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(8.w),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEEEEEE),
-                      shape: BoxShape.circle,
-                    ),
-                    child: SvgPicture.asset(
-                      'assets/icons/calendar.svg',
-                      width: 20.w,
-                      height: 20.h,
-                    ),
-                  ),
-                  SizedBox(width: 15.w),
-                  Text(
-                    _dateRange,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(width: 10.w),
-                  SvgPicture.asset(
-                    'assets/icons/arrow-circle-down.svg',
-                    width: 20.w,
-                    height: 20.h,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(width: 15.w),
-            Container(
-              padding: EdgeInsets.all(10.w),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(7.r),
-              ),
-              child: SvgPicture.asset(
-                'assets/icons/upload_one.svg',
-                width: 32.w,
-                height: 32.h,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 30.h),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(15.r),
-            border: Border.all(color: AppColors.grey),
-          ),
-          child: Column(
-            children: [
-              // Single scroll view for both header and content
-              SingleChildScrollView(
-                controller: _horizontalScrollController,
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: Container(
-                  constraints: BoxConstraints(minWidth: tableMinWidth),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Table header
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: const Color(0xFFEEEEEE),
-                              width: 1.w,
-                            ),
-                          ),
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          vertical: 16.h,
-                          horizontal: 12.w,
-                        ),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 100.w,
-                              child: Text(
-                                'Date',
-                                style: TextStyle(
-                                  color: AppColors.lightGrey,
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 120.w,
-                              child: Text(
-                                'ID',
-                                style: TextStyle(
-                                  color: AppColors.lightGrey,
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 100.w,
-                              child: Text(
-                                'Method',
-                                style: TextStyle(
-                                  color: AppColors.lightGrey,
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 100.w,
-                              child: Text(
-                                'To Deposit',
-                                style: TextStyle(
-                                  color: AppColors.lightGrey,
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 100.w,
-                              child: Text(
-                                'Amount',
-                                style: TextStyle(
-                                  color: AppColors.lightGrey,
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                textAlign: TextAlign.right,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // Table rows - only vertical scrolling here
-                      SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        physics: const BouncingScrollPhysics(),
-                        child: Column(
-                          children:
-                              displayedTransactions
-                                  .map(
-                                    (transaction) =>
-                                        _buildTransactionRow(transaction),
-                                  )
-                                  .toList(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Pagination
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 12.w),
-                decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(color: const Color(0xFFEEEEEE), width: 1.w),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Entries count
-                    Text(
-                      'Showing 1 to ${endIndex - startIndex} of ${transactions.length} entries',
-                      style: TextStyle(
-                        color: AppColors.lightGrey,
-                        fontSize: 12.sp,
-                      ),
-                    ),
-
-                    // Pagination controls
-                    Row(
-                      children: [
-                        // Previous page button
-                        Container(
-                          width: 24.w,
-                          height: 24.h,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: AppColors.lightGrey),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.chevron_left,
-                              size: 16.w,
-                              color: AppColors.lightGrey,
-                            ),
-                          ),
-                        ),
-
-                        // Page indicator
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.w),
-                          child: Text(
-                            '1 of 2',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-
-                        // Next page button
-                        Container(
-                          width: 24.w,
-                          height: 24.h,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: AppColors.lightGrey),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.chevron_right,
-                              size: 16.w,
-                              color: AppColors.lightGrey,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTransactionRow(Map<String, dynamic> transaction) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 12.w),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: const Color(0xFFEEEEEE), width: 1.w),
-        ),
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 100.w,
-            child: Text(
-              transaction['date'],
-              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w500),
-            ),
-          ),
-          SizedBox(
-            width: 120.w,
-            child: Text(
-              transaction['id'],
-              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w500),
-            ),
-          ),
-          SizedBox(
-            width: 100.w,
-            child: Text(
-              transaction['method'],
-              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w500),
-            ),
-          ),
-          SizedBox(
-            width: 120.w,
-            child: Text(
-              transaction['deposit'],
-              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w500),
-            ),
-          ),
-          SizedBox(
-            width: 100.w,
-            child: Text(
-              transaction['amount'],
-              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDropdownField({
-    required String label,
-    required String hintText,
-  }) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(7.r),
-              border: Border.all(color: AppColors.grey),
-            ),
-            child: Row(
-              children: [
-                Text(
-                  '$hintText*',
-                  style: TextStyle(
-                    color: AppColors.black,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const Spacer(),
-                const Icon(Icons.keyboard_arrow_down),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInputField({
-    required String label,
-    required String hintText,
-    TextInputType keyboardType = TextInputType.text,
-    int maxLines = 1,
-  }) {
-    return CommanTexfield(hintText: hintText);
   }
 }

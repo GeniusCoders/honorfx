@@ -25,6 +25,8 @@ import 'package:honorfx/models/dashboard/open_account_response.dart';
 import 'package:honorfx/models/dashboard/internal_transfer_response.dart';
 import 'package:honorfx/models/dashboard/withdraw_response.dart';
 import 'package:honorfx/models/dashboard/wallet_transfer_response.dart';
+import 'package:honorfx/models/dashboard/wallet_history_response.dart';
+import 'package:honorfx/models/dashboard/dashboard_data_response.dart';
 
 @Injectable(as: DashboardRepo)
 class DashboardApi extends DashboardRepo {
@@ -404,6 +406,40 @@ class DashboardApi extends DashboardRepo {
       return left(ServerError.withError(error: e));
     } catch (e) {
       log("General error in mt5ToWallet: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, WalletHistoryResponse>> walletHistory() async {
+    try {
+      _setupToken();
+      const url = "/wallethistory";
+
+      final response = await dio.get(url);
+      return right(WalletHistoryResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in walletHistory: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in walletHistory: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, DashboardDataResponse>> getDashboardData() async {
+    try {
+      _setupToken();
+      const url = "/dashboarddata";
+
+      final response = await dio.get(url);
+      return right(DashboardDataResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in getDashboardData: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in getDashboardData: $e");
       return left(ServerError(message: e.toString()));
     }
   }

@@ -397,4 +397,70 @@ class DashboardCubit extends Cubit<DashboardState> {
       emit(Mt5ToWalletError(message: e.toString()));
     }
   }
+
+  // Get wallet history
+  Future<void> getWalletHistory() async {
+    emit(DashboardLoading());
+    try {
+      final result = await _dashboardRepo.walletHistory();
+
+      result.fold(
+        (error) => emit(
+          WalletHistoryError(
+            message: error.message ?? 'Failed to load wallet history',
+          ),
+        ),
+        (response) {
+          if (response.status == 200) {
+            if (response.data != null && response.data!.isNotEmpty) {
+              emit(WalletHistoryLoaded(transactions: response.data!));
+            } else {
+              emit(WalletHistoryLoaded(transactions: []));
+            }
+          } else {
+            emit(
+              WalletHistoryError(
+                message: response.msg ?? 'Failed to load wallet history',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(WalletHistoryError(message: e.toString()));
+    }
+  }
+
+  // Get dashboard data
+  Future<void> getDashboardData() async {
+    emit(DashboardLoading());
+    try {
+      final result = await _dashboardRepo.getDashboardData();
+
+      result.fold(
+        (error) => emit(
+          DashboardDataError(
+            message: error.message ?? 'Failed to load dashboard data',
+          ),
+        ),
+        (response) {
+          if (response.status == 200) {
+            if (response.data != null) {
+              emit(DashboardDataLoaded(dashboardData: response.data!));
+            } else {
+              emit(DashboardDataError(message: 'No dashboard data available'));
+            }
+          } else {
+            emit(
+              DashboardDataError(
+                message: response.msg ?? 'Failed to load dashboard data',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(DashboardDataError(message: e.toString()));
+    }
+  }
 }

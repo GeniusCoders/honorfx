@@ -1,11 +1,13 @@
 import 'package:honorfx/models/dashboard/account_details_response.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
+import 'package:honorfx/models/dashboard/dashboard_data_response.dart';
 import 'package:honorfx/models/dashboard/group_list_model.dart';
 import 'package:honorfx/models/dashboard/leverage_list_model.dart';
 import 'package:honorfx/models/dashboard/open_account_response.dart';
 import 'package:honorfx/models/dashboard/open_positions_model.dart';
 import 'package:honorfx/models/dashboard/reports_model/deposit_report_model.dart';
 import 'package:honorfx/models/dashboard/reports_model/withdraw_report_model.dart';
+import 'package:honorfx/models/dashboard/wallet_history_response.dart';
 import 'package:honorfx/models/login_model.dart';
 
 abstract class DashboardState {}
@@ -145,6 +147,32 @@ class Mt5ToWalletError extends DashboardState {
   final String message;
 
   Mt5ToWalletError({required this.message});
+}
+
+// Wallet History states
+class WalletHistoryLoaded extends DashboardState {
+  final List<WalletHistoryData> transactions;
+
+  WalletHistoryLoaded({required this.transactions});
+}
+
+class WalletHistoryError extends DashboardState {
+  final String message;
+
+  WalletHistoryError({required this.message});
+}
+
+// Dashboard Data states
+class DashboardDataLoaded extends DashboardState {
+  final DashboardData dashboardData;
+
+  DashboardDataLoaded({required this.dashboardData});
+}
+
+class DashboardDataError extends DashboardState {
+  final String message;
+
+  DashboardDataError({required this.message});
 }
 
 // You can add more dashboard-related states here
