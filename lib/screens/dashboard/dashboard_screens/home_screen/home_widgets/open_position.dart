@@ -21,6 +21,12 @@ class _OpenPositionState extends State<OpenPosition>
   bool get wantKeepAlive => true;
 
   @override
+  void initState() {
+    super.initState();
+    context.read<ReportsCubit>().getOpenPositions();
+  }
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
 

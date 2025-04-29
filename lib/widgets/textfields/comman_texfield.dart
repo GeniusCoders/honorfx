@@ -28,7 +28,14 @@ class CommanTexfield extends StatelessWidget {
       keyboardType: keyboardType,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       onChanged: onChanged,
-      validator: validator,
+      validator:
+          validator ??
+          (value) {
+            if (value!.isEmpty) {
+              return '$hintText is required';
+            }
+            return null;
+          },
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14.sp),

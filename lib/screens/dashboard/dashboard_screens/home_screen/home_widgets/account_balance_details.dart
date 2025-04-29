@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
-import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
+import 'package:honorfx/models/dashboard/account_details_response.dart';
 import 'package:honorfx/utils/colors.dart';
 
 class AccountBalanceDetails extends StatelessWidget {
-  const AccountBalanceDetails({super.key});
+  final AccountDetailsData accountDetails;
+  const AccountBalanceDetails({super.key, required this.accountDetails});
 
   // Helper function to format values to 2 decimal places
   String _formatValue(String? value) {
@@ -21,61 +20,33 @@ class AccountBalanceDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DashboardCubit, DashboardState>(
-      builder: (context, state) {
-        if (state is AccountDetailsLoaded) {
-          final details = state.accountDetails;
-          final currency = details.currency ?? '\$';
-
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              AccountBalanceDetailItem(
-                title: "Profit",
-                amount:
-                    "$currency${details.profit?.toStringAsFixed(2) ?? '0.00'}",
-                color: AppColors.primary,
-              ),
-              Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
-              AccountBalanceDetailItem(
-                title: "Equity",
-                amount: "$currency${_formatValue(details.equity)}",
-              ),
-              Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
-              AccountBalanceDetailItem(
-                title: "Credit",
-                amount: "$currency${_formatValue(details.credit)}",
-              ),
-              Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
-              AccountBalanceDetailItem(
-                title: "Leverage",
-                amount: "1:${details.leverage?.toString() ?? '0'}",
-              ),
-            ],
-          );
-        } else if (state is DashboardLoading) {
-          return Center(
-            child: CircularProgressIndicator(color: AppColors.primary),
-          );
-        } else {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              AccountBalanceDetailItem(
-                title: "Profit",
-                amount: "\$0.00",
-                color: AppColors.primary,
-              ),
-              Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
-              AccountBalanceDetailItem(title: "Equity", amount: "\$0.00"),
-              Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
-              AccountBalanceDetailItem(title: "Credit", amount: "\$0.00"),
-              Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
-              AccountBalanceDetailItem(title: "Leverage", amount: "1:0"),
-            ],
-          );
-        }
-      },
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        AccountBalanceDetailItem(
+          title: "Profit",
+          amount:
+              "${accountDetails.currency ?? '\$'}${accountDetails.profit?.toStringAsFixed(2) ?? '0.00'}",
+          color: AppColors.primary,
+        ),
+        Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
+        AccountBalanceDetailItem(
+          title: "Equity",
+          amount:
+              "${accountDetails.currency ?? '\$'}${_formatValue(accountDetails.equity)}",
+        ),
+        Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
+        AccountBalanceDetailItem(
+          title: "Credit",
+          amount:
+              "${accountDetails.currency ?? '\$'}${_formatValue(accountDetails.credit)}",
+        ),
+        Container(height: 42.h, width: 1.w, color: Color(0xFFDFDFDF)),
+        AccountBalanceDetailItem(
+          title: "Leverage",
+          amount: "1:${accountDetails.leverage?.toString() ?? '0'}",
+        ),
+      ],
     );
   }
 }

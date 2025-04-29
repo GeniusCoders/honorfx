@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
-import 'package:honorfx/cubit/reports_cubit/reports_cubit.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/tab_title.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
@@ -31,10 +30,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _loadDashboardData() {
     // Load accounts data
-    Future.wait([
-      context.read<DashboardCubit>().getAccounts(),
-      context.read<ReportsCubit>().getOpenPositions(),
-    ]);
+    context.read<DashboardCubit>().getAccounts();
   }
 
   @override
@@ -50,6 +46,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             dashboardController.tokenResponse.value = state.tokenResponse;
             _loadDashboardData();
           }
+
+          if (state is AccountsLoaded) {
+            dashboardController.accounts.value = state.accounts;
+            dashboardController.selectedAccountIndex.value =
+                state.selectedAccountIndex ?? 0;
+          }
+
+          if (state is AccountDetailsLoaded) {
+            dashboardController.accountBalanceDetails.value =
+                state.accountDetails;
+            dashboardController.selectedAccountIndex.value =
+                state.selectedAccountIndex;
+          }
         },
         builder: (context, state) {
           return SingleChildScrollView(
@@ -62,8 +71,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 const UserName(),
                 SizedBox(height: 30.h),
 
-                if (state is AccountsLoaded ||
-                    state is AccountDetailsLoaded) ...[
+                if (dashboardController.accountBalanceDetails.value != null &&
+                    state is! DashboardLoading) ...[
                   TabTitle(title: 'My Accounts'),
                   SizedBox(height: 20.h),
                   Container(
@@ -72,7 +81,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                     child: Row(
                       children: [
-                        AccountBalance(),
+                        AccountBalance(
+                          dashboardController: dashboardController,
+                        ),
                         Spacer(),
                         OpenAccountButton(),
                       ],
@@ -188,26 +199,30 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               ],
                             ),
                             Text(
-                              state is AccountDetailsLoaded
+                              dashboardController.accountBalanceDetails.value !=
+                                      null
                                   ? () {
                                     try {
                                       double balanceValue = double.parse(
-                                        state.accountDetails.balance ?? "0.00",
+                                        dashboardController
+                                                .accountBalanceDetails
+                                                .value!
+                                                .balance ??
+                                            "0.00",
                                       );
-                                      return "${state.accountDetails.currency ?? '\$'}${balanceValue.toStringAsFixed(2)}";
+                                      return "${dashboardController.accountBalanceDetails.value!.currency ?? '\$'}${balanceValue.toStringAsFixed(2)}";
                                     } catch (e) {
-                                      return "${state.accountDetails.currency ?? '\$'}0.00";
+                                      return "${dashboardController.accountBalanceDetails.value!.currency ?? '\$'}0.00";
                                     }
                                   }()
-                                  : state is AccountsLoaded &&
-                                      state.accounts.isNotEmpty &&
-                                      state.selectedAccountIndex != null
+                                  : dashboardController.accounts.isNotEmpty
                                   ? () {
                                     try {
                                       double balanceValue = double.parse(
-                                        state
-                                                .accounts[state
-                                                    .selectedAccountIndex!]
+                                        dashboardController
+                                                .accounts[dashboardController
+                                                    .selectedAccountIndex
+                                                    .value]
                                                 .balance ??
                                             "0.00",
                                       );
@@ -222,22 +237,32 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 fontSize: 30.sp,
                               ),
                             ),
-                            AccountBalanceDetails(),
+                            AccountBalanceDetails(
+                              accountDetails:
+                                  dashboardController
+                                      .accountBalanceDetails
+                                      .value!,
+                            ),
                           ],
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 20.h),
-                  AccountList(),
+                  AccountList(
+                    accounts: dashboardController.accounts,
+                    selectedIndex:
+                        dashboardController.selectedAccountIndex.value,
+                  ),
                   SizedBox(height: 20.h),
-                ],
-                if (state is DashboardLoading)
+                ] else if (state is DashboardLoading)
                   SizedBox(
                     height: 200.h,
+                    width: double.infinity,
                     child: const Center(child: CircularProgressIndicator()),
-                  )
-                else if (state is AccountsError)
+                  ),
+
+                if (state is AccountsError)
                   SizedBox(
                     height: 200.h,
                     width: double.infinity,

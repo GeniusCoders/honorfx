@@ -13,6 +13,8 @@ class DashboardInitial extends DashboardState {}
 
 class DashboardLoading extends DashboardState {}
 
+class WalletTransferLoading extends DashboardState {}
+
 class DashboardFailed extends DashboardState {
   final String error;
 
@@ -40,12 +42,10 @@ class AccountsError extends DashboardState {
 }
 
 class AccountDetailsLoaded extends DashboardState {
-  final List<AccountListingTypeData> accounts;
   final int selectedAccountIndex;
   final AccountDetailsData accountDetails;
 
   AccountDetailsLoaded({
-    required this.accounts,
     required this.selectedAccountIndex,
     required this.accountDetails,
   });
@@ -183,6 +183,12 @@ class DealReportError extends DashboardState {
   final String message;
 
   DealReportError({required this.message});
+}
+
+class AddDepositSuccess extends DashboardState {
+  final String message;
+
+  AddDepositSuccess({required this.message});
 }
 
 // You can add more dashboard-related states here

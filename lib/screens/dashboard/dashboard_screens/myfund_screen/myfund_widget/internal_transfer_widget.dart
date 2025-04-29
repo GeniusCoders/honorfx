@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
@@ -8,8 +10,8 @@ import 'package:honorfx/utils/common_dropdown.dart';
 import 'package:honorfx/utils/submit_button.dart';
 import 'package:honorfx/widgets/loading/loading_overlay.dart';
 import 'package:honorfx/widgets/snackbar/snackbar.dart';
+import 'package:honorfx/widgets/snackbar/snackbars.dart';
 import 'package:honorfx/widgets/textfields/amount_texfield.dart';
-import 'package:honorfx/widgets/textfields/comman_texfield.dart';
 
 class InternalTransferWidget extends StatefulWidget {
   const InternalTransferWidget({super.key});
@@ -24,6 +26,7 @@ class _InternalTransferWidgetState extends State<InternalTransferWidget> {
   String? _toAccount;
   List<AccountListingTypeData> _accounts = [];
   final _formKey = GlobalKey<FormState>();
+  final dashboardController = Get.find<DashboardController>();
 
   @override
   void initState() {
@@ -34,59 +37,31 @@ class _InternalTransferWidgetState extends State<InternalTransferWidget> {
   @override
   void dispose() {
     _amountController.dispose();
+
     super.dispose();
   }
 
   void _loadAccounts() {
-    final dashboardCubit = context.read<DashboardCubit>();
-    if (dashboardCubit.state is! AccountsLoaded &&
-        dashboardCubit.state is! AccountDetailsLoaded) {
-      dashboardCubit.getAccounts();
-    } else {
-      _setupAccounts(dashboardCubit.state);
-    }
-  }
-
-  void _setupAccounts(DashboardState state) {
-    if (state is AccountsLoaded) {
-      setState(() {
-        _accounts = state.accounts;
-        if (_accounts.isNotEmpty) {
-          _fromAccount = _accounts.first.mtUserid.toString();
-          // Default to second account if available, otherwise use the first
-          _toAccount =
-              _accounts.length > 1
-                  ? _accounts[1].mtUserid.toString()
-                  : _accounts.first.mtUserid.toString();
-        }
-      });
-    } else if (state is AccountDetailsLoaded) {
-      setState(() {
-        _accounts = state.accounts;
-        if (_accounts.isNotEmpty) {
-          _fromAccount = _accounts.first.mtUserid.toString();
-          // Default to second account if available, otherwise use the first
-          _toAccount =
-              _accounts.length > 1
-                  ? _accounts[1].mtUserid.toString()
-                  : _accounts.first.mtUserid.toString();
-        }
-      });
-    }
+    _accounts = dashboardController.accounts;
   }
 
   void _submitTransfer() {
-    if (!_formKey.currentState!.validate()) {
+    if (_fromAccount == null || _toAccount == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBars.errorSnackBar(title: 'Please select a valid account'),
+      );
+      return;
+    }
+    if (_fromAccount == _toAccount) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBars.errorSnackBar(
+          title: 'From and To accounts must be different',
+        ),
+      );
       return;
     }
 
-    if (_fromAccount == _toAccount) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        buildSnackBar(
-          message: 'From and To accounts must be different',
-          isError: true,
-        ),
-      );
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
@@ -105,10 +80,6 @@ class _InternalTransferWidgetState extends State<InternalTransferWidget> {
   Widget build(BuildContext context) {
     return BlocConsumer<DashboardCubit, DashboardState>(
       listener: (context, state) {
-        if (state is AccountsLoaded || state is AccountDetailsLoaded) {
-          _setupAccounts(state);
-        }
-
         if (state is InternalTransferSuccess) {
           _amountController.clear();
           ScaffoldMessenger.of(

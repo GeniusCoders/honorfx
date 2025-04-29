@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
 import 'package:honorfx/models/dashboard/wallet_history_response.dart';
@@ -17,7 +16,7 @@ class WalletHistory extends StatefulWidget {
 }
 
 class _WalletHistoryState extends State<WalletHistory> {
-  static String _dateRange = 'Jan 02,23 - Feb 28,25';
+  static const String _dateRange = 'Jan 02,23 - Feb 28,25';
   final ScrollController _horizontalScrollController = ScrollController();
 
   // Pagination state

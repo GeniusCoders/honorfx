@@ -1,10 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:injectable/injectable.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
-import 'package:honorfx/services/repo/dashboard_repo.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
-import 'package:honorfx/models/dashboard/group_list_model.dart';
-import 'package:honorfx/models/dashboard/leverage_list_model.dart';
+import 'package:honorfx/models/dashboard/reports_model/add_deposit_model.dart';
+import 'package:honorfx/services/repo/dashboard_repo.dart';
+import 'package:injectable/injectable.dart';
 
 @injectable
 class DashboardCubit extends Cubit<DashboardState> {
@@ -61,23 +60,6 @@ class DashboardCubit extends Cubit<DashboardState> {
     required String accountId,
     int? selectedIndex,
   }) async {
-    List<AccountListingTypeData> accounts = [];
-    int selectedAccountIdx = selectedIndex ?? 0;
-
-    // Handle both states
-    if (state is AccountsLoaded) {
-      final currentState = state as AccountsLoaded;
-      accounts = currentState.accounts;
-      selectedAccountIdx =
-          selectedIndex ?? currentState.selectedAccountIndex ?? 0;
-    } else if (state is AccountDetailsLoaded) {
-      final currentState = state as AccountDetailsLoaded;
-      accounts = currentState.accounts;
-      selectedAccountIdx = selectedIndex ?? currentState.selectedAccountIndex;
-    } else {
-      return;
-    }
-
     emit(DashboardLoading());
 
     try {
@@ -94,8 +76,7 @@ class DashboardCubit extends Cubit<DashboardState> {
           if (response.status == 200 && response.data != null) {
             emit(
               AccountDetailsLoaded(
-                accounts: accounts,
-                selectedAccountIndex: selectedAccountIdx,
+                selectedAccountIndex: selectedIndex ?? 0,
                 accountDetails: response.data!,
               ),
             );
@@ -111,40 +92,6 @@ class DashboardCubit extends Cubit<DashboardState> {
     } catch (e) {
       emit(DashboardError(message: e.toString()));
     }
-  }
-
-  void selectAccount(int index) {
-    print("selectAccount");
-    // Handle both AccountsLoaded and AccountDetailsLoaded states
-    List<AccountListingTypeData> accounts = [];
-
-    if (state is AccountsLoaded) {
-      final currentState = state as AccountsLoaded;
-      accounts = currentState.accounts;
-    } else if (state is AccountDetailsLoaded) {
-      final currentState = state as AccountDetailsLoaded;
-      accounts = currentState.accounts;
-    } else {
-      return;
-    }
-
-    if (index >= 0 && index < accounts.length) {
-      final selectedAccount = accounts[index];
-
-      // First update the selection state based on current state type
-      if (state is AccountsLoaded) {
-        emit(AccountsLoaded(accounts: accounts, selectedAccountIndex: index));
-      } else if (state is AccountDetailsLoaded) {
-        // Keep the current account details but update the selected index
-        emit(AccountsLoaded(accounts: accounts, selectedAccountIndex: index));
-      }
-
-      // Call API to get account details
-      getAccountDetails(
-        accountId: selectedAccount.mtUserid.toString(),
-        selectedIndex: index,
-      );
-    } else {}
   }
 
   Future<void> getGroupList() async {
@@ -330,7 +277,7 @@ class DashboardCubit extends Cubit<DashboardState> {
     required String amount,
     required String note,
   }) async {
-    emit(DashboardLoading());
+    emit(WalletTransferLoading());
     try {
       final result = await _dashboardRepo.walletToMt5(
         mt5id: mt5id,
@@ -364,7 +311,7 @@ class DashboardCubit extends Cubit<DashboardState> {
     required String amount,
     required String note,
   }) async {
-    emit(DashboardLoading());
+    emit(WalletTransferLoading());
     try {
       final result = await _dashboardRepo.mt5ToWallet(
         mt5id: mt5id,
@@ -497,5 +444,19 @@ class DashboardCubit extends Cubit<DashboardState> {
     } catch (e) {
       emit(DealReportError(message: e.toString()));
     }
+  }
+
+  Future<void> addDeposit({required AddDepositModel model}) async {
+    emit(DashboardLoading());
+    final _data = await _dashboardRepo.addDeposit(model: model);
+    _data.fold(
+      (l) => emit(DashboardFailed(error: l.message ?? 'Failed to add deposit')),
+      (r) => {
+        if (r.status == 200)
+          {emit(AddDepositSuccess(message: r.msg!))}
+        else
+          {emit(DashboardError(message: r.msg!))},
+      },
+    );
   }
 }

@@ -6,8 +6,10 @@ import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/auth/auth_cubit.dart';
 import 'package:honorfx/injection.dart';
 import 'package:get/get.dart' as getcontroller;
+import 'package:honorfx/models/common/response_details.dart';
 import 'package:honorfx/models/dashboard/account_details_response.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
+import 'package:honorfx/models/dashboard/reports_model/add_deposit_model.dart';
 import 'package:honorfx/models/dashboard/reports_model/deposit_report_model.dart';
 import 'package:honorfx/models/dashboard/reports_model/withdraw_report_model.dart';
 import 'package:honorfx/models/login_model.dart';
@@ -469,6 +471,25 @@ class DashboardApi extends DashboardRepo {
     } catch (e) {
       log("General error in getDealReport: $e");
       return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, ResponseDetails>> addDeposit({
+    required AddDepositModel model,
+  }) async {
+    log(model.toMap().toString());
+    Response response;
+
+    try {
+      const _url = "/deposit";
+      response = await dio.post(
+        _url,
+        data: FormData.fromMap(await model.toMap()),
+      );
+      return right(ResponseDetails.fromJson(response.data));
+    } on DioError catch (e) {
+      return left(ServerError.withError(error: e));
     }
   }
 }

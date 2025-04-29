@@ -3,10 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
+import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
 import 'package:honorfx/utils/colors.dart';
 
 class AccountList extends StatelessWidget {
-  const AccountList({super.key});
+  final List<AccountListingTypeData> accounts;
+  final int selectedIndex;
+  const AccountList({
+    super.key,
+    required this.accounts,
+    required this.selectedIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +29,9 @@ class AccountList extends StatelessWidget {
             SizedBox(height: 10.h),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Row(children: _buildAccountItems(context, state)),
+              child: Row(
+                children: _buildAccountItems(context, state, accounts),
+              ),
             ),
           ],
         );
@@ -30,10 +39,11 @@ class AccountList extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildAccountItems(BuildContext context, DashboardState state) {
-    final accounts = _getAccountsFromState(state);
-    final selectedIndex = _getSelectedIndexFromState(state);
-
+  List<Widget> _buildAccountItems(
+    BuildContext context,
+    DashboardState state,
+    List<AccountListingTypeData> accounts,
+  ) {
     if (accounts.isEmpty) return [];
 
     return accounts.asMap().entries.map((entry) {
@@ -46,29 +56,14 @@ class AccountList extends StatelessWidget {
         isSelected: isSelected,
         onTap: () {
           if (!isSelected) {
-            context.read<DashboardCubit>().selectAccount(index);
+            context.read<DashboardCubit>().getAccountDetails(
+              accountId: account.mtUserid.toString(),
+              selectedIndex: index,
+            );
           }
         },
       );
     }).toList();
-  }
-
-  List _getAccountsFromState(DashboardState state) {
-    if (state is AccountsLoaded) {
-      return state.accounts;
-    } else if (state is AccountDetailsLoaded) {
-      return state.accounts;
-    }
-    return [];
-  }
-
-  int? _getSelectedIndexFromState(DashboardState state) {
-    if (state is AccountsLoaded) {
-      return state.selectedAccountIndex;
-    } else if (state is AccountDetailsLoaded) {
-      return state.selectedAccountIndex;
-    }
-    return 0;
   }
 }
 

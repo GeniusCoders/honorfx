@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
 import 'package:honorfx/utils/common_dropdown.dart';
 import 'package:honorfx/utils/submit_button.dart';
 import 'package:honorfx/widgets/loading/loading_overlay.dart';
+import 'package:honorfx/widgets/snackbar/snackbars.dart';
 import 'package:honorfx/widgets/textfields/amount_texfield.dart';
 import 'package:honorfx/widgets/textfields/comman_texfield.dart';
 
@@ -23,6 +26,7 @@ class _WalletToMt5State extends State<WalletToMt5> {
   String? _selectedMt5Account;
   final _formKey = GlobalKey<FormState>();
   List<AccountListingTypeData> _accounts = [];
+  final dashboardController = Get.find<DashboardController>();
 
   @override
   void initState() {
@@ -38,34 +42,17 @@ class _WalletToMt5State extends State<WalletToMt5> {
   }
 
   void _loadAccounts() {
-    final dashboardCubit = context.read<DashboardCubit>();
-    if (dashboardCubit.state is! AccountsLoaded &&
-        dashboardCubit.state is! AccountDetailsLoaded) {
-      dashboardCubit.getAccounts();
-    } else {
-      _setupAccounts(dashboardCubit.state);
-    }
-  }
-
-  void _setupAccounts(DashboardState state) {
-    if (state is AccountsLoaded) {
-      setState(() {
-        _accounts = state.accounts;
-        if (_accounts.isNotEmpty) {
-          _selectedMt5Account = _accounts.first.mtUserid.toString();
-        }
-      });
-    } else if (state is AccountDetailsLoaded) {
-      setState(() {
-        _accounts = state.accounts;
-        if (_accounts.isNotEmpty) {
-          _selectedMt5Account = _accounts.first.mtUserid.toString();
-        }
-      });
-    }
+    _accounts = dashboardController.accounts;
   }
 
   void _submitTransfer() {
+    if (_selectedMt5Account == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBars.errorSnackBar(title: 'Please select a valid account'),
+      );
+      return;
+    }
+
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -83,9 +70,7 @@ class _WalletToMt5State extends State<WalletToMt5> {
   Widget build(BuildContext context) {
     return BlocConsumer<DashboardCubit, DashboardState>(
       listener: (context, state) {
-        if (state is AccountsLoaded || state is AccountDetailsLoaded) {
-          _setupAccounts(state);
-        } else if (state is WalletToMt5Success) {
+        if (state is WalletToMt5Success) {
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -105,7 +90,7 @@ class _WalletToMt5State extends State<WalletToMt5> {
       },
       builder: (context, state) {
         return LoadingOverlay(
-          isLoading: state is DashboardLoading,
+          isLoading: state is WalletTransferLoading,
           child: Form(
             key: _formKey,
             child: Column(
@@ -161,10 +146,7 @@ class _WalletToMt5State extends State<WalletToMt5> {
                 SizedBox(height: 28.h),
 
                 // Submit button
-                SubmitButton(
-                  onPressed:
-                      _selectedMt5Account != null ? _submitTransfer : null,
-                ),
+                SubmitButton(onPressed: _submitTransfer),
               ],
             ),
           ),

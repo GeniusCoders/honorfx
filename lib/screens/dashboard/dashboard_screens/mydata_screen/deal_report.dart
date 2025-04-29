@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
@@ -21,7 +23,7 @@ class _DealReportState extends State<DealReport> {
   String? _selectedMt5Account;
   List<AccountListingTypeData> _accounts = [];
   List<DealReportData> _deals = [];
-
+  final dashboardController = Get.find<DashboardController>();
   // Pagination state
   int currentPage = 1;
   int itemsPerPage = 6;
@@ -37,32 +39,10 @@ class _DealReportState extends State<DealReport> {
   }
 
   void _loadAccounts() {
-    final dashboardCubit = context.read<DashboardCubit>();
-    if (dashboardCubit.state is! AccountsLoaded &&
-        dashboardCubit.state is! AccountDetailsLoaded) {
-      dashboardCubit.getAccounts();
-    } else {
-      _setupAccounts(dashboardCubit.state);
-    }
-  }
-
-  void _setupAccounts(DashboardState state) {
-    if (state is AccountsLoaded) {
-      setState(() {
-        _accounts = state.accounts;
-        if (_accounts.isNotEmpty) {
-          _selectedMt5Account = _accounts.first.mtUserid.toString();
-          _fetchDealReport();
-        }
-      });
-    } else if (state is AccountDetailsLoaded) {
-      setState(() {
-        _accounts = state.accounts;
-        if (_accounts.isNotEmpty) {
-          _selectedMt5Account = _accounts.first.mtUserid.toString();
-          _fetchDealReport();
-        }
-      });
+    _accounts = dashboardController.accounts;
+    if (_accounts.isNotEmpty) {
+      _selectedMt5Account = _accounts.first.mtUserid.toString();
+      _fetchDealReport();
     }
   }
 
@@ -109,9 +89,7 @@ class _DealReportState extends State<DealReport> {
   Widget build(BuildContext context) {
     return BlocConsumer<DashboardCubit, DashboardState>(
       listener: (context, state) {
-        if (state is AccountsLoaded || state is AccountDetailsLoaded) {
-          _setupAccounts(state);
-        } else if (state is DealReportLoaded) {
+        if (state is DealReportLoaded) {
           setState(() {
             _deals = state.deals;
             currentPage = 1; // Reset to first page when new data is loaded
@@ -233,6 +211,7 @@ class _DealReportState extends State<DealReport> {
                           ListView.builder(
                             shrinkWrap: true,
                             itemCount: displayedDeals.length,
+                            physics: NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) {
                               final deal = displayedDeals[index];
                               return Padding(
