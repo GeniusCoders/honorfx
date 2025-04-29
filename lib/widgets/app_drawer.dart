@@ -15,6 +15,8 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dashboardController = Get.find<DashboardController>();
+
     return Drawer(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -82,14 +84,17 @@ class AppDrawer extends StatelessWidget {
 
               // Menu Items
               Column(
-                // padding: EdgeInsets.zero,
                 children: [
                   _buildMenuItem(
                     context,
                     icon: 'assets/images/dashboard-v2.png',
                     title: 'Dashboard',
-                    isSelected: true,
+                    isSelected: dashboardController.selectedIndex == 0,
                     isPng: true,
+                    onTap: () {
+                      dashboardController.updateSelectedIndex(0);
+                      Navigator.pop(context);
+                    },
                   ),
                   _buildMenuItem(
                     context,
@@ -100,6 +105,11 @@ class AppDrawer extends StatelessWidget {
                     context,
                     icon: 'assets/icons/my_fund.svg',
                     title: 'My Fund',
+                    isSelected: dashboardController.selectedIndex == 1,
+                    onTap: () {
+                      dashboardController.updateSelectedIndex(1);
+                      Navigator.pop(context);
+                    },
                   ),
                   _buildMenuItem(
                     context,
@@ -111,12 +121,22 @@ class AppDrawer extends StatelessWidget {
                     context,
                     icon: 'assets/icons/my_data.svg',
                     title: 'My Data',
+                    isSelected: dashboardController.selectedIndex == 2,
                     hasNotification: true,
+                    onTap: () {
+                      dashboardController.updateSelectedIndex(2);
+                      Navigator.pop(context);
+                    },
                   ),
                   _buildMenuItem(
                     context,
                     icon: 'assets/icons/my_wallet.svg',
                     title: 'My Wallet',
+                    isSelected: dashboardController.selectedIndex == 3,
+                    onTap: () {
+                      dashboardController.updateSelectedIndex(3);
+                      Navigator.pop(context);
+                    },
                   ),
                   _buildMenuItem(
                     context,
@@ -127,6 +147,9 @@ class AppDrawer extends StatelessWidget {
                     context,
                     icon: 'assets/icons/support.svg',
                     title: 'Support',
+                    onTap: () {
+                      getIt<AppRouter>().goToSupport();
+                    },
                   ),
                 ],
               ),
@@ -321,12 +344,13 @@ class AppDrawer extends StatelessWidget {
     bool isSelected = false,
     bool hasNotification = false,
     bool isPng = false,
+    VoidCallback? onTap,
   }) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.r),
-        // color: isSelected ? Colors.black : Colors.transparent,
+        color: isSelected ? AppColors.greyBackground : Colors.transparent,
       ),
       child: ListTile(
         leading: Container(
@@ -343,7 +367,6 @@ class AppDrawer extends StatelessWidget {
                     : SvgPicture.asset(icon, width: 20.w, height: 20.h),
           ),
         ),
-
         title: Text(
           title,
           style: TextStyle(
@@ -363,14 +386,17 @@ class AppDrawer extends StatelessWidget {
                   ),
                   child: Icon(Icons.add, color: Colors.white, size: 16.w),
                 )
+                : isSelected
+                ? Container(
+                  width: 8.w,
+                  height: 8.h,
+                  decoration: BoxDecoration(
+                    color: AppColors.black,
+                    shape: BoxShape.circle,
+                  ),
+                )
                 : null,
-        onTap: () {
-          // Handle navigation
-
-          if (title == 'Support') {
-            getIt<AppRouter>().goToSupport();
-          }
-        },
+        onTap: onTap,
       ),
     );
   }

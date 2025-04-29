@@ -11,6 +11,9 @@ class DashboardController extends GetxController {
   Rx<AccountDetailsData?> accountBalanceDetails = Rx<AccountDetailsData?>(null);
   RxInt selectedAccountIndex = 0.obs;
 
+  // Navigation index
+  RxInt selectedIndex = 0.obs;
+
   // Convenience getter for the user's name
   String get userName {
     if (tokenResponse.value != null) {
@@ -32,5 +35,10 @@ class DashboardController extends GetxController {
 
   void updateAccountDetails(AccountDetailsData details) {
     accountBalanceDetails.value = details;
+  }
+
+  // Method to update navigation index
+  void updateSelectedIndex(int index) {
+    selectedIndex.value = index;
   }
 }
