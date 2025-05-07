@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:honorfx/models/ib_program/client_transaction_response.dart';
 import 'package:honorfx/models/ib_program/ib_dashboard_response.dart';
 import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
+import 'package:honorfx/models/ib_program/ib_withdraw_list_response.dart';
 import 'package:honorfx/models/ib_program/top_earning_response.dart';
 import 'package:honorfx/models/login_model.dart';
 import 'package:honorfx/services/core/server_error.dart';
@@ -120,6 +121,25 @@ class IbDashboardApi extends IbDashboardRepo {
       return left(ServerError.withError(error: e));
     } catch (e) {
       log("General error in getTopEarning: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, IbWithdrawListResponse>>
+  getIbWithdrawList() async {
+    try {
+      _setupToken();
+      const url = "/ibwithdrawlist";
+      log("Making API call to IB Withdraw List: $url");
+
+      final response = await dio.get(url);
+      return right(IbWithdrawListResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in getIbWithdrawList: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in getIbWithdrawList: $e");
       return left(ServerError(message: e.toString()));
     }
   }

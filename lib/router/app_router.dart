@@ -4,6 +4,7 @@ import 'package:honorfx/screens/dashboard/dashboard.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/open_account/open_account_screen.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/support_screen/support_screen.dart';
 import 'package:honorfx/screens/ib_dashboard/ib_dashboard_screen.dart';
+import 'package:honorfx/screens/ib_dashboard/team_withdraw_report_screen.dart';
 import 'package:honorfx/screens/login/login_screen.dart';
 import 'package:honorfx/screens/signup/signup_screen.dart';
 import 'package:honorfx/screens/splash/splash_screen.dart';
@@ -63,6 +64,11 @@ class AppRouter {
                   name: 'ib-dashboard',
                   builder: (context, state) => const IbDashboardScreen(),
                 ),
+                GoRoute(
+                  path: 'team-withdraw-report',
+                  name: 'team-withdraw-report',
+                  builder: (context, state) => const TeamWithdrawReportScreen(),
+                ),
               ],
             ),
           ],
@@ -102,5 +108,10 @@ class AppRouter {
   // Navigate to IB Dashboard screen
   void goToIbDashboard() {
     router.pushNamed('ib-dashboard');
+  }
+
+  // Navigate to Team Withdraw Report screen
+  void goToTeamWithdrawReport() {
+    router.pushNamed('team-withdraw-report');
   }
 }

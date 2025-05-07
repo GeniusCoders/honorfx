@@ -1,6 +1,7 @@
 import 'package:honorfx/models/ib_program/client_transaction_response.dart';
 import 'package:honorfx/models/ib_program/ib_dashboard_response.dart';
 import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
+import 'package:honorfx/models/ib_program/ib_withdraw_list_response.dart';
 import 'package:honorfx/models/ib_program/top_earning_response.dart';
 
 abstract class IbDashboardState {}
@@ -61,6 +62,20 @@ class TopEarningError extends IbDashboardState {
   final String message;
 
   TopEarningError({required this.message});
+}
+
+class IbWithdrawListLoading extends IbDashboardState {}
+
+class IbWithdrawListLoaded extends IbDashboardState {
+  final List<IbWithdrawItem> data;
+
+  IbWithdrawListLoaded({required this.data});
+}
+
+class IbWithdrawListError extends IbDashboardState {
+  final String message;
+
+  IbWithdrawListError({required this.message});
 }
 
 class IbDashboardAndMonthlyCommissionLoaded extends IbDashboardState {

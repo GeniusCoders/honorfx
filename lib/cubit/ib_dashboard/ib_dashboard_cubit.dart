@@ -3,6 +3,7 @@ import 'package:honorfx/cubit/ib_dashboard/ib_dashboard_state.dart';
 import 'package:honorfx/models/ib_program/client_transaction_response.dart';
 import 'package:honorfx/models/ib_program/ib_dashboard_response.dart';
 import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
+import 'package:honorfx/models/ib_program/ib_withdraw_list_response.dart';
 import 'package:honorfx/models/ib_program/top_earning_response.dart';
 import 'package:honorfx/services/repo/ib_dashboard_repo.dart';
 import 'package:injectable/injectable.dart';
@@ -14,6 +15,7 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
   IbMonthlyCommissionData? _monthlyCommissionData;
   ClientTransactionData? _clientTransactionData;
   List<TopEarningData>? _topEarningData;
+  List<IbWithdrawItem>? _withdrawListData;
 
   IbDashboardCubit({required IbDashboardRepo ibDashboardRepo})
     : _ibDashboardRepo = ibDashboardRepo,
@@ -142,7 +144,44 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
     }
   }
 
-  // Helper method to emit state based on what data we have already loaded
+  Future<void> getIbWithdrawList() async {
+    emit(IbWithdrawListLoading());
+    try {
+      final result = await _ibDashboardRepo.getIbWithdrawList();
+      result.fold(
+        (error) => emit(
+          IbWithdrawListError(
+            message: error.message ?? 'Failed to load withdraw list data',
+          ),
+        ),
+        (response) {
+          if (response.status == 200 && response.data != null) {
+            _withdrawListData = response.data;
+            emit(IbWithdrawListLoaded(data: response.data!));
+          } else {
+            emit(
+              IbWithdrawListError(
+                message: response.msg ?? 'Failed to load withdraw list data',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(IbWithdrawListError(message: e.toString()));
+    }
+  }
+
+  Future<void> loadAllIbData() async {
+    emit(IbDashboardLoading());
+    await Future.wait([
+      getIbDashboardData(),
+      getIbMonthlyCommission(),
+      getMyClientTransaction(),
+      getTopEarning(),
+    ]);
+  }
+
   void _emitCombinedState() {
     if (_dashboardData != null &&
         _monthlyCommissionData != null &&
@@ -170,14 +209,8 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
       emit(ClientTransactionLoaded(data: _clientTransactionData!));
     } else if (_topEarningData != null) {
       emit(TopEarningLoaded(data: _topEarningData!));
+    } else if (_withdrawListData != null) {
+      emit(IbWithdrawListLoaded(data: _withdrawListData!));
     }
-  }
-
-  Future<void> loadAllIbData() async {
-    emit(IbDashboardLoading());
-    await getIbDashboardData();
-    await getIbMonthlyCommission();
-    await getMyClientTransaction();
-    await getTopEarning();
   }
 }

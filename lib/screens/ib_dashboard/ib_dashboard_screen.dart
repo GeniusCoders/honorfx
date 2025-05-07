@@ -3,9 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:honorfx/cubit/ib_dashboard/ib_dashboard_cubit.dart';
 import 'package:honorfx/cubit/ib_dashboard/ib_dashboard_state.dart';
 import 'package:honorfx/injection.dart';
-import 'package:honorfx/models/ib_program/client_transaction_response.dart';
-import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
-import 'package:honorfx/models/ib_program/top_earning_response.dart';
 import 'package:honorfx/screens/ib_dashboard/widgets/client_transaction_chart.dart';
 import 'package:honorfx/screens/ib_dashboard/widgets/monthly_commission_chart.dart';
 import 'package:honorfx/screens/ib_dashboard/widgets/top_earnings_table.dart';
@@ -71,7 +68,7 @@ class _IbDashboardScreenState extends State<IbDashboardScreen> {
     } else if (state is TopEarningError) {
       return state.message;
     }
-    return 'Failed to load data';
+    return 'An error occurred';
   }
 
   Widget _buildCompleteData(IbDashboardCompleteDataLoaded state) {
@@ -85,6 +82,8 @@ class _IbDashboardScreenState extends State<IbDashboardScreen> {
         child: Column(
           children: [
             MonthlyCommissionChart(data: state.monthlyCommissionData),
+            const SizedBox(height: 16),
+            ClientTransactionChart(data: state.clientTransactionData),
             const SizedBox(height: 16),
             _buildInfoCard(
               '\$${state.dashboardData.withdrawCommission}',
@@ -121,11 +120,10 @@ class _IbDashboardScreenState extends State<IbDashboardScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            ClientTransactionChart(data: state.clientTransactionData),
-            const SizedBox(height: 16),
             if (state.topEarningData != null &&
                 state.topEarningData!.isNotEmpty)
               TopEarningsTable(data: state.topEarningData!),
+            const SizedBox(height: 80), // Extra space for FAB
           ],
         ),
       ),
