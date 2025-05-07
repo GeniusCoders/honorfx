@@ -16,16 +16,19 @@ import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
 import 'cubit/auth/auth_cubit.dart' as _i766;
 import 'cubit/dashboard/dashboard_cubit.dart' as _i152;
+import 'cubit/ib_dashboard/ib_dashboard_cubit.dart' as _i597;
 import 'cubit/login_cubit/login_cubit.dart' as _i536;
 import 'cubit/reports_cubit/reports_cubit.dart' as _i332;
 import 'cubit/signup/signup_cubit.dart' as _i775;
 import 'router/app_router.dart' as _i722;
 import 'services/api/dashboard_api.dart' as _i90;
+import 'services/api/ib_dashboard_api.dart' as _i270;
 import 'services/api/login_api.dart' as _i483;
 import 'services/api/signup_api.dart' as _i887;
 import 'services/auth_service.dart' as _i706;
 import 'services/core/register_module.dart' as _i758;
 import 'services/repo/dashboard_repo.dart' as _i942;
+import 'services/repo/ib_dashboard_repo.dart' as _i181;
 import 'services/repo/login_repo.dart' as _i322;
 import 'services/repo/signup_repo.dart' as _i666;
 import 'utils/constant/strings.dart' as _i929;
@@ -68,6 +71,12 @@ Future<_i174.GetIt> $initGetIt(
         dio: gh<_i361.Dio>(),
         sharedPreferences: gh<_i460.SharedPreferences>(),
       ));
+  gh.factory<_i181.IbDashboardRepo>(() => _i270.IbDashboardApi(
+        dio: gh<_i361.Dio>(),
+        sharedPreferences: gh<_i460.SharedPreferences>(),
+      ));
+  gh.factory<_i597.IbDashboardCubit>(() =>
+      _i597.IbDashboardCubit(ibDashboardRepo: gh<_i181.IbDashboardRepo>()));
   gh.factory<_i152.DashboardCubit>(
       () => _i152.DashboardCubit(dashboardRepo: gh<_i942.DashboardRepo>()));
   gh.factory<_i332.ReportsCubit>(

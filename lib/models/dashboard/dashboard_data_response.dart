@@ -16,9 +16,9 @@ class DashboardDataResponse {
 
 class DashboardData {
   final String? walletBalance;
-  final int? totalMt5Account;
-  final int? totalDeposit;
-  final int? totalWithdraw;
+  final double? totalMt5Account;
+  final double? totalDeposit;
+  final double? totalWithdraw;
 
   DashboardData({
     this.walletBalance,
@@ -30,9 +30,9 @@ class DashboardData {
   factory DashboardData.fromJson(Map<String, dynamic> json) {
     return DashboardData(
       walletBalance: json['wallet_balance'],
-      totalMt5Account: json['totalmt5account'],
-      totalDeposit: json['totaldeposit'],
-      totalWithdraw: json['totalwithdraw'],
+      totalMt5Account: json['totalmt5account'].toDouble(),
+      totalDeposit: json['totaldeposit'].toDouble(),
+      totalWithdraw: json['totalwithdraw'].toDouble(),
     );
   }
 }
