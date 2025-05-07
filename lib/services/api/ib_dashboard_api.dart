@@ -8,6 +8,7 @@ import 'package:honorfx/models/ib_program/client_transaction_response.dart';
 import 'package:honorfx/models/ib_program/ib_dashboard_response.dart';
 import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
 import 'package:honorfx/models/ib_program/ib_withdraw_list_response.dart';
+import 'package:honorfx/models/ib_program/my_clients_response.dart';
 import 'package:honorfx/models/ib_program/top_earning_response.dart';
 import 'package:honorfx/models/login_model.dart';
 import 'package:honorfx/services/core/server_error.dart';
@@ -140,6 +141,60 @@ class IbDashboardApi extends IbDashboardRepo {
       return left(ServerError.withError(error: e));
     } catch (e) {
       log("General error in getIbWithdrawList: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, MyClientsResponse>> getMyClientsLevel1() async {
+    return _getMyClients("/myclientslevel1");
+  }
+
+  @override
+  Future<Either<ServerError, MyClientsResponse>> getMyClientsLevel2() async {
+    return _getMyClients("/myclientslevel2");
+  }
+
+  @override
+  Future<Either<ServerError, MyClientsResponse>> getMyClientsLevel3() async {
+    return _getMyClients("/myclientslevel3");
+  }
+
+  @override
+  Future<Either<ServerError, MyClientsResponse>> getMyClientsLevel4() async {
+    return _getMyClients("/myclientslevel4");
+  }
+
+  @override
+  Future<Either<ServerError, MyClientsResponse>> getMyClientsLevel5() async {
+    return _getMyClients("/myclientslevel5");
+  }
+
+  @override
+  Future<Either<ServerError, MyClientsResponse>> getMyClientsLevel6() async {
+    return _getMyClients("/myclientslevel6");
+  }
+
+  @override
+  Future<Either<ServerError, MyClientsResponse>> getMyClientsLevel7() async {
+    return _getMyClients("/myclientslevel7");
+  }
+
+  // Helper method to reduce code duplication
+  Future<Either<ServerError, MyClientsResponse>> _getMyClients(
+    String endpoint,
+  ) async {
+    try {
+      _setupToken();
+      log("Making API call to: $endpoint");
+
+      final response = await dio.get(endpoint);
+      return right(MyClientsResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in $endpoint: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in $endpoint: $e");
       return left(ServerError(message: e.toString()));
     }
   }

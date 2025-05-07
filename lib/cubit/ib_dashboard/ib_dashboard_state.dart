@@ -2,6 +2,7 @@ import 'package:honorfx/models/ib_program/client_transaction_response.dart';
 import 'package:honorfx/models/ib_program/ib_dashboard_response.dart';
 import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
 import 'package:honorfx/models/ib_program/ib_withdraw_list_response.dart';
+import 'package:honorfx/models/ib_program/my_clients_response.dart';
 import 'package:honorfx/models/ib_program/top_earning_response.dart';
 
 abstract class IbDashboardState {}
@@ -76,6 +77,57 @@ class IbWithdrawListError extends IbDashboardState {
   final String message;
 
   IbWithdrawListError({required this.message});
+}
+
+// My Clients States
+class MyClientsLoading extends IbDashboardState {}
+
+class MyClientsLevel1Loaded extends IbDashboardState {
+  final List<ClientData> data;
+
+  MyClientsLevel1Loaded({required this.data});
+}
+
+class MyClientsLevel2Loaded extends IbDashboardState {
+  final List<ClientData> data;
+
+  MyClientsLevel2Loaded({required this.data});
+}
+
+class MyClientsLevel3Loaded extends IbDashboardState {
+  final List<ClientData> data;
+
+  MyClientsLevel3Loaded({required this.data});
+}
+
+class MyClientsLevel4Loaded extends IbDashboardState {
+  final List<ClientData> data;
+
+  MyClientsLevel4Loaded({required this.data});
+}
+
+class MyClientsLevel5Loaded extends IbDashboardState {
+  final List<ClientData> data;
+
+  MyClientsLevel5Loaded({required this.data});
+}
+
+class MyClientsLevel6Loaded extends IbDashboardState {
+  final List<ClientData> data;
+
+  MyClientsLevel6Loaded({required this.data});
+}
+
+class MyClientsLevel7Loaded extends IbDashboardState {
+  final List<ClientData> data;
+
+  MyClientsLevel7Loaded({required this.data});
+}
+
+class MyClientsError extends IbDashboardState {
+  final String message;
+
+  MyClientsError({required this.message});
 }
 
 class IbDashboardAndMonthlyCommissionLoaded extends IbDashboardState {

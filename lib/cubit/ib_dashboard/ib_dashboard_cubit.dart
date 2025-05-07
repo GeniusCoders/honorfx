@@ -4,6 +4,7 @@ import 'package:honorfx/models/ib_program/client_transaction_response.dart';
 import 'package:honorfx/models/ib_program/ib_dashboard_response.dart';
 import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
 import 'package:honorfx/models/ib_program/ib_withdraw_list_response.dart';
+import 'package:honorfx/models/ib_program/my_clients_response.dart';
 import 'package:honorfx/models/ib_program/top_earning_response.dart';
 import 'package:honorfx/services/repo/ib_dashboard_repo.dart';
 import 'package:injectable/injectable.dart';
@@ -16,6 +17,15 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
   ClientTransactionData? _clientTransactionData;
   List<TopEarningData>? _topEarningData;
   List<IbWithdrawItem>? _withdrawListData;
+
+  // Store clients data at each level
+  List<ClientData>? _clientsLevel1;
+  List<ClientData>? _clientsLevel2;
+  List<ClientData>? _clientsLevel3;
+  List<ClientData>? _clientsLevel4;
+  List<ClientData>? _clientsLevel5;
+  List<ClientData>? _clientsLevel6;
+  List<ClientData>? _clientsLevel7;
 
   IbDashboardCubit({required IbDashboardRepo ibDashboardRepo})
     : _ibDashboardRepo = ibDashboardRepo,
@@ -169,6 +179,231 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
       );
     } catch (e) {
       emit(IbWithdrawListError(message: e.toString()));
+    }
+  }
+
+  // Methods for fetching clients at different levels
+  Future<void> getMyClientsLevel1() async {
+    emit(MyClientsLoading());
+    try {
+      final result = await _ibDashboardRepo.getMyClientsLevel1();
+      result.fold(
+        (error) => emit(
+          MyClientsError(
+            message: error.message ?? 'Failed to load level 1 clients data',
+          ),
+        ),
+        (response) {
+          if (response.status == 200 && response.data != null) {
+            _clientsLevel1 = response.data;
+            emit(MyClientsLevel1Loaded(data: response.data!));
+          } else if (response.status == 301 &&
+              response.msg == "No data found.") {
+            _clientsLevel1 = [];
+            emit(MyClientsLevel1Loaded(data: []));
+          } else {
+            emit(
+              MyClientsError(
+                message: response.msg ?? 'Failed to load level 1 clients data',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(MyClientsError(message: e.toString()));
+    }
+  }
+
+  Future<void> getMyClientsLevel2() async {
+    emit(MyClientsLoading());
+    try {
+      final result = await _ibDashboardRepo.getMyClientsLevel2();
+      result.fold(
+        (error) => emit(
+          MyClientsError(
+            message: error.message ?? 'Failed to load level 2 clients data',
+          ),
+        ),
+        (response) {
+          if (response.status == 200 && response.data != null) {
+            _clientsLevel2 = response.data;
+            emit(MyClientsLevel2Loaded(data: response.data!));
+          } else if (response.status == 301 &&
+              response.msg == "No data found.") {
+            _clientsLevel2 = [];
+            emit(MyClientsLevel2Loaded(data: []));
+          } else {
+            emit(
+              MyClientsError(
+                message: response.msg ?? 'Failed to load level 2 clients data',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(MyClientsError(message: e.toString()));
+    }
+  }
+
+  Future<void> getMyClientsLevel3() async {
+    emit(MyClientsLoading());
+    try {
+      final result = await _ibDashboardRepo.getMyClientsLevel3();
+      result.fold(
+        (error) => emit(
+          MyClientsError(
+            message: error.message ?? 'Failed to load level 3 clients data',
+          ),
+        ),
+        (response) {
+          if (response.status == 200 && response.data != null) {
+            _clientsLevel3 = response.data;
+            emit(MyClientsLevel3Loaded(data: response.data!));
+          } else if (response.status == 301 &&
+              response.msg == "No data found.") {
+            _clientsLevel3 = [];
+            emit(MyClientsLevel3Loaded(data: []));
+          } else {
+            emit(
+              MyClientsError(
+                message: response.msg ?? 'Failed to load level 3 clients data',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(MyClientsError(message: e.toString()));
+    }
+  }
+
+  Future<void> getMyClientsLevel4() async {
+    emit(MyClientsLoading());
+    try {
+      final result = await _ibDashboardRepo.getMyClientsLevel4();
+      result.fold(
+        (error) => emit(
+          MyClientsError(
+            message: error.message ?? 'Failed to load level 4 clients data',
+          ),
+        ),
+        (response) {
+          if (response.status == 200 && response.data != null) {
+            _clientsLevel4 = response.data;
+            emit(MyClientsLevel4Loaded(data: response.data!));
+          } else if (response.status == 301 &&
+              response.msg == "No data found.") {
+            _clientsLevel4 = [];
+            emit(MyClientsLevel4Loaded(data: []));
+          } else {
+            emit(
+              MyClientsError(
+                message: response.msg ?? 'Failed to load level 4 clients data',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(MyClientsError(message: e.toString()));
+    }
+  }
+
+  Future<void> getMyClientsLevel5() async {
+    emit(MyClientsLoading());
+    try {
+      final result = await _ibDashboardRepo.getMyClientsLevel5();
+      result.fold(
+        (error) => emit(
+          MyClientsError(
+            message: error.message ?? 'Failed to load level 5 clients data',
+          ),
+        ),
+        (response) {
+          if (response.status == 200 && response.data != null) {
+            _clientsLevel5 = response.data;
+            emit(MyClientsLevel5Loaded(data: response.data!));
+          } else if (response.status == 301 &&
+              response.msg == "No data found.") {
+            _clientsLevel5 = [];
+            emit(MyClientsLevel5Loaded(data: []));
+          } else {
+            emit(
+              MyClientsError(
+                message: response.msg ?? 'Failed to load level 5 clients data',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(MyClientsError(message: e.toString()));
+    }
+  }
+
+  Future<void> getMyClientsLevel6() async {
+    emit(MyClientsLoading());
+    try {
+      final result = await _ibDashboardRepo.getMyClientsLevel6();
+      result.fold(
+        (error) => emit(
+          MyClientsError(
+            message: error.message ?? 'Failed to load level 6 clients data',
+          ),
+        ),
+        (response) {
+          if (response.status == 200 && response.data != null) {
+            _clientsLevel6 = response.data;
+            emit(MyClientsLevel6Loaded(data: response.data!));
+          } else if (response.status == 301 &&
+              response.msg == "No data found.") {
+            _clientsLevel6 = [];
+            emit(MyClientsLevel6Loaded(data: []));
+          } else {
+            emit(
+              MyClientsError(
+                message: response.msg ?? 'Failed to load level 6 clients data',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(MyClientsError(message: e.toString()));
+    }
+  }
+
+  Future<void> getMyClientsLevel7() async {
+    emit(MyClientsLoading());
+    try {
+      final result = await _ibDashboardRepo.getMyClientsLevel7();
+      result.fold(
+        (error) => emit(
+          MyClientsError(
+            message: error.message ?? 'Failed to load level 7 clients data',
+          ),
+        ),
+        (response) {
+          if (response.status == 200 && response.data != null) {
+            _clientsLevel7 = response.data;
+            emit(MyClientsLevel7Loaded(data: response.data!));
+          } else if (response.status == 301 &&
+              response.msg == "No data found.") {
+            _clientsLevel7 = [];
+            emit(MyClientsLevel7Loaded(data: []));
+          } else {
+            emit(
+              MyClientsError(
+                message: response.msg ?? 'Failed to load level 7 clients data',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(MyClientsError(message: e.toString()));
     }
   }
 
