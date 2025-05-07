@@ -5,6 +5,7 @@ import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:honorfx/models/ib_program/ib_dashboard_response.dart';
+import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
 import 'package:honorfx/models/login_model.dart';
 import 'package:honorfx/services/core/server_error.dart';
 import 'package:honorfx/services/repo/ib_dashboard_repo.dart';
@@ -61,6 +62,25 @@ class IbDashboardApi extends IbDashboardRepo {
       return left(ServerError.withError(error: e));
     } catch (e) {
       log("General error in getIbDashboardData: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, IbMonthlyCommissionResponse>>
+  getIbMonthlyCommission() async {
+    try {
+      _setupToken();
+      const url = "/ibmonthlycommission";
+      log("Making API call to IB Monthly Commission: $url");
+
+      final response = await dio.get(url);
+      return right(IbMonthlyCommissionResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in getIbMonthlyCommission: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in getIbMonthlyCommission: $e");
       return left(ServerError(message: e.toString()));
     }
   }

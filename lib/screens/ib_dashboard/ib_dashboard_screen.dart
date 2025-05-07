@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:honorfx/cubit/ib_dashboard/ib_dashboard_cubit.dart';
 import 'package:honorfx/cubit/ib_dashboard/ib_dashboard_state.dart';
 import 'package:honorfx/injection.dart';
+import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
+import 'package:honorfx/screens/ib_dashboard/widgets/monthly_commission_chart.dart';
 import 'package:honorfx/widgets/custom_app_bar.dart';
 
 class IbDashboardScreen extends StatefulWidget {
@@ -18,7 +20,7 @@ class _IbDashboardScreenState extends State<IbDashboardScreen> {
   @override
   void initState() {
     super.initState();
-    _ibDashboardCubit.getIbDashboardData();
+    _ibDashboardCubit.loadAllIbData();
   }
 
   @override
@@ -30,10 +32,19 @@ class _IbDashboardScreenState extends State<IbDashboardScreen> {
         builder: (context, state) {
           if (state is IbDashboardLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is IbDashboardError) {
-            return Center(child: Text(state.message));
+          } else if (state is IbDashboardError ||
+              state is IbMonthlyCommissionError) {
+            final message =
+                state is IbDashboardError
+                    ? (state as IbDashboardError).message
+                    : (state as IbMonthlyCommissionError).message;
+            return Center(child: Text(message));
+          } else if (state is IbDashboardAndMonthlyCommissionLoaded) {
+            return _buildDashboardWithMonthlyCommission(state);
           } else if (state is IbDashboardLoaded) {
             return _buildDashboard(state);
+          } else if (state is IbMonthlyCommissionLoaded) {
+            return _buildMonthlyCommission(state);
           }
           return const Center(child: Text('No data available'));
         },
@@ -41,10 +52,64 @@ class _IbDashboardScreenState extends State<IbDashboardScreen> {
     );
   }
 
+  Widget _buildDashboardWithMonthlyCommission(
+    IbDashboardAndMonthlyCommissionLoaded state,
+  ) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        await _ibDashboardCubit.loadAllIbData();
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            MonthlyCommissionChart(data: state.monthlyCommissionData),
+            const SizedBox(height: 16),
+            _buildInfoCard(
+              '\$${state.dashboardData.withdrawCommission}',
+              'Withdraw Commission',
+            ),
+            const SizedBox(height: 16),
+            _buildInfoCard(
+              '\$${state.dashboardData.availableCommission}',
+              'Available Commission',
+            ),
+            const SizedBox(height: 16),
+            _buildInfoCard(state.dashboardData.totalVolume, 'Total Volume'),
+            const SizedBox(height: 16),
+            _buildInfoCard(
+              state.dashboardData.totalClients.toString(),
+              'Total Clients',
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildSmallInfoCard(
+                    'Active Traders',
+                    state.dashboardData.activeTraders.toString(),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildSmallInfoCard(
+                    'Active Sub-IB',
+                    state.dashboardData.activeSubIb.toString(),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildDashboard(IbDashboardLoaded state) {
     return RefreshIndicator(
       onRefresh: () async {
-        await _ibDashboardCubit.getIbDashboardData();
+        await _ibDashboardCubit.loadAllIbData();
       },
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -84,6 +149,19 @@ class _IbDashboardScreenState extends State<IbDashboardScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildMonthlyCommission(IbMonthlyCommissionLoaded state) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        await _ibDashboardCubit.loadAllIbData();
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(children: [MonthlyCommissionChart(data: state.data)]),
       ),
     );
   }
