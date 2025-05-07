@@ -58,36 +58,6 @@ class _IbDashboardScreenState extends State<IbDashboardScreen> {
           return const Center(child: Text('No data available'));
         },
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton.extended(
-            onPressed: () {
-              _appRouter.goToMyClients();
-            },
-            backgroundColor: AppColors.primary,
-            icon: const Icon(Icons.people, color: Colors.white),
-            label: const Text(
-              'My Clients',
-              style: TextStyle(color: Colors.white),
-            ),
-            heroTag: 'myClients',
-          ),
-          const SizedBox(height: 16),
-          FloatingActionButton.extended(
-            onPressed: () {
-              _appRouter.goToTeamWithdrawReport();
-            },
-            backgroundColor: AppColors.secondary,
-            icon: const Icon(Icons.history, color: Colors.white),
-            label: const Text(
-              'Withdraw Report',
-              style: TextStyle(color: Colors.white),
-            ),
-            heroTag: 'withdrawReport',
-          ),
-        ],
-      ),
     );
   }
 

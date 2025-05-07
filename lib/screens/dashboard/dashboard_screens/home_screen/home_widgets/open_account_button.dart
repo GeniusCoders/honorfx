@@ -16,8 +16,7 @@ class OpenAccountButton extends StatelessWidget {
       ),
       child: TextButton.icon(
         onPressed: () {
-          // getIt<AppRouter>().goToOpenAccount();
-          getIt<AppRouter>().goToMyClients();
+          getIt<AppRouter>().goToOpenAccount();
         },
         icon: Icon(Icons.add_circle, color: Colors.white),
         label: Text(

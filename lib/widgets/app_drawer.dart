@@ -7,8 +7,15 @@ import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/auth/auth_cubit.dart';
 import 'package:honorfx/injection.dart';
 import 'package:honorfx/router/app_router.dart';
-import 'package:honorfx/screens/dashboard/dashboard_screens/support_screen/support_screen.dart';
 import 'package:honorfx/utils/colors.dart';
+
+// Data class for submenu items
+class SubMenuItem {
+  final String title;
+  final VoidCallback onTap;
+
+  SubMenuItem({required this.title, required this.onTap});
+}
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({Key? key}) : super(key: key);
@@ -111,23 +118,46 @@ class AppDrawer extends StatelessWidget {
                       Navigator.pop(context);
                     },
                   ),
-                  _buildMenuItem(
+                  _buildExpandableMenuItem(
                     context,
                     icon: 'assets/icons/ib_program.svg',
                     title: 'IB Programme',
                     hasNotification: true,
+                    subMenuItems: [
+                      SubMenuItem(
+                        title: 'IB Dashboard',
+                        onTap: () {
+                          Navigator.pop(context);
+                          getIt<AppRouter>().goToIbDashboard();
+                        },
+                      ),
+                      SubMenuItem(
+                        title: 'Withdraw Report',
+                        onTap: () {
+                          Navigator.pop(context);
+                          getIt<AppRouter>().goToTeamWithdrawReport();
+                        },
+                      ),
+                      SubMenuItem(
+                        title: 'My Clients',
+                        onTap: () {
+                          Navigator.pop(context);
+                          getIt<AppRouter>().goToMyClients();
+                        },
+                      ),
+                    ],
                   ),
                   _buildMenuItem(
                     context,
                     icon: 'assets/icons/my_data.svg',
                     title: 'My Data',
                     isSelected: dashboardController.selectedIndex == 2,
-                    hasNotification: true,
                     onTap: () {
                       dashboardController.updateSelectedIndex(2);
                       Navigator.pop(context);
                     },
                   ),
+
                   _buildMenuItem(
                     context,
                     icon: 'assets/icons/my_wallet.svg',
@@ -398,6 +428,95 @@ class AppDrawer extends StatelessWidget {
                 : null,
         onTap: onTap,
       ),
+    );
+  }
+
+  Widget _buildExpandableMenuItem(
+    BuildContext context, {
+    required String icon,
+    required String title,
+    bool hasNotification = false,
+    required List<SubMenuItem> subMenuItems,
+  }) {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            dividerColor: Colors.transparent,
+            expansionTileTheme: const ExpansionTileThemeData(
+              iconColor: AppColors.black,
+            ),
+          ),
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+            child: ExpansionTile(
+              childrenPadding: EdgeInsets.zero,
+              expandedAlignment: Alignment.centerLeft,
+              collapsedIconColor: AppColors.black,
+              iconColor: AppColors.black,
+              title: Row(
+                children: [
+                  Container(
+                    width: 40.w,
+                    height: 40.h,
+                    decoration: BoxDecoration(
+                      color: AppColors.greyBackground,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: SvgPicture.asset(icon, width: 20.w, height: 20.h),
+                    ),
+                  ),
+                  SizedBox(width: 16.w),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                ],
+              ),
+              trailing: Container(
+                width: 20.w,
+                height: 20.h,
+                decoration: BoxDecoration(
+                  color: AppColors.black,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.add, color: Colors.white, size: 16.w),
+              ),
+              children:
+                  subMenuItems.map((item) {
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: 4.h),
+                      child: Container(
+                        margin: EdgeInsets.only(left: 0.w),
+                        padding: EdgeInsets.only(left: 56.w),
+                        child: ListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          visualDensity: const VisualDensity(vertical: -3),
+                          minLeadingWidth: 0,
+                          minVerticalPadding: 0,
+                          title: Text(
+                            item.title,
+                            style: TextStyle(
+                              color: AppColors.black,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                          onTap: item.onTap,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+            ),
+          ),
+        );
+      },
     );
   }
 }

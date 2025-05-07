@@ -61,7 +61,7 @@ class _WithdrawReportTableState extends State<WithdrawReportTable> {
 
   Widget _buildHeader() {
     return const Text(
-      'Team Withdraw Report',
+      ' Withdraw Report',
       style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
