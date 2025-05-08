@@ -9,6 +9,7 @@ import 'package:honorfx/models/ib_program/ib_dashboard_response.dart';
 import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
 import 'package:honorfx/models/ib_program/ib_withdraw_list_response.dart';
 import 'package:honorfx/models/ib_program/my_clients_response.dart';
+import 'package:honorfx/models/ib_program/my_commission_response.dart';
 import 'package:honorfx/models/ib_program/top_earning_response.dart';
 import 'package:honorfx/models/login_model.dart';
 import 'package:honorfx/services/core/server_error.dart';
@@ -141,6 +142,27 @@ class IbDashboardApi extends IbDashboardRepo {
       return left(ServerError.withError(error: e));
     } catch (e) {
       log("General error in getIbWithdrawList: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, MyCommissionResponse>> getMyCommission(
+    String from,
+    String to,
+  ) async {
+    try {
+      _setupToken();
+      const url = "/mycommission";
+      log("Making API call to My Commission: $url with from=$from, to=$to");
+
+      final response = await dio.post(url, data: {'from': from, 'to': to});
+      return right(MyCommissionResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in getMyCommission: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in getMyCommission: $e");
       return left(ServerError(message: e.toString()));
     }
   }

@@ -5,6 +5,7 @@ import 'package:honorfx/models/ib_program/ib_dashboard_response.dart';
 import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
 import 'package:honorfx/models/ib_program/ib_withdraw_list_response.dart';
 import 'package:honorfx/models/ib_program/my_clients_response.dart';
+import 'package:honorfx/models/ib_program/my_commission_response.dart';
 import 'package:honorfx/models/ib_program/top_earning_response.dart';
 import 'package:honorfx/services/repo/ib_dashboard_repo.dart';
 import 'package:injectable/injectable.dart';
@@ -17,6 +18,7 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
   ClientTransactionData? _clientTransactionData;
   List<TopEarningData>? _topEarningData;
   List<IbWithdrawItem>? _withdrawListData;
+  List<MyCommissionItem>? _myCommissionData;
 
   // Store clients data at each level
   List<ClientData>? _clientsLevel1;
@@ -62,7 +64,7 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
   }
 
   Future<void> getIbMonthlyCommission() async {
-    emit(IbMonthlyCommissionLoading());
+    emit(IbDashboardLoading());
     try {
       final result = await _ibDashboardRepo.getIbMonthlyCommission();
       result.fold(
@@ -94,7 +96,7 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
   }
 
   Future<void> getMyClientTransaction() async {
-    emit(ClientTransactionLoading());
+    emit(IbDashboardLoading());
     try {
       final result = await _ibDashboardRepo.getMyClientTransaction();
       result.fold(
@@ -125,7 +127,7 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
   }
 
   Future<void> getTopEarning() async {
-    emit(TopEarningLoading());
+    emit(IbDashboardLoading());
     try {
       final result = await _ibDashboardRepo.getTopEarning();
       result.fold(
@@ -179,6 +181,34 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
       );
     } catch (e) {
       emit(IbWithdrawListError(message: e.toString()));
+    }
+  }
+
+  Future<void> getMyCommission(String from, String to) async {
+    emit(MyCommissionLoading());
+    try {
+      final result = await _ibDashboardRepo.getMyCommission(from, to);
+      result.fold(
+        (error) => emit(
+          MyCommissionError(
+            message: error.message ?? 'Failed to load commission data',
+          ),
+        ),
+        (response) {
+          if (response.status == 200 && response.data != null) {
+            _myCommissionData = response.data;
+            emit(MyCommissionLoaded(data: response.data!));
+          } else {
+            emit(
+              MyCommissionError(
+                message: response.msg ?? 'Failed to load commission data',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(MyCommissionError(message: e.toString()));
     }
   }
 
@@ -446,6 +476,8 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
       emit(TopEarningLoaded(data: _topEarningData!));
     } else if (_withdrawListData != null) {
       emit(IbWithdrawListLoaded(data: _withdrawListData!));
+    } else if (_myCommissionData != null) {
+      emit(MyCommissionLoaded(data: _myCommissionData!));
     }
   }
 }

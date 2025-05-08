@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:honorfx/cubit/ib_dashboard/ib_dashboard_cubit.dart';
 import 'package:honorfx/cubit/ib_dashboard/ib_dashboard_state.dart';
 import 'package:honorfx/injection.dart';
@@ -218,7 +219,7 @@ class _MyClientsScreenState extends State<MyClientsScreen> {
               _loadClientsByLevel(_selectedLevel);
             },
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.w),
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,7 +230,7 @@ class _MyClientsScreenState extends State<MyClientsScreen> {
                     summaryData: _summaryData,
                     isLoading: isLoading,
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24.h),
                   if (isLoading)
                     const Center(child: CircularProgressIndicator())
                   else if (hasError)

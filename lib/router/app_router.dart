@@ -5,6 +5,7 @@ import 'package:honorfx/screens/dashboard/dashboard_screens/open_account/open_ac
 import 'package:honorfx/screens/dashboard/dashboard_screens/support_screen/support_screen.dart';
 import 'package:honorfx/screens/ib_dashboard/ib_dashboard_screen.dart';
 import 'package:honorfx/screens/ib_dashboard/my_clients_screen.dart';
+import 'package:honorfx/screens/ib_dashboard/my_commission_screen.dart';
 import 'package:honorfx/screens/ib_dashboard/team_withdraw_report_screen.dart';
 import 'package:honorfx/screens/login/login_screen.dart';
 import 'package:honorfx/screens/signup/signup_screen.dart';
@@ -75,6 +76,11 @@ class AppRouter {
                   name: 'my-clients',
                   builder: (context, state) => const MyClientsScreen(),
                 ),
+                GoRoute(
+                  path: 'my-commission',
+                  name: 'my-commission',
+                  builder: (context, state) => const MyCommissionScreen(),
+                ),
               ],
             ),
           ],
@@ -124,5 +130,10 @@ class AppRouter {
   // Navigate to My Clients screen
   void goToMyClients() {
     router.pushNamed('my-clients');
+  }
+
+  // Navigate to My Commission screen
+  void goToMyCommission() {
+    router.pushNamed('my-commission');
   }
 }

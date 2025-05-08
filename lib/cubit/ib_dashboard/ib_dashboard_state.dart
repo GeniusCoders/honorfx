@@ -3,6 +3,7 @@ import 'package:honorfx/models/ib_program/ib_dashboard_response.dart';
 import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
 import 'package:honorfx/models/ib_program/ib_withdraw_list_response.dart';
 import 'package:honorfx/models/ib_program/my_clients_response.dart';
+import 'package:honorfx/models/ib_program/my_commission_response.dart';
 import 'package:honorfx/models/ib_program/top_earning_response.dart';
 
 abstract class IbDashboardState {}
@@ -128,6 +129,21 @@ class MyClientsError extends IbDashboardState {
   final String message;
 
   MyClientsError({required this.message});
+}
+
+// My Commission States
+class MyCommissionLoading extends IbDashboardState {}
+
+class MyCommissionLoaded extends IbDashboardState {
+  final List<MyCommissionItem> data;
+
+  MyCommissionLoaded({required this.data});
+}
+
+class MyCommissionError extends IbDashboardState {
+  final String message;
+
+  MyCommissionError({required this.message});
 }
 
 class IbDashboardAndMonthlyCommissionLoaded extends IbDashboardState {

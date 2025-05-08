@@ -87,8 +87,6 @@ class _WithdrawReportTableState extends State<WithdrawReportTable> {
   }
 
   Widget _buildTable() {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade200),

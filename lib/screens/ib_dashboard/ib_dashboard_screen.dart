@@ -3,11 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:honorfx/cubit/ib_dashboard/ib_dashboard_cubit.dart';
 import 'package:honorfx/cubit/ib_dashboard/ib_dashboard_state.dart';
 import 'package:honorfx/injection.dart';
-import 'package:honorfx/router/app_router.dart';
 import 'package:honorfx/screens/ib_dashboard/widgets/client_transaction_chart.dart';
 import 'package:honorfx/screens/ib_dashboard/widgets/monthly_commission_chart.dart';
 import 'package:honorfx/screens/ib_dashboard/widgets/top_earnings_table.dart';
-import 'package:honorfx/utils/colors.dart';
 import 'package:honorfx/widgets/custom_app_bar.dart';
 
 class IbDashboardScreen extends StatefulWidget {
@@ -19,7 +17,6 @@ class IbDashboardScreen extends StatefulWidget {
 
 class _IbDashboardScreenState extends State<IbDashboardScreen> {
   final IbDashboardCubit _ibDashboardCubit = getIt<IbDashboardCubit>();
-  final AppRouter _appRouter = getIt<AppRouter>();
 
   @override
   void initState() {

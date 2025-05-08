@@ -145,6 +145,13 @@ class AppDrawer extends StatelessWidget {
                           getIt<AppRouter>().goToMyClients();
                         },
                       ),
+                      SubMenuItem(
+                        title: 'My Commission',
+                        onTap: () {
+                          Navigator.pop(context);
+                          getIt<AppRouter>().goToMyCommission();
+                        },
+                      ),
                     ],
                   ),
                   _buildMenuItem(
