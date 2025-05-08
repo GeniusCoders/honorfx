@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/utils/colors.dart';
 
 class ClientLevelTabs extends StatefulWidget {
@@ -22,6 +24,8 @@ class ClientLevelTabs extends StatefulWidget {
 
 class _ClientLevelTabsState extends State<ClientLevelTabs> {
   final ScrollController _scrollController = ScrollController();
+  final DashboardController _dashboardController =
+      Get.find<DashboardController>();
 
   @override
   void dispose() {
@@ -84,7 +88,7 @@ class _ClientLevelTabsState extends State<ClientLevelTabs> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Referral Clients of IB :- ${widget.summaryData['ibName'] ?? ''}',
+          'Referral Clients of IB :- ${_dashboardController.userName}',
           style: TextStyle(
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,

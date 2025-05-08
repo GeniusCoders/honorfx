@@ -1,22 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:honorfx/cubit/ib_dashboard/ib_dashboard_state.dart';
-import 'package:honorfx/models/ib_program/client_transaction_response.dart';
-import 'package:honorfx/models/ib_program/ib_dashboard_response.dart';
-import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
 import 'package:honorfx/models/ib_program/ib_withdraw_list_response.dart';
 import 'package:honorfx/models/ib_program/my_clients_response.dart';
 import 'package:honorfx/models/ib_program/my_commission_response.dart';
-import 'package:honorfx/models/ib_program/top_earning_response.dart';
 import 'package:honorfx/services/repo/ib_dashboard_repo.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
 class IbDashboardCubit extends Cubit<IbDashboardState> {
   final IbDashboardRepo _ibDashboardRepo;
-  IbDashboardData? _dashboardData;
-  IbMonthlyCommissionData? _monthlyCommissionData;
-  ClientTransactionData? _clientTransactionData;
-  List<TopEarningData>? _topEarningData;
+
   List<IbWithdrawItem>? _withdrawListData;
   List<MyCommissionItem>? _myCommissionData;
 
@@ -45,10 +38,7 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
         ),
         (response) {
           if (response.status == 200 && response.data != null) {
-            _dashboardData = response.data;
-
-            // Emit appropriate state based on what data we already have
-            _emitCombinedState();
+            emit(IbDashboardLoaded(data: response.data!));
           } else {
             emit(
               IbDashboardError(
@@ -76,10 +66,7 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
         ),
         (response) {
           if (response.status == 200 && response.data != null) {
-            _monthlyCommissionData = response.data;
-
-            // Emit appropriate state based on what data we already have
-            _emitCombinedState();
+            emit(IbMonthlyCommissionLoaded(data: response.data!));
           } else {
             emit(
               IbMonthlyCommissionError(
@@ -107,10 +94,7 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
         ),
         (response) {
           if (response.status == 200 && response.data != null) {
-            _clientTransactionData = response.data;
-
-            // Emit appropriate state based on what data we already have
-            _emitCombinedState();
+            emit(ClientTransactionLoaded(data: response.data!));
           } else {
             emit(
               ClientTransactionError(
@@ -138,10 +122,7 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
         ),
         (response) {
           if (response.status == 200 && response.data != null) {
-            _topEarningData = response.data;
-
-            // Emit appropriate state based on what data we already have
-            _emitCombinedState();
+            emit(TopEarningLoaded(data: response.data!));
           } else {
             emit(
               TopEarningError(
@@ -445,39 +426,5 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
       getMyClientTransaction(),
       getTopEarning(),
     ]);
-  }
-
-  void _emitCombinedState() {
-    if (_dashboardData != null &&
-        _monthlyCommissionData != null &&
-        _clientTransactionData != null) {
-      emit(
-        IbDashboardCompleteDataLoaded(
-          dashboardData: _dashboardData!,
-          monthlyCommissionData: _monthlyCommissionData!,
-          clientTransactionData: _clientTransactionData!,
-          topEarningData: _topEarningData,
-        ),
-      );
-    } else if (_dashboardData != null && _monthlyCommissionData != null) {
-      emit(
-        IbDashboardAndMonthlyCommissionLoaded(
-          dashboardData: _dashboardData!,
-          monthlyCommissionData: _monthlyCommissionData!,
-        ),
-      );
-    } else if (_dashboardData != null) {
-      emit(IbDashboardLoaded(data: _dashboardData!));
-    } else if (_monthlyCommissionData != null) {
-      emit(IbMonthlyCommissionLoaded(data: _monthlyCommissionData!));
-    } else if (_clientTransactionData != null) {
-      emit(ClientTransactionLoaded(data: _clientTransactionData!));
-    } else if (_topEarningData != null) {
-      emit(TopEarningLoaded(data: _topEarningData!));
-    } else if (_withdrawListData != null) {
-      emit(IbWithdrawListLoaded(data: _withdrawListData!));
-    } else if (_myCommissionData != null) {
-      emit(MyCommissionLoaded(data: _myCommissionData!));
-    }
   }
 }

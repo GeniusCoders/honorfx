@@ -3,6 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:honorfx/cubit/ib_dashboard/ib_dashboard_cubit.dart';
 import 'package:honorfx/cubit/ib_dashboard/ib_dashboard_state.dart';
 import 'package:honorfx/injection.dart';
+import 'package:honorfx/models/ib_program/client_transaction_response.dart';
+import 'package:honorfx/models/ib_program/ib_dashboard_response.dart';
+import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
+import 'package:honorfx/models/ib_program/top_earning_response.dart';
 import 'package:honorfx/screens/ib_dashboard/widgets/client_transaction_chart.dart';
 import 'package:honorfx/screens/ib_dashboard/widgets/monthly_commission_chart.dart';
 import 'package:honorfx/screens/ib_dashboard/widgets/top_earnings_table.dart';
@@ -17,6 +21,10 @@ class IbDashboardScreen extends StatefulWidget {
 
 class _IbDashboardScreenState extends State<IbDashboardScreen> {
   final IbDashboardCubit _ibDashboardCubit = getIt<IbDashboardCubit>();
+  IbDashboardData? _dashboardData;
+  IbMonthlyCommissionData? _monthlyCommissionData;
+  ClientTransactionData? _clientTransactionData;
+  List<TopEarningData>? _topEarningData;
 
   @override
   void initState() {
@@ -28,31 +36,30 @@ class _IbDashboardScreenState extends State<IbDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: 'IB Program'),
-      body: BlocBuilder<IbDashboardCubit, IbDashboardState>(
+      body: BlocConsumer<IbDashboardCubit, IbDashboardState>(
         bloc: _ibDashboardCubit,
+        listener: (context, state) {
+          if (state is IbDashboardLoaded) {
+            _dashboardData = state.data;
+          } else if (state is IbMonthlyCommissionLoaded) {
+            _monthlyCommissionData = state.data;
+          } else if (state is ClientTransactionLoaded) {
+            _clientTransactionData = state.data;
+          } else if (state is TopEarningLoaded) {
+            _topEarningData = state.data;
+          }
+        },
         builder: (context, state) {
           if (state is IbDashboardLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is IbDashboardError ||
-              state is IbMonthlyCommissionError ||
-              state is ClientTransactionError ||
+          } else if (state is IbDashboardError &&
+              state is IbMonthlyCommissionError &&
+              state is ClientTransactionError &&
               state is TopEarningError) {
             final message = _getErrorMessage(state);
             return Center(child: Text(message));
-          } else if (state is IbDashboardCompleteDataLoaded) {
-            return _buildCompleteData(state);
-          } else if (state is IbDashboardAndMonthlyCommissionLoaded) {
-            return _buildDashboardWithMonthlyCommission(state);
-          } else if (state is IbDashboardLoaded) {
-            return _buildDashboard(state);
-          } else if (state is IbMonthlyCommissionLoaded) {
-            return _buildMonthlyCommission(state);
-          } else if (state is ClientTransactionLoaded) {
-            return _buildClientTransaction(state);
-          } else if (state is TopEarningLoaded) {
-            return _buildTopEarnings(state);
           }
-          return const Center(child: Text('No data available'));
+          return _buildCompleteData();
         },
       ),
     );
@@ -71,7 +78,7 @@ class _IbDashboardScreenState extends State<IbDashboardScreen> {
     return 'An error occurred';
   }
 
-  Widget _buildCompleteData(IbDashboardCompleteDataLoaded state) {
+  Widget _buildCompleteData() {
     return RefreshIndicator(
       onRefresh: () async {
         await _ibDashboardCubit.loadAllIbData();
@@ -81,48 +88,16 @@ class _IbDashboardScreenState extends State<IbDashboardScreen> {
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
-            MonthlyCommissionChart(data: state.monthlyCommissionData),
+            if (_monthlyCommissionData != null)
+              MonthlyCommissionChart(data: _monthlyCommissionData!),
             const SizedBox(height: 16),
-            ClientTransactionChart(data: state.clientTransactionData),
+            if (_clientTransactionData != null)
+              ClientTransactionChart(data: _clientTransactionData!),
             const SizedBox(height: 16),
-            _buildInfoCard(
-              '\$${state.dashboardData.withdrawCommission}',
-              'Withdraw Commission',
-            ),
+            if (_dashboardData != null) ...[_buildDashboardData()],
             const SizedBox(height: 16),
-            _buildInfoCard(
-              '\$${state.dashboardData.availableCommission}',
-              'Available Commission',
-            ),
-            const SizedBox(height: 16),
-            _buildInfoCard(state.dashboardData.totalVolume, 'Total Volume'),
-            const SizedBox(height: 16),
-            _buildInfoCard(
-              state.dashboardData.totalClients.toString(),
-              'Total Clients',
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildSmallInfoCard(
-                    'Active Traders',
-                    state.dashboardData.activeTraders.toString(),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildSmallInfoCard(
-                    'Active Sub-IB',
-                    state.dashboardData.activeSubIb.toString(),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (state.topEarningData != null &&
-                state.topEarningData!.isNotEmpty)
-              TopEarningsTable(data: state.topEarningData!),
+            if (_topEarningData != null && _topEarningData!.isNotEmpty)
+              TopEarningsTable(data: _topEarningData!),
             const SizedBox(height: 80), // Extra space for FAB
           ],
         ),
@@ -130,143 +105,44 @@ class _IbDashboardScreenState extends State<IbDashboardScreen> {
     );
   }
 
-  Widget _buildDashboardWithMonthlyCommission(
-    IbDashboardAndMonthlyCommissionLoaded state,
-  ) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        await _ibDashboardCubit.loadAllIbData();
-      },
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
+  Widget _buildDashboardData() {
+    return Column(
+      children: [
+        _buildInfoCard(
+          '\$${_dashboardData?.withdrawCommission}',
+          'Withdraw Commission',
+        ),
+        const SizedBox(height: 16),
+        _buildInfoCard(
+          '\$${_dashboardData?.availableCommission}',
+          'Available Commission',
+        ),
+        const SizedBox(height: 16),
+        _buildInfoCard(_dashboardData?.totalVolume ?? '', 'Total Volume'),
+        const SizedBox(height: 16),
+        _buildInfoCard(
+          _dashboardData?.totalClients.toString() ?? '',
+          'Total Clients',
+        ),
+        const SizedBox(height: 16),
+        Row(
           children: [
-            MonthlyCommissionChart(data: state.monthlyCommissionData),
-            const SizedBox(height: 16),
-            _buildInfoCard(
-              '\$${state.dashboardData.withdrawCommission}',
-              'Withdraw Commission',
+            Expanded(
+              child: _buildSmallInfoCard(
+                'Active Traders',
+                _dashboardData?.activeTraders.toString() ?? '',
+              ),
             ),
-            const SizedBox(height: 16),
-            _buildInfoCard(
-              '\$${state.dashboardData.availableCommission}',
-              'Available Commission',
-            ),
-            const SizedBox(height: 16),
-            _buildInfoCard(state.dashboardData.totalVolume, 'Total Volume'),
-            const SizedBox(height: 16),
-            _buildInfoCard(
-              state.dashboardData.totalClients.toString(),
-              'Total Clients',
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildSmallInfoCard(
-                    'Active Traders',
-                    state.dashboardData.activeTraders.toString(),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildSmallInfoCard(
-                    'Active Sub-IB',
-                    state.dashboardData.activeSubIb.toString(),
-                  ),
-                ),
-              ],
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildSmallInfoCard(
+                'Active Sub-IB',
+                _dashboardData?.activeSubIb.toString() ?? '',
+              ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildDashboard(IbDashboardLoaded state) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        await _ibDashboardCubit.loadAllIbData();
-      },
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          children: [
-            _buildInfoCard(
-              '\$${state.data.withdrawCommission}',
-              'Withdraw Commission',
-            ),
-            const SizedBox(height: 16),
-            _buildInfoCard(
-              '\$${state.data.availableCommission}',
-              'Available Commission',
-            ),
-            const SizedBox(height: 16),
-            _buildInfoCard(state.data.totalVolume, 'Total Volume'),
-            const SizedBox(height: 16),
-            _buildInfoCard(state.data.totalClients.toString(), 'Total Clients'),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildSmallInfoCard(
-                    'Active Traders',
-                    state.data.activeTraders.toString(),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildSmallInfoCard(
-                    'Active Sub-IB',
-                    state.data.activeSubIb.toString(),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMonthlyCommission(IbMonthlyCommissionLoaded state) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        await _ibDashboardCubit.loadAllIbData();
-      },
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(children: [MonthlyCommissionChart(data: state.data)]),
-      ),
-    );
-  }
-
-  Widget _buildClientTransaction(ClientTransactionLoaded state) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        await _ibDashboardCubit.loadAllIbData();
-      },
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(children: [ClientTransactionChart(data: state.data)]),
-      ),
-    );
-  }
-
-  Widget _buildTopEarnings(TopEarningLoaded state) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        await _ibDashboardCubit.loadAllIbData();
-      },
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(children: [TopEarningsTable(data: state.data)]),
-      ),
+      ],
     );
   }
 
