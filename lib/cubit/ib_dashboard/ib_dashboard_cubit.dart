@@ -1,26 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:honorfx/cubit/ib_dashboard/ib_dashboard_state.dart';
-import 'package:honorfx/models/ib_program/ib_withdraw_list_response.dart';
-import 'package:honorfx/models/ib_program/my_clients_response.dart';
-import 'package:honorfx/models/ib_program/my_commission_response.dart';
 import 'package:honorfx/services/repo/ib_dashboard_repo.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
 class IbDashboardCubit extends Cubit<IbDashboardState> {
   final IbDashboardRepo _ibDashboardRepo;
-
-  List<IbWithdrawItem>? _withdrawListData;
-  List<MyCommissionItem>? _myCommissionData;
-
-  // Store clients data at each level
-  List<ClientData>? _clientsLevel1;
-  List<ClientData>? _clientsLevel2;
-  List<ClientData>? _clientsLevel3;
-  List<ClientData>? _clientsLevel4;
-  List<ClientData>? _clientsLevel5;
-  List<ClientData>? _clientsLevel6;
-  List<ClientData>? _clientsLevel7;
 
   IbDashboardCubit({required IbDashboardRepo ibDashboardRepo})
     : _ibDashboardRepo = ibDashboardRepo,
@@ -149,7 +134,6 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
         ),
         (response) {
           if (response.status == 200 && response.data != null) {
-            _withdrawListData = response.data;
             emit(IbWithdrawListLoaded(data: response.data!));
           } else {
             emit(
@@ -177,7 +161,6 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
         ),
         (response) {
           if (response.status == 200 && response.data != null) {
-            _myCommissionData = response.data;
             emit(MyCommissionLoaded(data: response.data!));
           } else {
             emit(
@@ -206,11 +189,9 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
         ),
         (response) {
           if (response.status == 200 && response.data != null) {
-            _clientsLevel1 = response.data;
             emit(MyClientsLevel1Loaded(data: response.data!));
           } else if (response.status == 301 &&
               response.msg == "No data found.") {
-            _clientsLevel1 = [];
             emit(MyClientsLevel1Loaded(data: []));
           } else {
             emit(
@@ -238,11 +219,9 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
         ),
         (response) {
           if (response.status == 200 && response.data != null) {
-            _clientsLevel2 = response.data;
             emit(MyClientsLevel2Loaded(data: response.data!));
           } else if (response.status == 301 &&
               response.msg == "No data found.") {
-            _clientsLevel2 = [];
             emit(MyClientsLevel2Loaded(data: []));
           } else {
             emit(
@@ -270,11 +249,9 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
         ),
         (response) {
           if (response.status == 200 && response.data != null) {
-            _clientsLevel3 = response.data;
             emit(MyClientsLevel3Loaded(data: response.data!));
           } else if (response.status == 301 &&
               response.msg == "No data found.") {
-            _clientsLevel3 = [];
             emit(MyClientsLevel3Loaded(data: []));
           } else {
             emit(
@@ -302,11 +279,9 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
         ),
         (response) {
           if (response.status == 200 && response.data != null) {
-            _clientsLevel4 = response.data;
             emit(MyClientsLevel4Loaded(data: response.data!));
           } else if (response.status == 301 &&
               response.msg == "No data found.") {
-            _clientsLevel4 = [];
             emit(MyClientsLevel4Loaded(data: []));
           } else {
             emit(
@@ -334,11 +309,9 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
         ),
         (response) {
           if (response.status == 200 && response.data != null) {
-            _clientsLevel5 = response.data;
             emit(MyClientsLevel5Loaded(data: response.data!));
           } else if (response.status == 301 &&
               response.msg == "No data found.") {
-            _clientsLevel5 = [];
             emit(MyClientsLevel5Loaded(data: []));
           } else {
             emit(
@@ -366,11 +339,9 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
         ),
         (response) {
           if (response.status == 200 && response.data != null) {
-            _clientsLevel6 = response.data;
             emit(MyClientsLevel6Loaded(data: response.data!));
           } else if (response.status == 301 &&
               response.msg == "No data found.") {
-            _clientsLevel6 = [];
             emit(MyClientsLevel6Loaded(data: []));
           } else {
             emit(
@@ -398,11 +369,9 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
         ),
         (response) {
           if (response.status == 200 && response.data != null) {
-            _clientsLevel7 = response.data;
             emit(MyClientsLevel7Loaded(data: response.data!));
           } else if (response.status == 301 &&
               response.msg == "No data found.") {
-            _clientsLevel7 = [];
             emit(MyClientsLevel7Loaded(data: []));
           } else {
             emit(
