@@ -80,6 +80,34 @@ class IbWithdrawListError extends IbDashboardState {
   IbWithdrawListError({required this.message});
 }
 
+class IbWithdrawSubmitting extends IbDashboardState {}
+
+class IbWithdrawSubmitted extends IbDashboardState {
+  final String message;
+
+  IbWithdrawSubmitted({required this.message});
+}
+
+class IbWithdrawSubmitError extends IbDashboardState {
+  final String message;
+
+  IbWithdrawSubmitError({required this.message});
+}
+
+class IbRequestSubmitting extends IbDashboardState {}
+
+class IbRequestSubmitted extends IbDashboardState {
+  final String message;
+
+  IbRequestSubmitted({required this.message});
+}
+
+class IbRequestError extends IbDashboardState {
+  final String message;
+
+  IbRequestError({required this.message});
+}
+
 // My Clients States
 class MyClientsLoading extends IbDashboardState {}
 

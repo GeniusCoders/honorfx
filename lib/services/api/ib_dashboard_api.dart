@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:dartz/dartz.dart';
+import 'package:honorfx/models/common/response_details.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:honorfx/models/ib_program/client_transaction_response.dart';
@@ -147,6 +148,37 @@ class IbDashboardApi extends IbDashboardRepo {
   }
 
   @override
+  Future<Either<ServerError, ResponseDetails>> submitIbWithdraw(
+    String paymentMethod,
+    String withdrawTo,
+    String amount,
+    String note,
+  ) async {
+    try {
+      _setupToken();
+      const url = "/ibwithdraw";
+      log("Making API call to submit IB Withdraw: $url");
+
+      final data = {
+        'paymentmethod': paymentMethod,
+        'withdraw_to': withdrawTo,
+        'amount': amount,
+        'note': note,
+      };
+
+      log("Submitting data: $data");
+      final response = await dio.post(url, data: data);
+      return right(ResponseDetails.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in submitIbWithdraw: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in submitIbWithdraw: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<ServerError, MyCommissionResponse>> getMyCommission(
     String from,
     String to,
@@ -217,6 +249,24 @@ class IbDashboardApi extends IbDashboardRepo {
       return left(ServerError.withError(error: e));
     } catch (e) {
       log("General error in $endpoint: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, ResponseDetails>> requestIbStatus() async {
+    try {
+      _setupToken();
+      const url = "/ibrequest";
+      log("Making API call to request IB status: $url");
+
+      final response = await dio.post(url);
+      return right(ResponseDetails.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in requestIbStatus: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in requestIbStatus: $e");
       return left(ServerError(message: e.toString()));
     }
   }

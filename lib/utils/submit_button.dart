@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:honorfx/utils/colors.dart';
 
 class SubmitButton extends StatelessWidget {
   const SubmitButton({super.key, this.onPressed});
@@ -14,7 +15,7 @@ class SubmitButton extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.all(15.w),
           decoration: BoxDecoration(
-            color: const Color(0xFFE95E30),
+            color: AppColors.secondary,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(

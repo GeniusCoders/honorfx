@@ -118,42 +118,62 @@ class AppDrawer extends StatelessWidget {
                       Navigator.pop(context);
                     },
                   ),
-                  _buildExpandableMenuItem(
-                    context,
-                    icon: 'assets/icons/ib_program.svg',
-                    title: 'IB Programme',
-                    hasNotification: true,
-                    subMenuItems: [
-                      SubMenuItem(
-                        title: 'IB Dashboard',
-                        onTap: () {
-                          Navigator.pop(context);
-                          getIt<AppRouter>().goToIbDashboard();
-                        },
-                      ),
-                      SubMenuItem(
-                        title: 'Withdraw Report',
-                        onTap: () {
-                          Navigator.pop(context);
-                          getIt<AppRouter>().goToTeamWithdrawReport();
-                        },
-                      ),
-                      SubMenuItem(
-                        title: 'My Clients',
-                        onTap: () {
-                          Navigator.pop(context);
-                          getIt<AppRouter>().goToMyClients();
-                        },
-                      ),
-                      SubMenuItem(
-                        title: 'My Commission',
-                        onTap: () {
-                          Navigator.pop(context);
-                          getIt<AppRouter>().goToMyCommission();
-                        },
-                      ),
-                    ],
-                  ),
+                  if (dashboardController.tokenResponse.value?.isIb == '2')
+                    _buildExpandableMenuItem(
+                      context,
+                      icon: 'assets/icons/ib_program.svg',
+                      title: 'IB Programme',
+                      hasNotification: true,
+                      subMenuItems: [
+                        SubMenuItem(
+                          title: 'IB Dashboard',
+                          onTap: () {
+                            Navigator.pop(context);
+                            getIt<AppRouter>().goToIbDashboard();
+                          },
+                        ),
+                        SubMenuItem(
+                          title: 'IB Withdraw',
+                          onTap: () {
+                            Navigator.pop(context);
+                            getIt<AppRouter>().goToIbWithdraw();
+                          },
+                        ),
+                        SubMenuItem(
+                          title: 'Withdraw Report',
+                          onTap: () {
+                            Navigator.pop(context);
+                            getIt<AppRouter>().goToTeamWithdrawReport();
+                          },
+                        ),
+                        SubMenuItem(
+                          title: 'My Clients',
+                          onTap: () {
+                            Navigator.pop(context);
+                            getIt<AppRouter>().goToMyClients();
+                          },
+                        ),
+                        SubMenuItem(
+                          title: 'My Commission',
+                          onTap: () {
+                            Navigator.pop(context);
+                            getIt<AppRouter>().goToMyCommission();
+                          },
+                        ),
+                      ],
+                    ),
+                  if (dashboardController.tokenResponse.value?.isIb == '0')
+                    _buildMenuItem(
+                      context,
+                      icon: 'assets/icons/ib_program.svg',
+                      title: 'Request IB',
+                      isSelected: false,
+                      onTap: () {
+                        Navigator.pop(context);
+                        getIt<AppRouter>().goToRequestIb();
+                      },
+                    ),
+
                   _buildMenuItem(
                     context,
                     icon: 'assets/icons/my_data.svg',
@@ -283,48 +303,52 @@ class AppDrawer extends StatelessWidget {
               ),
 
               // Referral Link Section
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                child: Container(
-                  padding: EdgeInsets.all(16.w),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: AppColors.grey),
+              if (dashboardController.tokenResponse.value?.isIb == '2')
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 8.h,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Copy your Referral Link!',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 8.h),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 6.h,
-                          horizontal: 16.w,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          'Click Here',
+                  child: Container(
+                    padding: EdgeInsets.all(16.w),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: AppColors.grey),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Copy your Referral Link!',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12.sp,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ),
-                    ],
+                        SizedBox(height: 8.h),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 6.h,
+                            horizontal: 16.w,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            'Click Here',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12.sp,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
               // Logout Button
               Padding(

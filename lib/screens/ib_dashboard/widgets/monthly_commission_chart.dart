@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:honorfx/models/ib_program/ib_monthly_commission_response.dart';
-import 'package:honorfx/utils/colors.dart';
 
 class MonthlyCommissionChart extends StatelessWidget {
   final IbMonthlyCommissionData data;
@@ -51,14 +51,27 @@ class MonthlyCommissionChart extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(width: 12, height: 12, color: const Color(0xFFF17D23)),
+              const SizedBox(width: 8),
+              const Text(
+                'Commission',
+                style: TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
           Container(
             padding: const EdgeInsets.only(right: 10),
-            height: 240,
+            height: 240.h,
             child: BarChart(
               BarChartData(
                 gridData: const FlGridData(
                   show: true,
-                  horizontalInterval: 1,
+                  horizontalInterval: 10,
+                  verticalInterval: 10,
                   drawVerticalLine: false,
                 ),
                 titlesData: FlTitlesData(
@@ -67,7 +80,7 @@ class MonthlyCommissionChart extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 30,
-                      interval: 1,
+                      interval: 10,
                     ),
                   ),
                   bottomTitles: AxisTitles(
@@ -118,7 +131,7 @@ class MonthlyCommissionChart extends StatelessWidget {
                       BarChartRodData(
                         toY: data.commission[index],
                         color: const Color(0xFFF17D23),
-                        width: 20,
+                        width: 12,
                         borderRadius: BorderRadius.zero,
                       ),
                     ],
@@ -129,18 +142,6 @@ class MonthlyCommissionChart extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(width: 12, height: 12, color: const Color(0xFFF17D23)),
-              const SizedBox(width: 8),
-              const Text(
-                'Commission',
-                style: TextStyle(color: Colors.grey, fontSize: 12),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -148,12 +149,10 @@ class MonthlyCommissionChart extends StatelessWidget {
 
   double _getMaxY() {
     if (data.commission.isEmpty) return 10;
-
     double max = data.commission.reduce(
       (curr, next) => curr > next ? curr : next,
     );
-
-    // Round up to the nearest whole number and add 1 for a bit of padding
-    return (max.ceil() + 1).toDouble();
+    // Round up to the next multiple of 10
+    return ((max / 10).ceil() * 10).toDouble();
   }
 }

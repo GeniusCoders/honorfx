@@ -149,6 +149,80 @@ class IbDashboardCubit extends Cubit<IbDashboardState> {
     }
   }
 
+  Future<void> submitIbWithdraw(
+    String paymentMethod,
+    String withdrawTo,
+    String amount,
+    String note,
+  ) async {
+    emit(IbWithdrawSubmitting());
+    try {
+      final result = await _ibDashboardRepo.submitIbWithdraw(
+        paymentMethod,
+        withdrawTo,
+        amount,
+        note,
+      );
+
+      result.fold(
+        (error) => emit(
+          IbWithdrawSubmitError(
+            message: error.message ?? 'Failed to submit withdrawal request',
+          ),
+        ),
+        (response) {
+          if (response.status == 200) {
+            emit(
+              IbWithdrawSubmitted(
+                message: response.msg ?? 'Withdrawal submitted successfully',
+              ),
+            );
+          } else {
+            emit(
+              IbWithdrawSubmitError(
+                message: response.msg ?? 'Failed to submit withdrawal request',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(IbWithdrawSubmitError(message: e.toString()));
+    }
+  }
+
+  Future<void> requestIbStatus() async {
+    emit(IbRequestSubmitting());
+    try {
+      final result = await _ibDashboardRepo.requestIbStatus();
+
+      result.fold(
+        (error) => emit(
+          IbRequestError(
+            message: error.message ?? 'Failed to submit IB request',
+          ),
+        ),
+        (response) {
+          if (response.status == 200) {
+            emit(
+              IbRequestSubmitted(
+                message: response.msg ?? 'IB request submitted successfully',
+              ),
+            );
+          } else {
+            emit(
+              IbRequestError(
+                message: response.msg ?? 'Failed to submit IB request',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(IbRequestError(message: e.toString()));
+    }
+  }
+
   Future<void> getMyCommission(String from, String to) async {
     emit(MyCommissionLoading());
     try {

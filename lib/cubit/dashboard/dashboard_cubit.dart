@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
-import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
 import 'package:honorfx/models/dashboard/reports_model/add_deposit_model.dart';
 import 'package:honorfx/services/repo/dashboard_repo.dart';
 import 'package:injectable/injectable.dart';

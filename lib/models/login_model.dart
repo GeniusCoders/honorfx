@@ -26,6 +26,7 @@ class TokenResponse {
   dynamic country;
   String? createdAt;
   String? updatedAt;
+  String? isIb;
 
   TokenResponse({
     this.token,
@@ -41,6 +42,7 @@ class TokenResponse {
     this.country,
     this.createdAt,
     this.updatedAt,
+    this.isIb,
   });
 
   TokenResponse.fromJson(Map<String, dynamic> json) {
@@ -57,6 +59,7 @@ class TokenResponse {
     country = json["country"];
     createdAt = json["created_at"];
     updatedAt = json["updated_at"];
+    isIb = json["is_ib"];
   }
 
   Map<String, dynamic> toJson() {
@@ -74,6 +77,7 @@ class TokenResponse {
     data["country"] = country;
     data["created_at"] = createdAt;
     data["updated_at"] = updatedAt;
+    data["is_ib"] = isIb;
     return data;
   }
 }

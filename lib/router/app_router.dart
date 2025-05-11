@@ -4,9 +4,12 @@ import 'package:honorfx/screens/dashboard/dashboard.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/open_account/open_account_screen.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/support_screen/support_screen.dart';
 import 'package:honorfx/screens/ib_dashboard/ib_dashboard_screen.dart';
+import 'package:honorfx/screens/ib_dashboard/ib_withdraw_screen.dart';
 import 'package:honorfx/screens/ib_dashboard/my_clients_screen.dart';
 import 'package:honorfx/screens/ib_dashboard/my_commission_screen.dart';
+import 'package:honorfx/screens/ib_dashboard/request_ib_screen.dart';
 import 'package:honorfx/screens/ib_dashboard/team_withdraw_report_screen.dart';
+import 'package:honorfx/screens/login/forgot_password/forgot_password.dart';
 import 'package:honorfx/screens/login/login_screen.dart';
 import 'package:honorfx/screens/signup/signup_screen.dart';
 import 'package:honorfx/screens/splash/splash_screen.dart';
@@ -16,6 +19,10 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>(
 );
 final GlobalKey<NavigatorState> shellNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'shell',
+);
+
+final GlobalKey<NavigatorState> authNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'auth',
 );
 
 class AppRouter {
@@ -32,16 +39,28 @@ class AppRouter {
           name: 'splash',
           builder: (context, state) => const SplashScreen(),
         ),
-        GoRoute(
-          path: '/login',
-          name: 'login',
-          builder: (context, state) => const LoginScreen(),
+        ShellRoute(
+          navigatorKey: authNavigatorKey,
+          builder: (context, state, child) => child,
+          routes: [
+            GoRoute(
+              path: '/login',
+              name: 'login',
+              builder: (context, state) => const LoginScreen(),
+            ),
+            GoRoute(
+              path: '/signup',
+              name: 'signup',
+              builder: (context, state) => const SignupScreen(),
+            ),
+            GoRoute(
+              path: '/forgot-password',
+              name: 'forgot-password',
+              builder: (context, state) => const ForgotPasswordScreen(),
+            ),
+          ],
         ),
-        GoRoute(
-          path: '/signup',
-          name: 'signup',
-          builder: (context, state) => const SignupScreen(),
-        ),
+
         ShellRoute(
           navigatorKey: shellNavigatorKey,
           builder: (context, state, child) => child,
@@ -81,6 +100,16 @@ class AppRouter {
                   name: 'my-commission',
                   builder: (context, state) => const MyCommissionScreen(),
                 ),
+                GoRoute(
+                  path: 'ib-withdraw',
+                  name: 'ib-withdraw',
+                  builder: (context, state) => const IbWithdrawScreen(),
+                ),
+                GoRoute(
+                  path: 'request-ib',
+                  name: 'request-ib',
+                  builder: (context, state) => const RequestIbScreen(),
+                ),
               ],
             ),
           ],
@@ -95,6 +124,11 @@ class AppRouter {
   // Navigate to login screen and clear history
   void goToLogin() {
     router.goNamed('login');
+  }
+
+  // Navigate to forgot password screen
+  void goToForgotPassword() {
+    router.goNamed('forgot-password');
   }
 
   // Navigate to dashboard screen and clear history
@@ -135,5 +169,15 @@ class AppRouter {
   // Navigate to My Commission screen
   void goToMyCommission() {
     router.pushNamed('my-commission');
+  }
+
+  // Navigate to IB Withdraw screen
+  void goToIbWithdraw() {
+    router.pushNamed('ib-withdraw');
+  }
+
+  // Navigate to Request IB screen
+  void goToRequestIb() {
+    router.pushNamed('request-ib');
   }
 }

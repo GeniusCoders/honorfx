@@ -6,6 +6,7 @@ import 'package:honorfx/models/ib_program/ib_withdraw_list_response.dart';
 import 'package:honorfx/models/ib_program/my_clients_response.dart';
 import 'package:honorfx/models/ib_program/my_commission_response.dart';
 import 'package:honorfx/models/ib_program/top_earning_response.dart';
+import 'package:honorfx/models/common/response_details.dart';
 import 'package:honorfx/services/core/server_error.dart';
 
 abstract class IbDashboardRepo {
@@ -20,6 +21,17 @@ abstract class IbDashboardRepo {
     String from,
     String to,
   );
+
+  // New method for submitting IB withdrawal
+  Future<Either<ServerError, ResponseDetails>> submitIbWithdraw(
+    String paymentMethod,
+    String withdrawTo,
+    String amount,
+    String note,
+  );
+
+  // New method for requesting IB status
+  Future<Either<ServerError, ResponseDetails>> requestIbStatus();
 
   // New methods for fetching clients at different levels
   Future<Either<ServerError, MyClientsResponse>> getMyClientsLevel1();

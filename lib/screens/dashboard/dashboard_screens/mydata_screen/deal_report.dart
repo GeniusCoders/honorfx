@@ -10,6 +10,7 @@ import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
 import 'package:honorfx/models/dashboard/deal_report_response.dart';
 import 'package:honorfx/utils/colors.dart';
 import 'package:honorfx/utils/common_dropdown.dart';
+import 'package:honorfx/widgets/loading/loading.dart';
 import 'package:honorfx/widgets/loading/loading_overlay.dart';
 
 class DealReport extends StatefulWidget {
@@ -97,219 +98,217 @@ class _DealReportState extends State<DealReport> {
         }
       },
       builder: (context, state) {
-        return LoadingOverlay(
-          isLoading: state is DashboardLoading,
-          child: SingleChildScrollView(
-            physics: NeverScrollableScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Account selection
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10.h),
-                  child: CommonDropdown(
-                    hintText: 'Select MT5 Account',
-                    value: _selectedMt5Account,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedMt5Account = value;
-                        _fetchDealReport();
-                      });
-                    },
-                    data: _accounts.map((e) => e.mtUserid.toString()).toList(),
-                  ),
-                ),
-
-                // Date range display
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 10.h,
-                        horizontal: 10.w,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(7.r),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(8.w),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFEEEEEE),
-                              shape: BoxShape.circle,
-                            ),
-                            child: SvgPicture.asset(
-                              'assets/icons/calendar.svg',
-                              width: 20.w,
-                              height: 20.h,
-                            ),
-                          ),
-                          SizedBox(width: 15.w),
-                          Text(
-                            '$fromDate - $toDate',
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20.h),
-
-                // Error message
-                if (state is DealReportError)
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16.h),
-                    child: Text(
-                      state.message,
-                      style: TextStyle(color: Colors.red, fontSize: 14.sp),
-                    ),
-                  ),
-
-                // Empty state
-                if (_deals.isEmpty &&
-                    state is! DashboardLoading &&
-                    state is! DealReportError)
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 32.h),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.account_balance_outlined,
-                            color: Colors.grey.shade400,
-                            size: 40,
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            'No deal history found',
-                            style: TextStyle(color: Colors.grey.shade700),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                // Deal report cards
-                if (_deals.isNotEmpty)
-                  RefreshIndicator(
-                    onRefresh: () async {
+        if (state is DashboardLoading) return const SmallLoading();
+        return SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Account selection
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 10.h),
+                child: CommonDropdown(
+                  hintText: 'Select MT5 Account',
+                  value: _selectedMt5Account,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedMt5Account = value;
                       _fetchDealReport();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Column(
-                        children: [
-                          // Deal cards
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: displayedDeals.length,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              final deal = displayedDeals[index];
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child:
-                                    deal.action == 0 || deal.action == 1
-                                        ? DealCard(deal: deal)
-                                        : Container(),
-                              );
-                            },
+                    });
+                  },
+                  data: _accounts.map((e) => e.mtUserid.toString()).toList(),
+                ),
+              ),
+
+              // Date range display
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 10.h,
+                      horizontal: 10.w,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(7.r),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(8.w),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEEEEEE),
+                            shape: BoxShape.circle,
                           ),
-
-                          // Pagination
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16.h),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // Entries count
-                                Text(
-                                  'Showing ${(currentPage - 1) * itemsPerPage + 1} to ${(currentPage - 1) * itemsPerPage + displayedDeals.length} of ${_deals.length} entries',
-                                  style: TextStyle(
-                                    color: AppColors.lightGrey,
-                                    fontSize: 12.sp,
-                                  ),
-                                ),
-
-                                // Pagination controls
-                                Row(
-                                  children: [
-                                    // Previous page button
-                                    GestureDetector(
-                                      onTap: _previousPage,
-                                      child: Container(
-                                        width: 24.w,
-                                        height: 24.h,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: AppColors.lightGrey,
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: Icon(
-                                            Icons.chevron_left,
-                                            size: 16.w,
-                                            color: AppColors.lightGrey,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    // Page indicator
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 8.w,
-                                      ),
-                                      child: Text(
-                                        '$currentPage of $totalPages',
-                                        style: TextStyle(
-                                          fontSize: 12.sp,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-
-                                    // Next page button
-                                    GestureDetector(
-                                      onTap: _nextPage,
-                                      child: Container(
-                                        width: 24.w,
-                                        height: 24.h,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: AppColors.lightGrey,
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: Icon(
-                                            Icons.chevron_right,
-                                            size: 16.w,
-                                            color: AppColors.lightGrey,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                          child: SvgPicture.asset(
+                            'assets/icons/calendar.svg',
+                            width: 20.w,
+                            height: 20.h,
                           ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(width: 15.w),
+                        Text(
+                          '$fromDate - $toDate',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-              ],
-            ),
+                ],
+              ),
+              SizedBox(height: 20.h),
+
+              // Error message
+              if (state is DealReportError)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                  child: Text(
+                    state.message,
+                    style: TextStyle(color: Colors.red, fontSize: 14.sp),
+                  ),
+                ),
+
+              // Empty state
+              if (_deals.isEmpty &&
+                  state is! DashboardLoading &&
+                  state is! DealReportError)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 32.h),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.account_balance_outlined,
+                          color: Colors.grey.shade400,
+                          size: 40,
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'No deal history found',
+                          style: TextStyle(color: Colors.grey.shade700),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+              // Deal report cards
+              if (_deals.isNotEmpty)
+                RefreshIndicator(
+                  onRefresh: () async {
+                    _fetchDealReport();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Column(
+                      children: [
+                        // Deal cards
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: displayedDeals.length,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            final deal = displayedDeals[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child:
+                                  deal.action == 0 || deal.action == 1
+                                      ? DealCard(deal: deal)
+                                      : Container(),
+                            );
+                          },
+                        ),
+
+                        // Pagination
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Entries count
+                              Text(
+                                'Showing ${(currentPage - 1) * itemsPerPage + 1} to ${(currentPage - 1) * itemsPerPage + displayedDeals.length} of ${_deals.length} entries',
+                                style: TextStyle(
+                                  color: AppColors.lightGrey,
+                                  fontSize: 12.sp,
+                                ),
+                              ),
+
+                              // Pagination controls
+                              Row(
+                                children: [
+                                  // Previous page button
+                                  GestureDetector(
+                                    onTap: _previousPage,
+                                    child: Container(
+                                      width: 24.w,
+                                      height: 24.h,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: AppColors.lightGrey,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.chevron_left,
+                                          size: 16.w,
+                                          color: AppColors.lightGrey,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                  // Page indicator
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 8.w,
+                                    ),
+                                    child: Text(
+                                      '$currentPage of $totalPages',
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+
+                                  // Next page button
+                                  GestureDetector(
+                                    onTap: _nextPage,
+                                    child: Container(
+                                      width: 24.w,
+                                      height: 24.h,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: AppColors.lightGrey,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.chevron_right,
+                                          size: 16.w,
+                                          color: AppColors.lightGrey,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
           ),
         );
       },

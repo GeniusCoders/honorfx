@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:honorfx/cubit/login_cubit/login_cubit.dart';
 import 'package:honorfx/injection.dart';
 import 'package:honorfx/router/app_router.dart';
-import 'package:honorfx/screens/dashboard/dashboard.dart';
-import 'package:honorfx/screens/signup/signup_screen.dart';
 import 'package:honorfx/utils/colors.dart';
 import 'package:honorfx/widgets/gradient_background.dart';
 import 'package:honorfx/widgets/loading/loading.dart';
@@ -154,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               // Forgot password button
                               TextButton(
                                 onPressed: () {
-                                  // TODO: Implement forgot password navigation
+                                  getIt<AppRouter>().goToForgotPassword();
                                 },
                                 child: Text(
                                   'Forgot Password?',
