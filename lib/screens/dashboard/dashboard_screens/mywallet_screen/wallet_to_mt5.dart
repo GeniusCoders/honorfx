@@ -14,7 +14,9 @@ import 'package:honorfx/widgets/textfields/amount_texfield.dart';
 import 'package:honorfx/widgets/textfields/comman_texfield.dart';
 
 class WalletToMt5 extends StatefulWidget {
-  const WalletToMt5({super.key});
+  final Function(String)? onAccountSelected;
+
+  const WalletToMt5({super.key, this.onAccountSelected});
 
   @override
   State<WalletToMt5> createState() => _WalletToMt5State();
@@ -46,6 +48,8 @@ class _WalletToMt5State extends State<WalletToMt5> {
   }
 
   void _submitTransfer() {
+    FocusScope.of(context).unfocus();
+
     if (_selectedMt5Account == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBars.errorSnackBar(title: 'Please select a valid account'),
@@ -71,6 +75,17 @@ class _WalletToMt5State extends State<WalletToMt5> {
     return BlocConsumer<DashboardCubit, DashboardState>(
       listener: (context, state) {
         if (state is WalletToMt5Success) {
+          context.read<DashboardCubit>().getDashboardData();
+          context.read<DashboardCubit>().getAccounts(
+            isAccountDetailsFetched: false,
+          );
+
+          // Clear form and reset validation state
+          _formKey.currentState?.reset();
+          _amountController.clear();
+          _noteController.clear();
+          _selectedMt5Account = null;
+
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -78,9 +93,6 @@ class _WalletToMt5State extends State<WalletToMt5> {
               backgroundColor: Colors.green,
             ),
           );
-          // Clear form fields
-          _amountController.clear();
-          _noteController.clear();
         } else if (state is WalletToMt5Error) {
           // Show error message
           ScaffoldMessenger.of(context).showSnackBar(
@@ -103,6 +115,11 @@ class _WalletToMt5State extends State<WalletToMt5> {
                     setState(() {
                       _selectedMt5Account = value;
                     });
+
+                    // Notify parent when account is selected
+                    if (value != null && widget.onAccountSelected != null) {
+                      widget.onAccountSelected!(value);
+                    }
                   },
                   data: _accounts.map((e) => e.mtUserid.toString()).toList(),
                 ),
@@ -113,20 +130,6 @@ class _WalletToMt5State extends State<WalletToMt5> {
                 AmountTexfield(
                   hintText: 'Amount',
                   controller: _amountController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter an amount';
-                    }
-                    try {
-                      final amount = double.parse(value);
-                      if (amount <= 0) {
-                        return 'Amount must be greater than 0';
-                      }
-                    } catch (e) {
-                      return 'Please enter a valid amount';
-                    }
-                    return null;
-                  },
                 ),
 
                 SizedBox(height: 20.h),

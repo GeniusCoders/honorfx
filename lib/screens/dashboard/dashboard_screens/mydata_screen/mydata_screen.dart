@@ -1,3 +1,4 @@
+import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,7 +28,7 @@ class _MyDataScreenState extends State<MyDataScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -38,7 +39,7 @@ class _MyDataScreenState extends State<MyDataScreen>
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Padding(
       padding: EdgeInsets.all(16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,30 +57,27 @@ class _MyDataScreenState extends State<MyDataScreen>
             indicatorColor: AppColors.primary,
             indicatorWeight: 4.w,
             labelStyle: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
-            labelColor: Colors.black,
             unselectedLabelColor: Colors.grey,
             indicatorSize: TabBarIndicatorSize.tab,
-            dividerColor: AppColors.grey,
+            labelColor: AppColors.primary,
             tabs: const [
               Tab(text: 'History'),
               Tab(text: 'Deal Report'),
-              Tab(text: 'Insights'),
+              // Tab(text: 'Insights'),
             ],
           ),
 
-          // TabBarView with fixed height
-          SizedBox(
-            height: 760.h,
+          // TabBarView with dynamic height
+          Expanded(
             child: TabBarView(
               controller: _tabController,
-              physics: const NeverScrollableScrollPhysics(),
               children: [
                 // History Tab
                 _buildHistoryTab(),
                 // Deal Report Tab
                 const DealReport(),
                 // Insights Tab
-                _buildInsightsTab(),
+                // Center(child: Text('Coming Soon')),
               ],
             ),
           ),
@@ -89,7 +87,7 @@ class _MyDataScreenState extends State<MyDataScreen>
   }
 
   Widget _buildHistoryTab() {
-    return Padding(
+    return SingleChildScrollView(
       padding: EdgeInsets.only(top: 30.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,64 +101,65 @@ class _MyDataScreenState extends State<MyDataScreen>
               _buildRadioOption('Withdrawal', 'Withdrawal'),
             ],
           ),
-          SizedBox(height: 30.h),
+          // SizedBox(height: 30.h),
 
           // Date Range Picker
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(7.r),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(8.w),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEEEEEE),
-                        shape: BoxShape.circle,
-                      ),
-                      child: SvgPicture.asset(
-                        'assets/icons/calendar.svg',
-                        width: 20.w,
-                        height: 20.w,
-                      ),
-                    ),
-                    SizedBox(width: 15.w),
-                    Text(
-                      _dateRange,
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(width: 10.w),
-                    SvgPicture.asset(
-                      'assets/icons/arrow-circle-down.svg',
-                      width: 20.w,
-                      height: 20.w,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 15.w),
-              Container(
-                padding: EdgeInsets.all(10.w),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(7.r),
-                ),
-                child: SvgPicture.asset(
-                  'assets/icons/upload_one.svg',
-                  width: 32.w,
-                  height: 32.w,
-                ),
-              ),
-            ],
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     Container(
+          //       padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
+          //       decoration: BoxDecoration(
+          //         color: AppColors.greyBackground,
+          //         borderRadius: BorderRadius.circular(7.r),
+          //       ),
+          //       child: Row(
+          //         children: [
+          //           Container(
+          //             padding: EdgeInsets.all(8.w),
+          //             decoration: BoxDecoration(
+          //               color: const Color(0xFFEEEEEE),
+          //               shape: BoxShape.circle,
+          //             ),
+          //             child: SvgPicture.asset(
+          //               'assets/icons/calendar.svg',
+          //               width: 20.w,
+          //               height: 20.w,
+          //             ),
+          //           ),
+          //           SizedBox(width: 15.w),
+          //           Text(
+          //             _dateRange,
+          //             style: TextStyle(
+          //               fontSize: 14.sp,
+          //               fontWeight: FontWeight.w500,
+          //             ),
+          //           ),
+          //           SizedBox(width: 10.w),
+          //           SvgPicture.asset(
+          //             'assets/icons/arrow-circle-down.svg',
+          //             width: 20.w,
+          //             height: 20.w,
+          //             color: AppColors.black,
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //     SizedBox(width: 15.w),
+          //     Container(
+          //       padding: EdgeInsets.all(10.w),
+          //       decoration: BoxDecoration(
+          //         color: AppColors.greyBackground,
+          //         borderRadius: BorderRadius.circular(7.r),
+          //       ),
+          //       child: SvgPicture.asset(
+          //         'assets/icons/upload_one.svg',
+          //         width: 32.w,
+          //         height: 32.w,
+          //       ),
+          //     ),
+          //   ],
+          // ),
           SizedBox(height: 20.h),
           // Display either deposit or withdraw transactions based on selection
           AnimatedSwitcher(
@@ -252,7 +251,7 @@ class _MyDataScreenState extends State<MyDataScreen>
           Container(
             padding: EdgeInsets.all(16.w),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.greyBackground,
               borderRadius: BorderRadius.circular(15.r),
               border: Border.all(color: AppColors.grey),
             ),
@@ -349,7 +348,7 @@ class _MyDataScreenState extends State<MyDataScreen>
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.greyBackground,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -405,7 +404,7 @@ class _MyDataScreenState extends State<MyDataScreen>
           style: TextStyle(
             fontSize: 14.sp,
             fontWeight: FontWeight.w500,
-            color: _selectedOption == value ? Colors.black : Colors.grey,
+            color: _selectedOption == value ? AppColors.black : Colors.grey,
           ),
         ),
       ],

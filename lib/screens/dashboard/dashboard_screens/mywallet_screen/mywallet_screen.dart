@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
@@ -25,22 +27,81 @@ class _MyWalletScreenState extends State<MyWalletScreen>
   late TabController _tabController;
   String walletBalance = '\$0.00';
   String equityBalance = '\$0.00';
+  final dashboardController = Get.find<DashboardController>();
+  Worker? _accountSelectionWorker;
+  Worker? _navigationWorker;
+  int? _initialAccountIndex;
+  bool _isDisposing = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    // Fetch dashboard data when the screen loads
+    _initialAccountIndex = dashboardController.selectedAccountIndex.value;
     _loadDashboardData();
+    _setupAccountSelectionListener();
   }
 
   void _loadDashboardData() {
     context.read<DashboardCubit>().getDashboardData();
   }
 
+  void _setupAccountSelectionListener() {
+    _accountSelectionWorker = ever(dashboardController.selectedAccountIndex, (
+      _,
+    ) {
+      _updateEquityBalance();
+    });
+  }
+
+  void _resetAccountSelection() {
+    if (_initialAccountIndex != null) {
+      dashboardController.selectedAccountIndex.value = _initialAccountIndex!;
+    }
+
+    if (mounted && !_isDisposing) {
+      setState(() {
+        equityBalance = '\$0.00';
+      });
+    }
+  }
+
+  void _updateEquityBalance() {
+    if (!mounted || _isDisposing) return;
+
+    if (dashboardController.accounts.isNotEmpty) {
+      final selectedIndex = dashboardController.selectedAccountIndex.value;
+      if (selectedIndex >= 0 &&
+          selectedIndex < dashboardController.accounts.length) {
+        final selectedAccount = dashboardController.accounts[selectedIndex];
+        setState(() {
+          equityBalance = '\$${selectedAccount.balance ?? '0.00'}';
+        });
+      }
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _setupNavigationListener();
+  }
+
+  void _setupNavigationListener() {
+    _navigationWorker?.dispose();
+    _navigationWorker = ever(dashboardController.selectedIndex, (int index) {
+      if (index != 3 && mounted && !_isDisposing) {
+        _resetAccountSelection();
+      }
+    });
+  }
+
   @override
   void dispose() {
+    _isDisposing = true;
     _tabController.dispose();
+    _accountSelectionWorker?.dispose();
+    _navigationWorker?.dispose();
     super.dispose();
   }
 
@@ -48,15 +109,15 @@ class _MyWalletScreenState extends State<MyWalletScreen>
   Widget build(BuildContext context) {
     return BlocConsumer<DashboardCubit, DashboardState>(
       listener: (context, state) {
-        if (state is DashboardDataLoaded) {
+        if (state is DashboardDataLoaded && mounted && !_isDisposing) {
           setState(() {
-            // Update the wallet balance from API
             walletBalance = '\$${state.dashboardData.walletBalance ?? '0.00'}';
-
-            // Equity balance could come from the account details,
-            // but for now we'll just keep the placeholder
-            equityBalance = '\$1000.16';
+            _updateEquityBalance();
           });
+        }
+        if (state is AccountsLoaded) {
+          dashboardController.accounts.value = state.accounts;
+          _updateEquityBalance();
         }
       },
       builder: (context, state) {
@@ -74,11 +135,9 @@ class _MyWalletScreenState extends State<MyWalletScreen>
                 const TabTitle(title: 'My Wallet'),
                 SizedBox(height: 20.h),
 
-                // Balance Cards
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    // Wallet Balance Card
                     Expanded(
                       child: _buildBalanceCard(
                         'Wallet Balance',
@@ -88,7 +147,6 @@ class _MyWalletScreenState extends State<MyWalletScreen>
                       ),
                     ),
                     SizedBox(width: 12.w),
-                    // Equity Balance Card
                     Expanded(
                       child: _buildBalanceCard(
                         'Equity Balance',
@@ -100,7 +158,6 @@ class _MyWalletScreenState extends State<MyWalletScreen>
                   ],
                 ),
 
-                // Error message
                 if (state is DashboardDataError)
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 8.h),
@@ -113,49 +170,36 @@ class _MyWalletScreenState extends State<MyWalletScreen>
                 SizedBox(height: 30.h),
 
                 // Tab Bar
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: const Color(0xFFEEEEEE),
-                        width: 2.w,
-                      ),
-                    ),
+                TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: AppColors.primary,
+                  labelStyle: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500,
                   ),
-                  child: TabBar(
-                    controller: _tabController,
-                    labelColor: Colors.black,
-                    isScrollable: true,
-                    tabAlignment: TabAlignment.start,
-                    unselectedLabelColor: Colors.grey,
-                    indicatorColor: AppColors.primary,
-                    labelStyle: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    indicatorWeight: 3.w,
-                    dividerColor: AppColors.grey,
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    tabs: const [
-                      Tab(text: 'Wallet to MT5'),
-                      Tab(text: 'MT5 to Wallet'),
-                      Tab(text: 'History'),
-                    ],
-                  ),
+
+                  indicatorWeight: 3.w,
+                  dividerColor: AppColors.grey,
+                  labelColor: AppColors.primary,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  tabs: const [
+                    Tab(text: 'Wallet to MT5'),
+                    Tab(text: 'MT5 to Wallet'),
+                    Tab(text: 'History'),
+                  ],
                 ),
                 SizedBox(height: 30.h),
 
-                // Tab Content
                 SizedBox(
                   height: 500.h,
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      // Wallet Transfer Tab
-                      const WalletToMt5(),
-                      const Mt5ToWallet(),
-
-                      // History Tab
+                      WalletToMt5(onAccountSelected: _onAccountSelected),
+                      Mt5ToWallet(onAccountSelected: _onAccountSelected),
                       WalletHistory(),
                     ],
                   ),
@@ -168,6 +212,18 @@ class _MyWalletScreenState extends State<MyWalletScreen>
     );
   }
 
+  void _onAccountSelected(String accountId) {
+    if (!mounted || _isDisposing) return;
+
+    final index = dashboardController.accounts.indexWhere(
+      (account) => account.mtUserid.toString() == accountId,
+    );
+
+    if (index != -1) {
+      dashboardController.selectedAccountIndex.value = index;
+    }
+  }
+
   Widget _buildBalanceCard(
     String title,
     String amount,
@@ -177,13 +233,12 @@ class _MyWalletScreenState extends State<MyWalletScreen>
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.greyBackground,
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Icon
           SvgPicture.asset(
             iconAsset,
             height: 24.h,
@@ -191,7 +246,6 @@ class _MyWalletScreenState extends State<MyWalletScreen>
             color: iconColor,
           ),
           SizedBox(height: 12.h),
-          // Title
           Text(
             title,
             style: TextStyle(
@@ -201,7 +255,6 @@ class _MyWalletScreenState extends State<MyWalletScreen>
             ),
           ),
           SizedBox(height: 4.h),
-          // Amount
           Text(
             amount,
             style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),

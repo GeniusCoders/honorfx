@@ -100,7 +100,6 @@ class _DealReportState extends State<DealReport> {
       builder: (context, state) {
         if (state is DashboardLoading) return const SmallLoading();
         return SingleChildScrollView(
-          physics: NeverScrollableScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -130,7 +129,7 @@ class _DealReportState extends State<DealReport> {
                       horizontal: 10.w,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.greyBackground,
                       borderRadius: BorderRadius.circular(7.r),
                     ),
                     child: Row(
@@ -325,7 +324,7 @@ class DealCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.greyBackground,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Padding(
@@ -356,7 +355,7 @@ class DealCard extends StatelessWidget {
                     deal.getDealType(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppColors.white,
                       fontWeight: FontWeight.w500,
                       fontSize: 12.sp,
                     ),

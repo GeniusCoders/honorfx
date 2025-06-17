@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
 import 'package:honorfx/models/dashboard/reports_model/add_deposit_model.dart';
+import 'package:honorfx/models/dashboard/support_ticket_model.dart';
 import 'package:honorfx/services/repo/dashboard_repo.dart';
 import 'package:injectable/injectable.dart';
 
@@ -22,7 +23,7 @@ class DashboardCubit extends Cubit<DashboardState> {
     }
   }
 
-  Future<void> getAccounts() async {
+  Future<void> getAccounts({bool isAccountDetailsFetched = true}) async {
     emit(DashboardLoading());
     try {
       final result = await _dashboardRepo.getAccounts();
@@ -35,9 +36,11 @@ class DashboardCubit extends Cubit<DashboardState> {
             if (accountList.data != null && accountList.data!.isNotEmpty) {
               emit(AccountsLoaded(accounts: accountList.data!));
               // Fetch account details for the first account by default
-              getAccountDetails(
-                accountId: accountList.data!.first.mtUserid.toString(),
-              );
+              if (isAccountDetailsFetched) {
+                getAccountDetails(
+                  accountId: accountList.data!.first.mtUserid.toString(),
+                );
+              }
             } else {
               emit(AccountsLoaded(accounts: []));
             }
@@ -450,12 +453,177 @@ class DashboardCubit extends Cubit<DashboardState> {
     final _data = await _dashboardRepo.addDeposit(model: model);
     _data.fold(
       (l) => emit(DashboardFailed(error: l.message ?? 'Failed to add deposit')),
-      (r) => {
-        if (r.status == 200)
-          {emit(AddDepositSuccess(message: r.msg!))}
-        else
-          {emit(DashboardError(message: r.msg!))},
+      (r) {
+        if (r.status == 200) {
+          emit(AddDepositSuccess(message: r.msg!));
+        } else {
+          emit(DashboardError(message: r.msg!));
+        }
       },
     );
+  }
+
+  Future<void> upiQrCode() async {
+    emit(DashboardLoading());
+    final _data = await _dashboardRepo.upiQrCode();
+    _data.fold(
+      (l) => emit(
+        DashboardFailed(error: l.message ?? 'Failed to get UPI QR code'),
+      ),
+      (r) {
+        if (r.status == 200) {
+          emit(UpiQrCodeLoaded(qrcode: r.data!.qrcode));
+        } else {
+          emit(DashboardError(message: r.msg!));
+        }
+      },
+    );
+  }
+
+  Future<void> cregisDeposit({
+    required String amount,
+    required String mt5id,
+  }) async {
+    emit(DashboardLoading());
+    final _data = await _dashboardRepo.cregisDeposit(
+      amount: amount,
+      mt5id: mt5id,
+    );
+    _data.fold(
+      (l) => emit(
+        CryptoDepositError(
+          message: l.message ?? 'Failed to create crypto deposit',
+        ),
+      ),
+      (r) {
+        if (r.status == 200) {
+          emit(
+            CryptoDepositSuccess(
+              url: r.data!.url,
+              message: r.msg ?? 'Crypto deposit request created successfully',
+            ),
+          );
+        } else {
+          emit(
+            CryptoDepositError(
+              message: r.msg ?? 'Failed to create crypto deposit',
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  // Create support ticket
+  Future<void> createTicket({
+    required String title,
+    required String category,
+    required String priority,
+    required String message,
+  }) async {
+    emit(CreateTicketLoading());
+    try {
+      final request = CreateTicketRequest(
+        title: title,
+        category: category,
+        priority: priority,
+        message: message,
+      );
+
+      final result = await _dashboardRepo.createTicket(request: request);
+
+      result.fold(
+        (error) => emit(
+          CreateTicketError(
+            message: error.message ?? 'Failed to create ticket',
+          ),
+        ),
+        (response) {
+          if (response.status == 200) {
+            emit(
+              CreateTicketSuccess(
+                message: response.msg ?? 'Ticket created successfully',
+                ticketId: response.data?.ticketId,
+              ),
+            );
+            // Refresh tickets list after creating a new ticket
+            getMyTickets();
+          } else {
+            emit(
+              CreateTicketError(
+                message: response.msg ?? 'Failed to create ticket',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(CreateTicketError(message: e.toString()));
+    }
+  }
+
+  // Get my tickets
+  Future<void> getMyTickets() async {
+    emit(MyTicketsLoading());
+    try {
+      final result = await _dashboardRepo.getMyTickets();
+
+      result.fold(
+        (error) => emit(
+          MyTicketsError(message: error.message ?? 'Failed to load tickets'),
+        ),
+        (response) {
+          if (response.status == 200) {
+            if (response.data != null && response.data!.isNotEmpty) {
+              emit(MyTicketsLoaded(tickets: response.data!));
+            } else {
+              emit(MyTicketsLoaded(tickets: []));
+            }
+          } else {
+            emit(
+              MyTicketsError(message: response.msg ?? 'Failed to load tickets'),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(MyTicketsError(message: e.toString()));
+    }
+  }
+
+  // Add comment to ticket
+  Future<void> addComment({
+    required String ticketId,
+    required String comment,
+  }) async {
+    emit(AddCommentLoading());
+    try {
+      final request = AddCommentRequest(ticketId: ticketId, comment: comment);
+
+      final result = await _dashboardRepo.addComment(request: request);
+
+      result.fold(
+        (error) => emit(
+          AddCommentError(message: error.message ?? 'Failed to add comment'),
+        ),
+        (response) {
+          if (response.status == 200) {
+            emit(
+              AddCommentSuccess(
+                message: response.msg ?? 'Comment added successfully',
+              ),
+            );
+            // Refresh tickets list after adding comment
+            getMyTickets();
+          } else {
+            emit(
+              AddCommentError(message: response.msg ?? 'Failed to add comment'),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(AddCommentError(message: e.toString()));
+    }
   }
 }

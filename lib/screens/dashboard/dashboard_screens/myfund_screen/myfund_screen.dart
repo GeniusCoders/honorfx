@@ -40,7 +40,6 @@ class _MyFundScreenState extends State<MyFundScreen>
     return SingleChildScrollView(
       child: Column(
         children: [
-          // Fixed height header section
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             child: Column(
@@ -55,49 +54,32 @@ class _MyFundScreenState extends State<MyFundScreen>
               ],
             ),
           ),
-          // Top Tab Bar (Deposit/Withdrawal)
-          Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: Colors.grey.shade200, width: 1.h),
-              ),
-            ),
-            child: TabBar(
-              controller: _topTabController,
-              indicatorColor: AppColors.primary,
-              indicatorWeight: 3.h,
-              labelStyle: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-              ),
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-              indicatorSize: TabBarIndicatorSize.tab,
-              tabs: const [Tab(text: 'Deposit'), Tab(text: 'Withdrawal')],
-            ),
+          TabBar(
+            controller: _topTabController,
+            indicatorColor: AppColors.primary,
+            indicatorWeight: 3.h,
+            labelStyle: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+            unselectedLabelColor: Colors.grey,
+            indicatorSize: TabBarIndicatorSize.tab,
+            dividerColor: Colors.transparent,
+            labelColor: AppColors.primary,
+            tabs: const [Tab(text: 'Deposit'), Tab(text: 'Withdrawal')],
           ),
-          // First TabBarView with fixed height
           SizedBox(
             height: 560.h,
             child: TabBarView(
               controller: _topTabController,
               physics: const NeverScrollableScrollPhysics(),
-              children: [
-                // Deposit Tab
-                const DepositWidget(),
-                // Withdrawal Tab
-                _buildWithdrawalTab(),
-              ],
+              children: [const DepositWidget(), _buildWithdrawalTab()],
             ),
           ),
-          // Bottom Tab Bar (Internal Transfer/Recent Transactions)
           TabBar(
             controller: _bottomTabController,
             indicatorColor: AppColors.primary,
             indicatorWeight: 3.h,
             labelStyle: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
-            labelColor: Colors.black,
             unselectedLabelColor: Colors.grey,
+            labelColor: AppColors.primary,
             indicatorSize: TabBarIndicatorSize.tab,
             tabs: const [
               Tab(text: 'Internal Transfer'),
@@ -105,16 +87,13 @@ class _MyFundScreenState extends State<MyFundScreen>
             ],
             dividerColor: Colors.transparent,
           ),
-          // Second TabBarView with fixed height
           SizedBox(
             height: 300.h,
             child: TabBarView(
               controller: _bottomTabController,
               physics: const NeverScrollableScrollPhysics(),
               children: [
-                // Internal Transfer Tab
                 const InternalTransferWidget(),
-                // Recent Transactions Tab
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   child: _buildRecentTransactionsTab(),

@@ -15,7 +15,9 @@ import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
 import 'cubit/auth/auth_cubit.dart' as _i766;
+import 'cubit/bank_details/bank_details_cubit.dart' as _i482;
 import 'cubit/dashboard/dashboard_cubit.dart' as _i152;
+import 'cubit/document_upload/document_upload_cubit.dart' as _i420;
 import 'cubit/ib_dashboard/ib_dashboard_cubit.dart' as _i597;
 import 'cubit/login_cubit/login_cubit.dart' as _i536;
 import 'cubit/reports_cubit/reports_cubit.dart' as _i332;
@@ -39,11 +41,7 @@ Future<_i174.GetIt> $initGetIt(
   String? environment,
   _i526.EnvironmentFilter? environmentFilter,
 }) async {
-  final gh = _i526.GetItHelper(
-    getIt,
-    environment,
-    environmentFilter,
-  );
+  final gh = _i526.GetItHelper(getIt, environment, environmentFilter);
   final registerModule = _$RegisterModule();
   await gh.factoryAsync<_i460.SharedPreferences>(
     () => registerModule.prefs,
@@ -51,41 +49,59 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.lazySingleton<_i929.Constant>(() => _i929.Constant());
   gh.lazySingleton<_i558.FlutterSecureStorage>(
-      () => registerModule.flutterSecureStorage);
+    () => registerModule.flutterSecureStorage,
+  );
   gh.lazySingleton<_i722.AppRouter>(() => registerModule.appRouter);
   gh.factory<_i706.AuthService>(
-      () => _i706.AuthService(gh<_i460.SharedPreferences>()));
-  gh.factory<_i766.AuthCubit>(
-      () => _i766.AuthCubit(authService: gh<_i706.AuthService>()));
-  gh.factory<String>(
-    () => registerModule.baseUrl,
-    instanceName: 'BaseUrl',
+    () => _i706.AuthService(gh<_i460.SharedPreferences>()),
   );
+  gh.factory<_i766.AuthCubit>(
+    () => _i766.AuthCubit(authService: gh<_i706.AuthService>()),
+  );
+  gh.factory<String>(() => registerModule.baseUrl, instanceName: 'BaseUrl');
   gh.lazySingleton<_i361.Dio>(
-      () => registerModule.dio(gh<String>(instanceName: 'BaseUrl')));
-  gh.factory<_i942.DashboardRepo>(() => _i90.DashboardApi(
-        dio: gh<_i361.Dio>(),
-        sharedPreferences: gh<_i460.SharedPreferences>(),
-      ));
-  gh.factory<_i322.LoginRepo>(() => _i483.LoginApi(
-        dio: gh<_i361.Dio>(),
-        sharedPreferences: gh<_i460.SharedPreferences>(),
-      ));
-  gh.factory<_i181.IbDashboardRepo>(() => _i270.IbDashboardApi(
-        dio: gh<_i361.Dio>(),
-        sharedPreferences: gh<_i460.SharedPreferences>(),
-      ));
-  gh.factory<_i597.IbDashboardCubit>(() =>
-      _i597.IbDashboardCubit(ibDashboardRepo: gh<_i181.IbDashboardRepo>()));
+    () => registerModule.dio(gh<String>(instanceName: 'BaseUrl')),
+  );
+  gh.factory<_i942.DashboardRepo>(
+    () => _i90.DashboardApi(
+      dio: gh<_i361.Dio>(),
+      sharedPreferences: gh<_i460.SharedPreferences>(),
+    ),
+  );
+  gh.factory<_i322.LoginRepo>(
+    () => _i483.LoginApi(
+      dio: gh<_i361.Dio>(),
+      sharedPreferences: gh<_i460.SharedPreferences>(),
+    ),
+  );
+  gh.factory<_i181.IbDashboardRepo>(
+    () => _i270.IbDashboardApi(
+      dio: gh<_i361.Dio>(),
+      sharedPreferences: gh<_i460.SharedPreferences>(),
+    ),
+  );
+  gh.factory<_i597.IbDashboardCubit>(
+    () => _i597.IbDashboardCubit(ibDashboardRepo: gh<_i181.IbDashboardRepo>()),
+  );
   gh.factory<_i152.DashboardCubit>(
-      () => _i152.DashboardCubit(dashboardRepo: gh<_i942.DashboardRepo>()));
+    () => _i152.DashboardCubit(dashboardRepo: gh<_i942.DashboardRepo>()),
+  );
   gh.factory<_i332.ReportsCubit>(
-      () => _i332.ReportsCubit(dashboardRepo: gh<_i942.DashboardRepo>()));
+    () => _i332.ReportsCubit(dashboardRepo: gh<_i942.DashboardRepo>()),
+  );
   gh.factory<_i536.LoginCubit>(
-      () => _i536.LoginCubit(loginRepo: gh<_i322.LoginRepo>()));
+    () => _i536.LoginCubit(loginRepo: gh<_i322.LoginRepo>()),
+  );
   gh.factory<_i666.SignupRepo>(() => _i887.SignupApi(dio: gh<_i361.Dio>()));
   gh.factory<_i775.SignupCubit>(
-      () => _i775.SignupCubit(signupRepo: gh<_i666.SignupRepo>()));
+    () => _i775.SignupCubit(signupRepo: gh<_i666.SignupRepo>()),
+  );
+  gh.factory<_i482.BankDetailsCubit>(
+    () => _i482.BankDetailsCubit(dashboardRepo: gh<_i942.DashboardRepo>()),
+  );
+  gh.factory<_i420.DocumentUploadCubit>(
+    () => _i420.DocumentUploadCubit(dashboardRepo: gh<_i942.DashboardRepo>()),
+  );
   return getIt;
 }
 

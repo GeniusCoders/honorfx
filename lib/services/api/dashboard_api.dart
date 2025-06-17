@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:honorfx/controllers/dashboard_controller.dart';
@@ -9,27 +10,32 @@ import 'package:get/get.dart' as getcontroller;
 import 'package:honorfx/models/common/response_details.dart';
 import 'package:honorfx/models/dashboard/account_details_response.dart';
 import 'package:honorfx/models/dashboard/account_listing_type_model.dart';
+import 'package:honorfx/models/dashboard/bank_details_model.dart';
+import 'package:honorfx/models/dashboard/crypto_deposit_response.dart';
+import 'package:honorfx/models/dashboard/dashboard_data_response.dart';
+import 'package:honorfx/models/dashboard/deal_report_response.dart';
+import 'package:honorfx/models/dashboard/document_upload_model.dart';
+import 'package:honorfx/models/dashboard/group_list_model.dart';
+import 'package:honorfx/models/dashboard/internal_transfer_response.dart';
+import 'package:honorfx/models/dashboard/leverage_list_model.dart';
+import 'package:honorfx/models/dashboard/open_account_response.dart';
+import 'package:honorfx/models/dashboard/open_positions_model.dart';
 import 'package:honorfx/models/dashboard/reports_model/add_deposit_model.dart';
 import 'package:honorfx/models/dashboard/reports_model/deposit_report_model.dart';
 import 'package:honorfx/models/dashboard/reports_model/withdraw_report_model.dart';
+import 'package:honorfx/models/dashboard/support_ticket_model.dart';
+import 'package:honorfx/models/dashboard/upi_qr_code_response.dart';
+import 'package:honorfx/models/dashboard/wallet_history_response.dart';
+import 'package:honorfx/models/dashboard/wallet_transfer_response.dart';
+import 'package:honorfx/models/dashboard/withdraw_response.dart';
 import 'package:honorfx/models/login_model.dart';
 import 'package:honorfx/router/app_router.dart';
-import 'package:honorfx/utils/constant/strings.dart';
-import 'package:injectable/injectable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:dartz/dartz.dart';
 import 'package:honorfx/services/core/server_error.dart';
 import 'package:honorfx/services/repo/dashboard_repo.dart';
-import 'package:honorfx/models/dashboard/open_positions_model.dart';
-import 'package:honorfx/models/dashboard/group_list_model.dart';
-import 'package:honorfx/models/dashboard/leverage_list_model.dart';
-import 'package:honorfx/models/dashboard/open_account_response.dart';
-import 'package:honorfx/models/dashboard/internal_transfer_response.dart';
-import 'package:honorfx/models/dashboard/withdraw_response.dart';
-import 'package:honorfx/models/dashboard/wallet_transfer_response.dart';
-import 'package:honorfx/models/dashboard/wallet_history_response.dart';
-import 'package:honorfx/models/dashboard/dashboard_data_response.dart';
-import 'package:honorfx/models/dashboard/deal_report_response.dart';
+import 'package:honorfx/utils/constant/strings.dart';
+import 'package:honorfx/utils/constant/base_url.dart';
+import 'package:injectable/injectable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 @Injectable(as: DashboardRepo)
 class DashboardApi extends DashboardRepo {
@@ -490,6 +496,235 @@ class DashboardApi extends DashboardRepo {
       return right(ResponseDetails.fromJson(response.data));
     } on DioError catch (e) {
       return left(ServerError.withError(error: e));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, UpiQrCodeResponse>> upiQrCode() async {
+    try {
+      _setupToken();
+      const url = "/upiqrcode";
+      final response = await dio.get(url);
+      return right(UpiQrCodeResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in upiQrCode: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in upiQrCode: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, CryptoDepositResponse>> cregisDeposit({
+    required String amount,
+    required String mt5id,
+  }) async {
+    try {
+      _setupToken();
+      const url = "/cregisdeposit";
+      final Map<String, dynamic> data = {'amount': amount, 'mt5id': mt5id};
+
+      final response = await dio.post(url, data: data);
+      return right(CryptoDepositResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in cregisDeposit: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in cregisDeposit: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, BankDetailsResponse>> getBankDetailsList() async {
+    try {
+      _setupToken();
+      const url = "/bankdetails";
+      final response = await dio.get(url);
+      return right(BankDetailsResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in getBankDetailsList: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in getBankDetailsList: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, ResponseDetails>> addBankDetails({
+    required AddBankDetailsModel model,
+  }) async {
+    try {
+      _setupToken();
+      const url = "/addbankdetails";
+      final response = await dio.post(url, data: model.toJson());
+      return right(ResponseDetails.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in addBankDetails: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in addBankDetails: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, DocumentUploadResponse>>
+  getDocumentUploadList() async {
+    try {
+      _setupToken();
+      const url = "/documentuploadlist";
+      final response = await dio.get(url);
+      return right(DocumentUploadResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in getDocumentUploadList: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in getDocumentUploadList: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, ResponseDetails>> uploadDocuments({
+    required UploadDocumentModel model,
+  }) async {
+    try {
+      _setupToken();
+      const url = "/documentupload";
+
+      // Prepare form data for file upload
+      final formData = FormData();
+
+      // Add files if provided
+      if (model.poi != null && model.poi!.isNotEmpty) {
+        final fileName = model.poi!.split('/').last;
+        formData.files.add(
+          MapEntry(
+            'poi',
+            await MultipartFile.fromFile(model.poi!, filename: fileName),
+          ),
+        );
+      }
+
+      if (model.poiBack != null && model.poiBack!.isNotEmpty) {
+        final fileName = model.poiBack!.split('/').last;
+        formData.files.add(
+          MapEntry(
+            'poiback',
+            await MultipartFile.fromFile(model.poiBack!, filename: fileName),
+          ),
+        );
+      }
+
+      if (model.poa != null && model.poa!.isNotEmpty) {
+        final fileName = model.poa!.split('/').last;
+        formData.files.add(
+          MapEntry(
+            'poa',
+            await MultipartFile.fromFile(model.poa!, filename: fileName),
+          ),
+        );
+      }
+
+      if (model.poaBack != null && model.poaBack!.isNotEmpty) {
+        final fileName = model.poaBack!.split('/').last;
+        formData.files.add(
+          MapEntry(
+            'poaback',
+            await MultipartFile.fromFile(model.poaBack!, filename: fileName),
+          ),
+        );
+      }
+
+      final response = await dio.post(url, data: formData);
+      return right(ResponseDetails.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in uploadDocuments: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in uploadDocuments: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, CreateTicketResponse>> createTicket({
+    required CreateTicketRequest request,
+  }) async {
+    try {
+      _setupToken();
+      const url = "/createticket";
+      final response = await dio.post(url, data: request.toJson());
+      return right(CreateTicketResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in createTicket: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in createTicket: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, MyTicketsResponse>> getMyTickets() async {
+    try {
+      _setupToken();
+      const url = "/mytickets";
+      final response = await dio.get(url);
+      return right(MyTicketsResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in getMyTickets: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in getMyTickets: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerError, AddCommentResponse>> addComment({
+    required AddCommentRequest request,
+  }) async {
+    try {
+      _setupToken();
+      const url = "/addcomment";
+      final response = await dio.post(url, data: request.toJson());
+      return right(AddCommentResponse.fromJson(response.data));
+    } on DioError catch (e) {
+      log("DioError in addComment: ${e.message}");
+      return left(ServerError.withError(error: e));
+    } catch (e) {
+      log("General error in addComment: $e");
+      return left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<UpiQrCodeData> getUpiQrCode() async {
+    try {
+      final response = await dio.get('${BaseUrl.apidomain}/v1/upi/qr-code');
+      return UpiQrCodeData.fromJson(response.data['data']);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<CryptoDepositData> getCryptoDeposit({
+    required String amount,
+    required String mt5id,
+  }) async {
+    try {
+      final response = await dio.get(
+        '${BaseUrl.apidomain}/v1/crypto/deposit',
+        queryParameters: {'amount': amount, 'mt5id': mt5id},
+      );
+      return CryptoDepositData.fromJson(response.data['data']);
+    } catch (e) {
+      rethrow;
     }
   }
 }

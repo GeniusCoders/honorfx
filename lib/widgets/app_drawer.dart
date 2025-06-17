@@ -51,29 +51,29 @@ class AppDrawer extends StatelessWidget {
                             height: 42.h,
                           ),
                         ),
-                        SizedBox(width: 12.w),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 10.w,
-                                    vertical: 10.h,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.secondary,
-                                    borderRadius: BorderRadius.circular(7),
-                                  ),
-                                  child: SvgPicture.asset(
-                                    'assets/icons/setting.svg',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                        // SizedBox(width: 12.w),
+                        // Column(
+                        //   crossAxisAlignment: CrossAxisAlignment.start,
+                        //   children: [
+                        //     Row(
+                        //       children: [
+                        //         Container(
+                        //           padding: EdgeInsets.symmetric(
+                        //             horizontal: 10.w,
+                        //             vertical: 10.h,
+                        //           ),
+                        //           decoration: BoxDecoration(
+                        //             color: AppColors.secondary,
+                        //             borderRadius: BorderRadius.circular(7),
+                        //           ),
+                        //           child: SvgPicture.asset(
+                        //             'assets/icons/setting.svg',
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ],
+                        // ),
                       ],
                     ),
                     GestureDetector(
@@ -103,11 +103,11 @@ class AppDrawer extends StatelessWidget {
                       Navigator.pop(context);
                     },
                   ),
-                  _buildMenuItem(
-                    context,
-                    icon: 'assets/icons/regulations.svg',
-                    title: 'Regulations',
-                  ),
+                  // _buildMenuItem(
+                  //   context,
+                  //   icon: 'assets/icons/regulations.svg',
+                  //   title: 'Regulations',
+                  // ),
                   _buildMenuItem(
                     context,
                     icon: 'assets/icons/my_fund.svg',
@@ -195,202 +195,127 @@ class AppDrawer extends StatelessWidget {
                       Navigator.pop(context);
                     },
                   ),
-                  _buildMenuItem(
+                  _buildExpandableMenuItem(
                     context,
-                    icon: 'assets/icons/news.svg',
-                    title: 'News',
+                    icon: 'assets/icons/regulations.svg',
+                    title: 'Compliance',
+                    subMenuItems: [
+                      SubMenuItem(
+                        title: 'Document Upload',
+                        onTap: () {
+                          Navigator.pop(context);
+                          getIt<AppRouter>().goToDocumentUpload();
+                        },
+                      ),
+                      SubMenuItem(
+                        title: 'Bank Details',
+                        onTap: () {
+                          Navigator.pop(context);
+                          getIt<AppRouter>().goToBankDetails();
+                        },
+                      ),
+                    ],
                   ),
                   _buildMenuItem(
                     context,
                     icon: 'assets/icons/support.svg',
                     title: 'Support',
                     onTap: () {
+                      Navigator.pop(context);
                       getIt<AppRouter>().goToSupport();
                     },
                   ),
                 ],
               ),
 
-              // Account Manager Section
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                child: Container(
-                  padding: EdgeInsets.all(16.w),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: AppColors.grey),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 8.h),
-                      Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.asset(
-                              'assets/images/DP.png',
-                              width: 36.w,
-                              height: 36.h,
-                            ),
-                          ),
-                          SizedBox(width: 12.w),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Your Assigned Manager',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Text(
-                                'Jignesh Patel',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20.h),
-                      Center(
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: IntrinsicWidth(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 8.h,
-                                horizontal: 12.w,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.greyBackground,
-                                borderRadius: BorderRadius.circular(7),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/icons/sms.svg',
-                                    width: 20.w,
-                                    height: 20.h,
-                                    colorFilter: const ColorFilter.mode(
-                                      AppColors.black,
-                                      BlendMode.srcIn,
-                                    ),
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Text(
-                                    'Get in touch',
-                                    style: TextStyle(
-                                      color: AppColors.black,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14.sp,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
               // Referral Link Section
               if (dashboardController.tokenResponse.value?.isIb == '2')
+                // Padding(
+                //   padding: EdgeInsets.symmetric(
+                //     horizontal: 16.w,
+                //     vertical: 8.h,
+                //   ),
+                //   child: Container(
+                //     padding: EdgeInsets.all(16.w),
+                //     width: double.infinity,
+                //     decoration: BoxDecoration(
+                //       borderRadius: BorderRadius.circular(15),
+                //       border: Border.all(color: AppColors.grey),
+                //     ),
+                //     child: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.center,
+                //       children: [
+                //         Text(
+                //           'Copy your Referral Link!',
+                //           style: TextStyle(
+                //             fontSize: 14.sp,
+                //             fontWeight: FontWeight.w600,
+                //           ),
+                //         ),
+                //         SizedBox(height: 8.h),
+                //         Container(
+                //           padding: EdgeInsets.symmetric(
+                //             vertical: 6.h,
+                //             horizontal: 16.w,
+                //           ),
+                //           decoration: BoxDecoration(
+                //             color: AppColors.primary,
+                //             borderRadius: BorderRadius.circular(20),
+                //           ),
+                //           child: Text(
+                //             'Click Here',
+                //             style: TextStyle(
+                //               color: Colors.white,
+                //               fontWeight: FontWeight.w500,
+                //               fontSize: 12.sp,
+                //             ),
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+                // Logout Button
                 Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 8.h,
-                  ),
-                  child: Container(
-                    padding: EdgeInsets.all(16.w),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: AppColors.grey),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Copy your Referral Link!',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
+                  padding: EdgeInsets.all(16.w),
+                  child: GestureDetector(
+                    onTap: () {
+                      getIt<AuthCubit>().logout();
+                      getcontroller.Get.delete<DashboardController>();
+                      getIt<AppRouter>().goToLogin();
+                    },
+                    child: IntrinsicWidth(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10.h,
+                          horizontal: 16.w,
                         ),
-                        SizedBox(height: 8.h),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 6.h,
-                            horizontal: 16.w,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            'Click Here',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12.sp,
-                            ),
-                          ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.grey.shade100,
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-
-              // Logout Button
-              Padding(
-                padding: EdgeInsets.all(16.w),
-                child: GestureDetector(
-                  onTap: () {
-                    getIt<AuthCubit>().logout();
-                    getcontroller.Get.delete<DashboardController>();
-                    getIt<AppRouter>().goToLogin();
-                  },
-                  child: IntrinsicWidth(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 10.h,
-                        horizontal: 16.w,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.grey.shade100,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(
-                            'assets/icons/logout.svg',
-                            width: 20.w,
-                            height: 20.h,
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            'Logout',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14.sp,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              'assets/icons/logout.svg',
+                              width: 20.w,
+                              height: 20.h,
                             ),
-                          ),
-                        ],
+                            SizedBox(width: 8.w),
+                            Text(
+                              'Logout',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14.sp,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ),

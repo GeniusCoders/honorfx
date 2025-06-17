@@ -64,7 +64,7 @@ class _WithdrawWidgetState extends State<WithdrawWidget> {
     // Call the withdraw method
     final dashboardCubit = context.read<DashboardCubit>();
     dashboardCubit.withdraw(
-      mt5id: _selectedAccount!,
+      mt5id: _selectedAccount == 'Wallet' ? 'wallet' : _selectedAccount!,
       withdrawTo: 'cash',
       amount: amount,
       note: _noteController.text.trim(),
@@ -141,7 +141,10 @@ class _WithdrawWidgetState extends State<WithdrawWidget> {
                   CommonDropdown(
                     hintText: 'Select Account',
                     value: _selectedAccount,
-                    data: _accounts.map((e) => e.mtUserid.toString()).toList(),
+                    data: [
+                      'Wallet',
+                      ..._accounts.map((e) => e.mtUserid.toString()).toList(),
+                    ],
                     onChanged: (value) {
                       setState(() {
                         _selectedAccount = value;

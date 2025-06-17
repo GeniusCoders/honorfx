@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:honorfx/controllers/dashboard_controller.dart';
 import 'package:honorfx/cubit/auth/auth_cubit.dart';
+import 'package:honorfx/cubit/bank_details/bank_details_cubit.dart';
 import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
+import 'package:honorfx/cubit/document_upload/document_upload_cubit.dart';
 import 'package:honorfx/cubit/login_cubit/login_cubit.dart';
 import 'package:honorfx/cubit/reports_cubit/reports_cubit.dart';
 import 'package:honorfx/cubit/signup/signup_cubit.dart';
@@ -51,6 +53,8 @@ class MyApp extends StatelessWidget {
             BlocProvider(create: (context) => getIt<DashboardCubit>()),
             BlocProvider(create: (context) => getIt<AuthCubit>()),
             BlocProvider(create: (context) => getIt<ReportsCubit>()),
+            BlocProvider(create: (context) => getIt<BankDetailsCubit>()),
+            BlocProvider(create: (context) => getIt<DocumentUploadCubit>()),
           ],
           child: MaterialApp.router(
             debugShowCheckedModeBanner: false,

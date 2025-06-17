@@ -4,6 +4,7 @@ import 'package:honorfx/models/dashboard/dashboard_data_response.dart';
 import 'package:honorfx/models/dashboard/deal_report_response.dart';
 import 'package:honorfx/models/dashboard/group_list_model.dart';
 import 'package:honorfx/models/dashboard/leverage_list_model.dart';
+import 'package:honorfx/models/dashboard/support_ticket_model.dart';
 import 'package:honorfx/models/dashboard/wallet_history_response.dart';
 import 'package:honorfx/models/login_model.dart';
 
@@ -191,8 +192,67 @@ class AddDepositSuccess extends DashboardState {
   AddDepositSuccess({required this.message});
 }
 
-// You can add more dashboard-related states here
-// class PositionsLoading extends DashboardState {}
-// class PositionsLoaded extends DashboardState {...}
-// class TransactionsLoading extends DashboardState {}
-// class TransactionsLoaded extends DashboardState {...}
+class UpiQrCodeLoaded extends DashboardState {
+  final String qrcode;
+
+  UpiQrCodeLoaded({required this.qrcode});
+}
+
+class CryptoDepositSuccess extends DashboardState {
+  final String url;
+  final String message;
+
+  CryptoDepositSuccess({required this.url, required this.message});
+}
+
+class CryptoDepositError extends DashboardState {
+  final String message;
+
+  CryptoDepositError({required this.message});
+}
+
+// Support Ticket states
+class CreateTicketLoading extends DashboardState {}
+
+class CreateTicketSuccess extends DashboardState {
+  final String message;
+  final String? ticketId;
+
+  CreateTicketSuccess({required this.message, this.ticketId});
+}
+
+class CreateTicketError extends DashboardState {
+  final String message;
+
+  CreateTicketError({required this.message});
+}
+
+// My Tickets states
+class MyTicketsLoading extends DashboardState {}
+
+class MyTicketsLoaded extends DashboardState {
+  final List<TicketData> tickets;
+
+  MyTicketsLoaded({required this.tickets});
+}
+
+class MyTicketsError extends DashboardState {
+  final String message;
+
+  MyTicketsError({required this.message});
+}
+
+// Comment states
+class AddCommentLoading extends DashboardState {}
+
+class AddCommentSuccess extends DashboardState {
+  final String message;
+
+  AddCommentSuccess({required this.message});
+}
+
+class AddCommentError extends DashboardState {
+  final String message;
+
+  AddCommentError({required this.message});
+}

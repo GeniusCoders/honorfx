@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honorfx/screens/dashboard/dashboard.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/bank_details_screen/add_bank_details_screen.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/bank_details_screen/bank_details_screen.dart';
+import 'package:honorfx/screens/dashboard/dashboard_screens/document_upload_screen/document_upload_screen.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/open_account/open_account_screen.dart';
 import 'package:honorfx/screens/dashboard/dashboard_screens/support_screen/support_screen.dart';
 import 'package:honorfx/screens/ib_dashboard/ib_dashboard_screen.dart';
@@ -110,6 +113,21 @@ class AppRouter {
                   name: 'request-ib',
                   builder: (context, state) => const RequestIbScreen(),
                 ),
+                GoRoute(
+                  path: 'bank-details',
+                  name: 'bank-details',
+                  builder: (context, state) => const BankDetailsScreen(),
+                ),
+                GoRoute(
+                  path: 'add-bank-details',
+                  name: 'add-bank-details',
+                  builder: (context, state) => const AddBankDetailsScreen(),
+                ),
+                GoRoute(
+                  path: 'document-upload',
+                  name: 'document-upload',
+                  builder: (context, state) => const DocumentUploadScreen(),
+                ),
               ],
             ),
           ],
@@ -179,5 +197,20 @@ class AppRouter {
   // Navigate to Request IB screen
   void goToRequestIb() {
     router.pushNamed('request-ib');
+  }
+
+  // Navigate to Bank Details screen
+  void goToBankDetails() {
+    router.pushNamed('bank-details');
+  }
+
+  // Navigate to Add Bank Details screen
+  void goToAddBankDetails() {
+    router.pushNamed('add-bank-details');
+  }
+
+  // Navigate to Document Upload screen
+  void goToDocumentUpload() {
+    router.pushNamed('document-upload');
   }
 }

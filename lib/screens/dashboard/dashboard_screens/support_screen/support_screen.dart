@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/comman_appbar.dart';
-import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/tab_title.dart';
-import 'package:honorfx/screens/dashboard/dashboard_screens/dashboard_widgets/user_name.dart';
+import 'package:honorfx/cubit/dashboard/dashboard_cubit.dart';
+import 'package:honorfx/cubit/dashboard/dashboard_state.dart';
+import 'package:honorfx/injection.dart';
 import 'package:honorfx/utils/colors.dart';
-import 'package:honorfx/widgets/textfields/comman_texfield.dart';
 import 'package:honorfx/utils/common_dropdown.dart';
+import 'package:honorfx/utils/constant/strings.dart';
 import 'package:honorfx/utils/submit_button.dart';
+import 'package:honorfx/widgets/custom_app_bar.dart';
 import 'package:honorfx/widgets/gradient_background.dart';
+import 'package:honorfx/widgets/textfields/comman_texfield.dart';
 
 class SupportScreen extends StatefulWidget {
   const SupportScreen({super.key});
@@ -21,101 +24,157 @@ class _SupportScreenState extends State<SupportScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _formKey = GlobalKey<FormState>();
-  bool _isAgreementChecked = false;
 
   String _selectedOption = 'Open'; // 'Open' or 'Closed'
+
+  // Form controllers
+  final _titleController = TextEditingController();
+  final _messageController = TextEditingController();
+
+  // Form values
+  String? _selectedCategory;
+  String? _selectedPriority;
+
+  late DashboardCubit _dashboardCubit;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _dashboardCubit = getIt<DashboardCubit>();
+    // Load tickets when screen initializes
+    _dashboardCubit.getMyTickets();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _titleController.dispose();
+    _messageController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return GradientBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          padding: EdgeInsets.all(16.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const CommanAppbar(),
-              SizedBox(height: 20.h),
-              const UserName(),
-              SizedBox(height: 30.h),
-              const TabTitle(title: 'Support Center'),
+    return BlocProvider.value(
+      value: _dashboardCubit,
+      child: BlocListener<DashboardCubit, DashboardState>(
+        listener: (context, state) {
+          if (state is CreateTicketSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.green,
+              ),
+            );
+            // Clear form after successful submission
+            _clearForm();
+          } else if (state is CreateTicketError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          } else if (state is MyTicketsError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          } else if (state is AddCommentSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.green,
+              ),
+            );
+          } else if (state is AddCommentError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        child: GradientBackground(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: const CustomAppBar(title: 'Support Center'),
 
-              SizedBox(height: 25.h),
-
-              // Contact Options Row
-              Row(
+            body: SingleChildScrollView(
+              padding: EdgeInsets.all(16.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Chat with us
-                  Expanded(
-                    child: _buildContactOption(
-                      icon: 'messages.svg',
-                      title: 'Chat with us',
-                      buttonText: 'Click here',
-                      buttonColor: const Color(0xFFE95E30),
-                      onTap: () {},
-                    ),
+                  SizedBox(height: 25.h),
+
+                  // Contact Options Row
+                  Row(
+                    children: [
+                      // Chat with us
+                      Expanded(
+                        child: _buildContactOption(
+                          icon: 'messages.svg',
+                          title: 'Chat with us',
+                          buttonText: 'Click here',
+                          buttonColor: AppColors.primary,
+                          onTap: () {},
+                        ),
+                      ),
+                      SizedBox(width: 16.w),
+                      // Mail us
+                      Expanded(
+                        child: _buildContactOption(
+                          icon: 'sms_outline.svg',
+                          title: 'Mail us',
+                          buttonText: 'Click here',
+                          buttonColor: AppColors.secondary,
+                          onTap: () {},
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 16.w),
-                  // Mail us
-                  Expanded(
-                    child: _buildContactOption(
-                      icon: 'sms_outline.svg',
-                      title: 'Mail us',
-                      buttonText: 'Click here',
-                      buttonColor: const Color(0xFFA1CF48),
-                      onTap: () {},
+
+                  SizedBox(height: 30.h),
+
+                  // Tabs for tickets
+                  TabBar(
+                    controller: _tabController,
+                    indicatorColor: AppColors.primary,
+                    indicatorWeight: 4.w,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    labelColor: AppColors.black,
+                    unselectedLabelColor: AppColors.lightGrey,
+                    labelStyle: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    unselectedLabelStyle: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.normal,
+                    ),
+                    tabs: const [
+                      Tab(text: 'Raise New Ticket'),
+                      Tab(text: 'My Tickets'),
+                    ],
+                  ),
+
+                  SizedBox(height: 20.h),
+
+                  // Tab content
+                  SizedBox(
+                    height: 600.h,
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [_buildRaiseTicketForm(), _buildMyTicketsTab()],
                     ),
                   ),
                 ],
               ),
-
-              SizedBox(height: 30.h),
-
-              // Tabs for tickets
-              TabBar(
-                controller: _tabController,
-                indicatorColor: AppColors.primary,
-                indicatorWeight: 4.w,
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelColor: AppColors.black,
-                unselectedLabelColor: AppColors.lightGrey,
-                labelStyle: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-                unselectedLabelStyle: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.normal,
-                ),
-                tabs: const [
-                  Tab(text: 'Raise New Ticket'),
-                  Tab(text: 'My Tickets'),
-                ],
-              ),
-
-              SizedBox(height: 20.h),
-
-              // Tab content
-              SizedBox(
-                height: 600.h,
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [_buildRaiseTicketForm(), _buildMyTicketsTab()],
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -169,121 +228,196 @@ class _SupportScreenState extends State<SupportScreen>
   }
 
   Widget _buildRaiseTicketForm() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Category field
-          _buildFormLabel('Category', isRequired: true),
-          CommonDropdown(
-            hintText: 'Select Category',
-            onChanged: (value) {},
-            data: ["Category 1", "Category 2", "Category 3"],
-          ),
-          SizedBox(height: 16.h),
+    return BlocBuilder<DashboardCubit, DashboardState>(
+      builder: (context, state) {
+        final isLoading = state is CreateTicketLoading;
 
-          // Title field
-          _buildFormLabel('Title', isRequired: true),
-          _buildTextField(hintText: 'Enter your name'),
-          SizedBox(height: 16.h),
-
-          // Priority field
-          _buildFormLabel('Priority', isRequired: true),
-          _buildTextField(hintText: 'Enter your name'),
-          SizedBox(height: 16.h),
-
-          // Query field
-          _buildFormLabel('Your query', isRequired: true),
-          _buildTextField(hintText: 'Enter your query', maxLines: 6),
-          SizedBox(height: 20.h),
-
-          // Upload document button
-          Center(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(8.r),
+        return Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Category field
+              _buildFormLabel('Category', isRequired: true),
+              CommonDropdown(
+                hintText: 'Select Category',
+                value: _selectedCategory,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedCategory = value;
+                  });
+                },
+                data: Constant.ticketCategory,
               ),
-              padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 24.w),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SvgPicture.asset('assets/icons/upload.svg'),
-                  SizedBox(width: 8.w),
-                  Text(
-                    'Upload a document',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14.sp,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: 24.h),
+              SizedBox(height: 16.h),
 
-          // Submit button
-          SubmitButton(),
-        ],
-      ),
+              // Title field
+              _buildFormLabel('Title', isRequired: true),
+              CommanTexfield(
+                hintText: 'Enter ticket title',
+                controller: _titleController,
+              ),
+              SizedBox(height: 16.h),
+
+              // Priority field
+              _buildFormLabel('Priority', isRequired: true),
+              CommonDropdown(
+                hintText: 'Select Priority',
+                value: _selectedPriority,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedPriority = value;
+                  });
+                },
+                data: Constant.ticketPriority,
+              ),
+              SizedBox(height: 16.h),
+
+              // Query field
+              _buildFormLabel('Describe your problem', isRequired: true),
+              CommanTexfield(
+                hintText: 'Enter your query',
+                controller: _messageController,
+              ),
+              SizedBox(height: 20.h),
+
+              SizedBox(height: 24.h),
+
+              // Submit button
+              isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : SubmitButton(onPressed: _submitTicket),
+            ],
+          ),
+        );
+      },
     );
   }
 
   Widget _buildMyTicketsTab() {
-    return Column(
-      children: [
-        // Open/Closed tickets toggle
-        Row(
+    return BlocBuilder<DashboardCubit, DashboardState>(
+      builder: (context, state) {
+        return Column(
           children: [
-            Expanded(child: _buildRadioOption('Open', 'Open Tickets')),
-            Expanded(child: _buildRadioOption('Closed', 'Closed Tickets')),
-            // Refresh button
-            Container(
-              padding: EdgeInsets.all(10.w),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(7.r),
-              ),
-              child: SvgPicture.asset(
-                'assets/icons/upload_one.svg',
-                width: 32.w,
-                height: 32.h,
-              ),
+            // Open/Closed tickets toggle
+            SizedBox(height: 20.h),
+            Row(
+              children: [
+                Expanded(child: _buildRadioOption('Open', 'Open Tickets')),
+                Expanded(child: _buildRadioOption('Closed', 'Closed Tickets')),
+              ],
+            ),
+
+            SizedBox(height: 20.h),
+
+            // Display tickets based on state and selected type
+            Expanded(child: _buildTicketsContent(state)),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildTicketsContent(DashboardState state) {
+    if (state is MyTicketsLoading) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (state is MyTicketsError) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Error loading tickets',
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              state.message,
+              style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 16.h),
+            ElevatedButton(
+              onPressed: () => _dashboardCubit.getMyTickets(),
+              child: const Text('Retry'),
             ),
           ],
         ),
+      );
+    } else if (state is MyTicketsLoaded) {
+      final filteredTickets =
+          state.tickets.where((ticket) {
+            if (_selectedOption == 'Open') {
+              return ticket.status?.toLowerCase() == 'open' ||
+                  ticket.status?.toLowerCase() == 'pending';
+            } else {
+              return ticket.status?.toLowerCase() == 'closed' ||
+                  ticket.status?.toLowerCase() == 'solved';
+            }
+          }).toList();
 
-        SizedBox(height: 20.h),
-
-        // Display tickets based on selected type
-        if (_selectedOption == 'Open')
-          Column(
+      if (filteredTickets.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildTicketCard(
-                ticketId: '114464636',
-                title: 'Technical Issue',
-                enquiryType: 'Technical',
-                status: 'Pending',
-                showSolution: true,
+              Icon(Icons.inbox_outlined, size: 64.sp, color: Colors.grey),
+              SizedBox(height: 16.h),
+              Text(
+                'No ${_selectedOption.toLowerCase()} tickets found',
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
               ),
-            ],
-          )
-        else
-          Column(
-            children: [
-              _buildTicketCard(
-                ticketId: '114464636',
-                title: 'Technical Issue',
-                enquiryType: 'Technical',
-                status: 'Solved',
-                showSolution: false,
+              SizedBox(height: 8.h),
+              Text(
+                'Your ${_selectedOption.toLowerCase()} tickets will appear here',
+                style: TextStyle(fontSize: 14.sp, color: Colors.grey),
               ),
             ],
           ),
-      ],
+        );
+      }
+
+      return ListView.builder(
+        itemCount: filteredTickets.length,
+        padding: EdgeInsets.zero,
+        itemBuilder: (context, index) {
+          final ticket = filteredTickets[index];
+          return Padding(
+            padding: EdgeInsets.only(bottom: 16.h),
+            child: _buildTicketCard(
+              ticketId: ticket.ticketId ?? '',
+              title: ticket.title ?? '',
+              enquiryType: ticket.category ?? '',
+              status: ticket.status ?? '',
+              priority: ticket.priority ?? '',
+              message: ticket.message ?? '',
+              showSolution:
+                  ticket.status?.toLowerCase() == 'open' ||
+                  ticket.status?.toLowerCase() == 'pending',
+            ),
+          );
+        },
+      );
+    }
+
+    // Default state - show empty state
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.inbox_outlined, size: 64.sp, color: Colors.grey),
+          SizedBox(height: 16.h),
+          Text(
+            'No tickets found',
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            'Your tickets will appear here',
+            style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+          ),
+        ],
+      ),
     );
   }
 
@@ -305,7 +439,7 @@ class _SupportScreenState extends State<SupportScreen>
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: isSelected ? const Color(0xFF9BC547) : Colors.grey,
+                color: isSelected ? AppColors.primary : Colors.grey,
                 width: 2.w,
               ),
             ),
@@ -314,7 +448,7 @@ class _SupportScreenState extends State<SupportScreen>
                     ? const Center(
                       child: CircleAvatar(
                         radius: 8,
-                        backgroundColor: Color(0xFF9BC547),
+                        backgroundColor: AppColors.primary,
                       ),
                     )
                     : null,
@@ -339,21 +473,9 @@ class _SupportScreenState extends State<SupportScreen>
     required String enquiryType,
     required String status,
     required bool showSolution,
+    String? priority,
+    String? message,
   }) {
-    Color statusColor;
-    Color statusTextColor = Colors.white;
-
-    switch (status) {
-      case 'Pending':
-        statusColor = const Color(0xFFE95E30);
-        break;
-      case 'Solved':
-        statusColor = const Color(0xFF666666);
-        break;
-      default:
-        statusColor = Colors.grey;
-    }
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -366,30 +488,29 @@ class _SupportScreenState extends State<SupportScreen>
           Padding(
             padding: EdgeInsets.all(16.w),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Ticket ID
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Ticket ID:',
-                        style: TextStyle(fontSize: 12.sp, color: Colors.grey),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Ticket ID:',
+                      style: TextStyle(fontSize: 12.sp, color: Colors.grey),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      '#$ticketId',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        '#$ticketId',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
 
                 // Title
-                Expanded(
+                Flexible(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -409,13 +530,13 @@ class _SupportScreenState extends State<SupportScreen>
                   ),
                 ),
 
-                // Enquiry Type
-                Expanded(
+                // Category
+                Flexible(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Enquiry Type:',
+                        'Category:',
                         style: TextStyle(fontSize: 12.sp, color: Colors.grey),
                       ),
                       SizedBox(height: 4.h),
@@ -430,25 +551,38 @@ class _SupportScreenState extends State<SupportScreen>
                   ),
                 ),
 
-                // Status
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12.w,
-                    vertical: 8.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: statusColor,
-                    borderRadius: BorderRadius.circular(7.r),
-                  ),
-                  child: Text(
-                    status,
-                    style: TextStyle(
-                      color: statusTextColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12.sp,
+                // Priority
+                if (priority != null)
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Priority:',
+                          style: TextStyle(fontSize: 12.sp, color: Colors.grey),
+                        ),
+                        SizedBox(height: 4.h),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 4.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getPriorityColor(priority!),
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                          child: Text(
+                            priority!,
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
               ],
             ),
           ),
@@ -464,48 +598,76 @@ class _SupportScreenState extends State<SupportScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Solution',
+                    'Message',
                     style: TextStyle(fontSize: 14.sp, color: Colors.grey),
                   ),
-                  SizedBox(height: 4.h),
-                  SizedBox(height: 120.h), // Space for solution content
-                  // Reply button
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 24.w,
-                        vertical: 10.h,
-                      ),
+                  SizedBox(height: 8.h),
+                  if (message != null && message!.isNotEmpty)
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(12.w),
                       decoration: BoxDecoration(
-                        color: Colors.black,
+                        color: Colors.grey.shade100,
                         borderRadius: BorderRadius.circular(8.r),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Reply',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.sp,
-                            ),
-                          ),
-                          SizedBox(width: 8.w),
-                          SvgPicture.asset(
-                            'assets/icons/messages.svg',
-                            width: 20.w,
-                            height: 20.h,
-                            colorFilter: const ColorFilter.mode(
-                              Colors.white,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                        ],
+                      child: Text(message!, style: TextStyle(fontSize: 14.sp)),
+                    )
+                  else
+                    Container(
+                      width: double.infinity,
+                      height: 60.h,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'No message available',
+                          style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+                        ),
                       ),
                     ),
-                  ),
+                  SizedBox(height: 16.h),
+                  // Reply button
+                  // Align(
+                  //   alignment: Alignment.centerRight,
+                  //   child: GestureDetector(
+                  //     onTap: () => _showReplyDialog(ticketId),
+                  //     child: Container(
+                  //       padding: EdgeInsets.symmetric(
+                  //         horizontal: 24.w,
+                  //         vertical: 10.h,
+                  //       ),
+                  //       decoration: BoxDecoration(
+                  //         color: Colors.black,
+                  //         borderRadius: BorderRadius.circular(8.r),
+                  //       ),
+                  //       child: Row(
+                  //         mainAxisSize: MainAxisSize.min,
+                  //         children: [
+                  //           Text(
+                  //             'Reply',
+                  //             style: TextStyle(
+                  //               color: Colors.white,
+                  //               fontWeight: FontWeight.bold,
+                  //               fontSize: 14.sp,
+                  //             ),
+                  //           ),
+                  //           SizedBox(width: 8.w),
+                  //           SvgPicture.asset(
+                  //             'assets/icons/messages.svg',
+                  //             width: 20.w,
+                  //             height: 20.h,
+                  //             colorFilter: const ColorFilter.mode(
+                  //               Colors.white,
+                  //               BlendMode.srcIn,
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -547,7 +709,7 @@ class _SupportScreenState extends State<SupportScreen>
           ),
           if (isRequired)
             Text(
-              '*',
+              ' *',
               style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
             ),
         ],
@@ -555,11 +717,196 @@ class _SupportScreenState extends State<SupportScreen>
     );
   }
 
-  Widget _buildTextField({
-    required String hintText,
-    int maxLines = 1,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return CommanTexfield(hintText: hintText);
+  void _submitTicket() {
+    FocusScope.of(context).unfocus();
+    if (_formKey.currentState!.validate()) {
+      if (_selectedCategory == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select a category'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      if (_selectedPriority == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select a priority'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      _dashboardCubit.createTicket(
+        title: _titleController.text.trim(),
+        category: _selectedCategory!,
+        priority: _selectedPriority!,
+        message: _messageController.text.trim(),
+      );
+    }
+  }
+
+  void _clearForm() {
+    _titleController.clear();
+    _messageController.clear();
+    setState(() {
+      _selectedCategory = null;
+      _selectedPriority = null;
+    });
+  }
+
+  Color _getPriorityColor(String priority) {
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return Colors.red;
+      case 'medium':
+        return Colors.orange;
+      case 'low':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  void _showReplyDialog(String ticketId) {
+    final replyController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return BlocProvider.value(
+          value: _dashboardCubit,
+          child: BlocListener<DashboardCubit, DashboardState>(
+            listener: (context, state) {
+              if (state is AddCommentSuccess) {
+                Navigator.of(context).pop();
+                replyController.dispose();
+              }
+            },
+            child: AlertDialog(
+              title: Text(
+                'Reply to Ticket',
+                style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Ticket ID: #$ticketId',
+                    style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+                  ),
+                  SizedBox(height: 16.h),
+                  Text(
+                    'Your Reply',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  TextField(
+                    controller: replyController,
+                    maxLines: 4,
+                    decoration: InputDecoration(
+                      hintText: 'Enter your reply...',
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade400,
+                        fontSize: 14.sp,
+                      ),
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7.r),
+                        borderSide: BorderSide(color: AppColors.grey),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7.r),
+                        borderSide: BorderSide(color: AppColors.grey),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7.r),
+                        borderSide: BorderSide(color: AppColors.grey),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 14.h,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    replyController.dispose();
+                  },
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                  ),
+                ),
+                BlocBuilder<DashboardCubit, DashboardState>(
+                  builder: (context, state) {
+                    final isLoading = state is AddCommentLoading;
+
+                    return ElevatedButton(
+                      onPressed:
+                          isLoading
+                              ? null
+                              : () {
+                                final comment = replyController.text.trim();
+                                if (comment.isNotEmpty) {
+                                  _dashboardCubit.addComment(
+                                    ticketId: ticketId,
+                                    comment: comment,
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Please enter a reply'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                      ),
+                      child:
+                          isLoading
+                              ? SizedBox(
+                                width: 20.w,
+                                height: 20.h,
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                              : Text(
+                                'Send Reply',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
