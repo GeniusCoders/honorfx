@@ -7,7 +7,7 @@ class BankDetailsInitial extends BankDetailsState {}
 class BankDetailsLoading extends BankDetailsState {}
 
 class BankDetailsListLoaded extends BankDetailsState {
-  final List<BankDetailsData> bankDetailsList;
+  final List<BankDetails> bankDetailsList;
 
   BankDetailsListLoaded({required this.bankDetailsList});
 }

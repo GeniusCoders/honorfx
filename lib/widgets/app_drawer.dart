@@ -229,93 +229,93 @@ class AppDrawer extends StatelessWidget {
               ),
 
               // Referral Link Section
-              if (dashboardController.tokenResponse.value?.isIb == '2')
-                // Padding(
-                //   padding: EdgeInsets.symmetric(
-                //     horizontal: 16.w,
-                //     vertical: 8.h,
-                //   ),
-                //   child: Container(
-                //     padding: EdgeInsets.all(16.w),
-                //     width: double.infinity,
-                //     decoration: BoxDecoration(
-                //       borderRadius: BorderRadius.circular(15),
-                //       border: Border.all(color: AppColors.grey),
-                //     ),
-                //     child: Column(
-                //       crossAxisAlignment: CrossAxisAlignment.center,
-                //       children: [
-                //         Text(
-                //           'Copy your Referral Link!',
-                //           style: TextStyle(
-                //             fontSize: 14.sp,
-                //             fontWeight: FontWeight.w600,
-                //           ),
-                //         ),
-                //         SizedBox(height: 8.h),
-                //         Container(
-                //           padding: EdgeInsets.symmetric(
-                //             vertical: 6.h,
-                //             horizontal: 16.w,
-                //           ),
-                //           decoration: BoxDecoration(
-                //             color: AppColors.primary,
-                //             borderRadius: BorderRadius.circular(20),
-                //           ),
-                //           child: Text(
-                //             'Click Here',
-                //             style: TextStyle(
-                //               color: Colors.white,
-                //               fontWeight: FontWeight.w500,
-                //               fontSize: 12.sp,
-                //             ),
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
-                // Logout Button
-                Padding(
-                  padding: EdgeInsets.all(16.w),
-                  child: GestureDetector(
-                    onTap: () {
-                      getIt<AuthCubit>().logout();
-                      getcontroller.Get.delete<DashboardController>();
-                      getIt<AppRouter>().goToLogin();
-                    },
-                    child: IntrinsicWidth(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 10.h,
-                          horizontal: 16.w,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.grey.shade100,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              'assets/icons/logout.svg',
-                              width: 20.w,
-                              height: 20.h,
+              // if (dashboardController.tokenResponse.value?.isIb == '2')
+              // Padding(
+              //   padding: EdgeInsets.symmetric(
+              //     horizontal: 16.w,
+              //     vertical: 8.h,
+              //   ),
+              //   child: Container(
+              //     padding: EdgeInsets.all(16.w),
+              //     width: double.infinity,
+              //     decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(15),
+              //       border: Border.all(color: AppColors.grey),
+              //     ),
+              //     child: Column(
+              //       crossAxisAlignment: CrossAxisAlignment.center,
+              //       children: [
+              //         Text(
+              //           'Copy your Referral Link!',
+              //           style: TextStyle(
+              //             fontSize: 14.sp,
+              //             fontWeight: FontWeight.w600,
+              //           ),
+              //         ),
+              //         SizedBox(height: 8.h),
+              //         Container(
+              //           padding: EdgeInsets.symmetric(
+              //             vertical: 6.h,
+              //             horizontal: 16.w,
+              //           ),
+              //           decoration: BoxDecoration(
+              //             color: AppColors.primary,
+              //             borderRadius: BorderRadius.circular(20),
+              //           ),
+              //           child: Text(
+              //             'Click Here',
+              //             style: TextStyle(
+              //               color: Colors.white,
+              //               fontWeight: FontWeight.w500,
+              //               fontSize: 12.sp,
+              //             ),
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+              // Logout Button
+              Padding(
+                padding: EdgeInsets.all(16.w),
+                child: GestureDetector(
+                  onTap: () {
+                    getIt<AuthCubit>().logout();
+                    getcontroller.Get.delete<DashboardController>();
+                    getIt<AppRouter>().goToLogin();
+                  },
+                  child: IntrinsicWidth(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 10.h,
+                        horizontal: 16.w,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.grey.shade100,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            'assets/icons/logout.svg',
+                            width: 20.w,
+                            height: 20.h,
+                          ),
+                          SizedBox(width: 8.w),
+                          Text(
+                            'Logout',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14.sp,
                             ),
-                            SizedBox(width: 8.w),
-                            Text(
-                              'Logout',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
+              ),
             ],
           ),
         ),

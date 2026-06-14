@@ -1,3 +1,4 @@
+import 'package:honorfx/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -47,7 +48,7 @@ class UserName extends StatelessWidget {
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(7),
-              color: Color(0xFFFF5C1E),
+              color: AppColors.secondary,
             ),
             child: Icon(Icons.menu, color: Colors.white),
           ),

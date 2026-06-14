@@ -1,7 +1,7 @@
 class BankDetailsResponse {
   final int status;
   final String? msg;
-  final List<BankDetailsData>? data;
+  final List<BankDetails>? data;
 
   BankDetailsResponse({required this.status, this.msg, this.data});
 
@@ -10,9 +10,9 @@ class BankDetailsResponse {
       status: json['status'] ?? 0,
       msg: json['msg'],
       data:
-          json['data'] != null
+          json['data'] != null && json['data'] is List
               ? (json['data'] as List)
-                  .map((item) => BankDetailsData.fromJson(item))
+                  .map((item) => BankDetails.fromJson(item))
                   .toList()
               : null,
     );
@@ -27,7 +27,7 @@ class BankDetailsResponse {
   }
 }
 
-class BankDetailsData {
+class BankDetails {
   final int? id;
   final String accountName;
   final String accountNo;
@@ -42,7 +42,7 @@ class BankDetailsData {
   final String? createdAt;
   final String? updatedAt;
 
-  BankDetailsData({
+  BankDetails({
     this.id,
     required this.accountName,
     required this.accountNo,
@@ -58,8 +58,8 @@ class BankDetailsData {
     this.updatedAt,
   });
 
-  factory BankDetailsData.fromJson(Map<String, dynamic> json) {
-    return BankDetailsData(
+  factory BankDetails.fromJson(Map<String, dynamic> json) {
+    return BankDetails(
       id: json['id'],
       accountName: json['account_name'] ?? '',
       accountNo: json['account_no'] ?? '',

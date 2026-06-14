@@ -47,16 +47,15 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
               buildSnackBar(message: state.message, isError: true),
             );
           }
+          if (state is BankDetailsListLoaded && state.bankDetailsList.isEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              getIt<AppRouter>().goToAddBankDetails();
+            });
+          }
         },
         child: BlocBuilder<BankDetailsCubit, BankDetailsState>(
           builder: (context, state) {
             // Navigate to add bank details screen if list is empty
-            if (state is BankDetailsListLoaded &&
-                state.bankDetailsList.isEmpty) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                getIt<AppRouter>().goToAddBankDetails();
-              });
-            }
 
             if (state is BankDetailsLoading) {
               return Center(child: SmallLoading());
@@ -120,7 +119,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
     );
   }
 
-  Widget _buildBankDetailsCards(List<BankDetailsData> bankDetailsList) {
+  Widget _buildBankDetailsCards(List<BankDetails> bankDetailsList) {
     if (bankDetailsList.isEmpty) {
       return _buildEmptyState();
     }
@@ -137,7 +136,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
     );
   }
 
-  Widget _buildBankDetailCard(BankDetailsData bankDetail) {
+  Widget _buildBankDetailCard(BankDetails bankDetail) {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(

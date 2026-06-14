@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:honorfx/utils/constant/base_url.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:honorfx/cubit/document_upload/document_upload_cubit.dart';
 import 'package:honorfx/cubit/document_upload/document_upload_state.dart';
@@ -22,9 +23,7 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
   final ImagePicker _picker = ImagePicker();
 
   String? _poiPath;
-  String? _poiBackPath;
   String? _poaPath;
-  String? _poaBackPath;
 
   List<DocumentUpload> _existingDocuments = [];
 
@@ -43,14 +42,8 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
             case 'poi':
               _poiPath = file.path;
               break;
-            case 'poi_back':
-              _poiBackPath = file.path;
-              break;
             case 'poa':
               _poaPath = file.path;
-              break;
-            case 'poa_back':
-              _poaBackPath = file.path;
               break;
           }
         });
@@ -69,13 +62,7 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
     if (_poiPath != null && !_hasExistingDocument('poi')) {
       hasNewDocuments = true;
     }
-    if (_poiBackPath != null && !_hasExistingDocument('poi_back')) {
-      hasNewDocuments = true;
-    }
     if (_poaPath != null && !_hasExistingDocument('poa')) {
-      hasNewDocuments = true;
-    }
-    if (_poaBackPath != null && !_hasExistingDocument('poa_back')) {
       hasNewDocuments = true;
     }
 
@@ -91,9 +78,9 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
 
     final model = UploadDocumentModel(
       poi: !_hasExistingDocument('poi') ? _poiPath : null,
-      poiBack: !_hasExistingDocument('poi_back') ? _poiBackPath : null,
+      poiBack: null, // Not using back variants for honorfx
       poa: !_hasExistingDocument('poa') ? _poaPath : null,
-      poaBack: !_hasExistingDocument('poa_back') ? _poaBackPath : null,
+      poaBack: null, // Not using back variants for honorfx
     );
 
     context.read<DocumentUploadCubit>().uploadDocuments(model);
@@ -103,11 +90,6 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
     try {
       // Map the document types to match API response
       String apiDocumentType = documentType;
-      if (documentType == 'poi_back') {
-        apiDocumentType = 'poiback';
-      } else if (documentType == 'poa_back') {
-        apiDocumentType = 'poaback';
-      }
 
       return _existingDocuments.firstWhere(
         (doc) =>
@@ -146,9 +128,7 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
             // Clear selected files after successful upload
             setState(() {
               _poiPath = null;
-              _poiBackPath = null;
               _poaPath = null;
-              _poaBackPath = null;
             });
           } else if (state is DocumentUploadError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -198,41 +178,68 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
             color: AppColors.black,
           ),
         ),
+        SizedBox(height: 8.h),
+        Text(
+          'Please upload the required documents for verification',
+          style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
+        ),
         SizedBox(height: 24.h),
-        _buildDocumentUploadCard('Proof of Identity (Front)', 'poi', _poiPath),
-        SizedBox(height: 16.h),
+
+        // POI
         _buildDocumentUploadCard(
-          'Proof of Identity (Back)',
-          'poi_back',
-          _poiBackPath,
+          title: 'Proof of Identity (POI)',
+          documentType: 'poi',
+          selectedPath: _poiPath,
+          isApproved: _isDocumentApproved('poi'),
+          isPending: _isDocumentPending('poi'),
+          hasExisting: _hasExistingDocument('poi'),
+          existingDocument: _getExistingDocument('poi'),
         ),
         SizedBox(height: 16.h),
-        _buildDocumentUploadCard('Proof of Address (Front)', 'poa', _poaPath),
-        SizedBox(height: 16.h),
+
+        // POA
         _buildDocumentUploadCard(
-          'Proof of Address (Back)',
-          'poa_back',
-          _poaBackPath,
+          title: 'Proof of Address (POA)',
+          documentType: 'poa',
+          selectedPath: _poaPath,
+          isApproved: _isDocumentApproved('poa'),
+          isPending: _isDocumentPending('poa'),
+          hasExisting: _hasExistingDocument('poa'),
+          existingDocument: _getExistingDocument('poa'),
         ),
       ],
     );
   }
 
-  Widget _buildDocumentUploadCard(
-    String title,
-    String documentType,
-    String? selectedFile,
-  ) {
-    final isApproved = _isDocumentApproved(documentType);
-    final isPending = _isDocumentPending(documentType);
-    final hasDocument = _hasExistingDocument(documentType);
-
+  Widget _buildDocumentUploadCard({
+    required String title,
+    required String documentType,
+    required String? selectedPath,
+    required bool isApproved,
+    required bool isPending,
+    required bool hasExisting,
+    required DocumentUpload? existingDocument,
+  }) {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.grey.withOpacity(0.2)),
+        border: Border.all(
+          color:
+              isApproved
+                  ? Colors.green.withOpacity(0.3)
+                  : isPending
+                  ? Colors.orange.withOpacity(0.3)
+                  : AppColors.grey.withOpacity(0.3),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,70 +247,225 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.black,
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.black,
+                  ),
                 ),
               ),
-              if (hasDocument)
+              if (isApproved)
                 Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12.w,
-                    vertical: 4.h,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                   decoration: BoxDecoration(
-                    color:
-                        isApproved
-                            ? Colors.green.withOpacity(0.1)
-                            : isPending
-                            ? Colors.orange.withOpacity(0.1)
-                            : Colors.red.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20.r),
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Text(
-                    isApproved
-                        ? 'Approved'
-                        : isPending
-                        ? 'Pending'
-                        : 'Rejected',
+                    'Approved',
                     style: TextStyle(
+                      color: Colors.white,
                       fontSize: 12.sp,
-                      color:
-                          isApproved
-                              ? Colors.green
-                              : isPending
-                              ? Colors.orange
-                              : Colors.red,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                )
+              else if (isPending)
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: Colors.orange,
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Text(
+                    'Pending',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
             ],
           ),
           SizedBox(height: 16.h),
-          if (!hasDocument)
-            Button(
-              title: selectedFile != null ? 'File Selected' : 'Select Document',
-              onPressed: () {
-                if (selectedFile == null) {
-                  _selectFile(documentType);
-                }
-              },
-              backgroundColor:
-                  selectedFile != null ? AppColors.grey : AppColors.primary,
+
+          if (hasExisting && existingDocument?.filePath != null)
+            // Show existing document (approved or pending)
+            _buildExistingDocumentView(existingDocument!, isPending: isPending)
+          else
+            // Show upload area
+            _buildUploadArea(
+              documentType,
+              selectedPath,
+              isDisabled: hasExisting,
             ),
+
+          SizedBox(height: 12.h),
+          Text(
+            'Supported formats: JPEG, JPG, PNG, PDF.',
+            style: TextStyle(fontSize: 12.sp, color: Colors.grey.shade500),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildUploadButton() {
-    return Button(
-      title: 'Upload Documents',
-      onPressed: _uploadDocuments,
-      backgroundColor: AppColors.primary,
+  Widget _buildExistingDocumentView(
+    DocumentUpload document, {
+    bool isPending = false,
+  }) {
+    final imageUrl = '${BaseUrl.domain}/${document.filePath}';
+    print(imageUrl);
+
+    return Container(
+      height: 120.h,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(
+          color:
+              isPending
+                  ? Colors.orange.withOpacity(0.3)
+                  : Colors.green.withOpacity(0.3),
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8.r),
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              ),
+            );
+          },
+          errorBuilder:
+              (context, error, stackTrace) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.description,
+                      size: 32.sp,
+                      color: isPending ? Colors.orange : Colors.green,
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      isPending ? 'Document Pending' : 'Document Uploaded',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: isPending ? Colors.orange : Colors.green,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+        ),
+      ),
     );
+  }
+
+  Widget _buildUploadArea(
+    String documentType,
+    String? selectedPath, {
+    bool isDisabled = false,
+  }) {
+    return GestureDetector(
+      onTap: isDisabled ? null : () => _selectFile(documentType),
+      child: Container(
+        height: 120.h,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: isDisabled ? Colors.grey.shade200 : AppColors.greyBackground,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(
+            color: AppColors.grey.withOpacity(0.3),
+            style: BorderStyle.solid,
+          ),
+        ),
+        child:
+            selectedPath != null
+                ? ClipRRect(
+                  borderRadius: BorderRadius.circular(8.r),
+                  child: Image.asset(
+                    selectedPath,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              size: 32.sp,
+                              color: AppColors.primary,
+                            ),
+                            SizedBox(height: 8.h),
+                            Text(
+                              'File Selected',
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                )
+                : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(12.w),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.cloud_upload_outlined,
+                        size: 24.sp,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Drag & drop files or Browse',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: AppColors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+      ),
+    );
+  }
+
+  Widget _buildUploadButton() {
+    bool allDocumentsUploaded =
+        _hasExistingDocument('poi') && _hasExistingDocument('poa');
+    if (!allDocumentsUploaded) {
+      return Button(
+        title: 'UPLOAD FILES',
+
+        onPressed: allDocumentsUploaded ? () {} : _uploadDocuments,
+        backgroundColor: AppColors.secondary,
+      );
+    } else {
+      return SizedBox.shrink();
+    }
   }
 }

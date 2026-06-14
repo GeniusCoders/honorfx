@@ -51,6 +51,7 @@ class Constant {
       "https://play.google.com/store/apps/details?id=com.phoenixfx";
 
   //images
+  static const String appLogo = "assets/images/honorfx_logo.svg";
   static const String logoh = "assets/logo_h.jpg";
   static const String logohtrasparent = "assets/logo_h_transparent.png";
   static const String defaultProfile = "assets/default_profile.png";

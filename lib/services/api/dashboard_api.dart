@@ -540,7 +540,7 @@ class DashboardApi extends DashboardRepo {
   Future<Either<ServerError, BankDetailsResponse>> getBankDetailsList() async {
     try {
       _setupToken();
-      const url = "/bankdetails";
+      const url = "/bankdetailslist";
       final response = await dio.get(url);
       return right(BankDetailsResponse.fromJson(response.data));
     } on DioError catch (e) {

@@ -1,3 +1,4 @@
+import 'package:honorfx/utils/constant/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -73,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Logo
                           Center(
                             child: SvgPicture.asset(
-                              'assets/images/honorfx_logo.svg',
+                              Constant.appLogo,
                               height: 60.h,
                             ),
                           ),
@@ -92,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             'Sign in to continue',
                             style: TextStyle(
                               fontSize: 14.sp,
-                              color: AppColors.lightGrey,
+                              color: AppColors.black,
                             ),
                           ),
                           SizedBox(height: 40.h),
@@ -176,10 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               Text(
                                 'Don\'t have an account? ',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  color: Colors.black,
-                                ),
+                                style: TextStyle(fontSize: 14.sp),
                               ),
                               GestureDetector(
                                 onTap: () {
